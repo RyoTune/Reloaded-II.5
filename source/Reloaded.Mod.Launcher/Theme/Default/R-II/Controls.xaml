@@ -1,163 +1,212 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:sys="clr-namespace:System;assembly=mscorlib"
-                    xmlns:controls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
-                    xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters;assembly=Reloaded-II">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
+    xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters;assembly=Reloaded-II"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
 
-    <!-- Import Reloaded.WPF Theme at runtime. -->
+    <!--  Import Reloaded.WPF Theme at runtime.  -->
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Default/Root.xaml"/>
+                <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Default/Root.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
-    <!-- Textblock with colour change on hover -->
-    <Style x:Key="TextblockWithColourChange" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource BaseTextBlockStyle}">
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+    <!--  Textblock with colour change on hover  -->
+    <Style
+        x:Key="TextblockWithColourChange"
+        BasedOn="{StaticResource BaseTextBlockStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>
-                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeTextToAccentLightest}"/>
+                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeTextToAccentLightest}" />
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
-                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeAccentLightestToText}"/>
+                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeAccentLightestToText}" />
                 </Trigger.ExitActions>
             </Trigger>
         </Style.Triggers>
     </Style>
 
-    <!-- PopupLabel with colour change on hover -->
+    <!--  PopupLabel with colour change on hover  -->
     <Style x:Key="PopupLabelWithColourChange" TargetType="{x:Type UserControl}">
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Trigger.EnterActions>
-                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeTextToAccentLightest}"/>
+                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeTextToAccentLightest}" />
                 </Trigger.EnterActions>
                 <Trigger.ExitActions>
-                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeAccentLightestToText}"/>
+                    <BeginStoryboard Storyboard="{StaticResource ForegroundFadeAccentLightestToText}" />
                 </Trigger.ExitActions>
             </Trigger>
         </Style.Triggers>
     </Style>
 
-    <!-- Textblock with colour change on hover -->
-    <Style x:Key="RIIDefaultTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DefaultTextBlock}">
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display"/>
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType"/>
+    <!--  Textblock with colour change on hover  -->
+    <Style
+        x:Key="RIIDefaultTextBlock"
+        BasedOn="{StaticResource DefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
 
-    <Style x:Key="SidebarHeaderTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource RIIDefaultTextBlock}">
-        <Setter Property="HorizontalAlignment" Value="Left"/>
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarger}"/>
-        <Setter Property="FontStyle" Value="Italic"/>
-        <Setter Property="FontFamily" Value="{DynamicResource FontRegular}"/>
+    <Style
+        x:Key="SidebarHeaderTextBlock"
+        BasedOn="{StaticResource RIIDefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarger}" />
+        <Setter Property="FontStyle" Value="Italic" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontRegular}" />
     </Style>
 
-    <Style x:Key="SidebarTextblock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextblockWithColourChange}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmaller}"/>
-        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="FontFamily" Value="{DynamicResource FontRegular}"/>
+    <Style
+        x:Key="SidebarHeaderTextBlockAlt"
+        BasedOn="{StaticResource RIIDefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontBold}" />
     </Style>
 
-    <!-- Button without internal padding -->
-    <Style x:Key="UnpaddedButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultButton}">
-        <Setter Property="Height" Value="30"/>
-        <Setter Property="Padding" Value="0"/>
+    <Style
+        x:Key="SidebarTextblock"
+        BasedOn="{StaticResource TextblockWithColourChange}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeSmaller}" />
+        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontRegular}" />
     </Style>
 
-    <Style x:Key="UnpaddedStretchedButton" TargetType="{x:Type Button}" BasedOn="{StaticResource UnpaddedButton}">
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="VerticalAlignment" Value="Stretch"/>
+    <!--  Button without internal padding  -->
+    <Style
+        x:Key="UnpaddedButton"
+        BasedOn="{StaticResource DefaultButton}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Padding" Value="0" />
     </Style>
 
-    <Style x:Key="UnpaddedStretchedGridButton" TargetType="{x:Type Button}" BasedOn="{StaticResource UnpaddedStretchedButton}">
-        <Setter Property="Margin" Value="10,0"/>
+    <Style
+        x:Key="UnpaddedStretchedButton"
+        BasedOn="{StaticResource UnpaddedButton}"
+        TargetType="{x:Type Button}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
     </Style>
 
-    <!-- Buttons to be positioned side by side -->
-    <Style x:Key="GridButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DefaultButton}">
-        <Setter Property="Margin" Value="10,0"/>
+    <Style
+        x:Key="UnpaddedStretchedGridButton"
+        BasedOn="{StaticResource UnpaddedStretchedButton}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Margin" Value="10,0" />
     </Style>
 
-    <!-- Image with High Quality render preset -->
+    <!--  Buttons to be positioned side by side  -->
+    <Style
+        x:Key="GridButton"
+        BasedOn="{StaticResource DefaultButton}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Margin" Value="10,0" />
+    </Style>
+
+    <!--  Image with High Quality render preset  -->
     <Style x:Key="HighQualityImage" TargetType="{x:Type Image}">
-        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
-        <Setter Property="RenderOptions.EdgeMode" Value="Aliased"/>
-        <Setter Property="RenderOptions.CachingHint" Value="Cache"/>
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+        <Setter Property="RenderOptions.EdgeMode" Value="Aliased" />
+        <Setter Property="RenderOptions.CachingHint" Value="Cache" />
     </Style>
 
-    <!-- Settings Page Specific -->
-    <Style x:Key="StatisticsTextblock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextblockWithColourChange}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}"/>
-        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <!--  Settings Page Specific  -->
+    <Style
+        x:Key="StatisticsTextblock"
+        BasedOn="{StaticResource TextblockWithColourChange}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
+        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="StatisticsTextvalue" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextblockWithColourChange}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}"/>
-        <Setter Property="Margin" Value="8,0,0,0"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <Style
+        x:Key="StatisticsTextvalue"
+        BasedOn="{StaticResource TextblockWithColourChange}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
+        <Setter Property="Margin" Value="8,0,0,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="BuildTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource TextblockWithColourChange}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLargest}"/>
-        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
+    <Style
+        x:Key="BuildTextBlock"
+        BasedOn="{StaticResource TextblockWithColourChange}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLargest}" />
+        <Setter Property="Margin" Value="{DynamicResource CommonItemVerticalMarginSmall}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <!-- Custom textbox type featuring a placeholder piece of text -->
-    <Style x:Key="TextboxWithPlaceholder" TargetType="{x:Type TextBox}" BasedOn="{StaticResource DefaultTextBox}">
+    <!--  Custom textbox type featuring a placeholder piece of text  -->
+    <Style
+        x:Key="TextboxWithPlaceholder"
+        BasedOn="{StaticResource DefaultTextBox}"
+        TargetType="{x:Type TextBox}">
 
-        <Setter Property="HorizontalAlignment" Value="Stretch"/>
-        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">
                     <Grid>
 
-                        <!-- Top/Bottom Border -->
-                        <Border BorderThickness="{DynamicResource TextboxBorderThickness}" Background="Transparent">
+                        <!--  Top/Bottom Border  -->
+                        <Border Background="Transparent" BorderThickness="{DynamicResource TextboxBorderThickness}">
                             <Border.BorderBrush>
                                 <VisualBrush>
                                     <VisualBrush.Visual>
-                                        <Rectangle Stroke="{TemplateBinding Foreground}"
-                                                   StrokeThickness="{DynamicResource TextboxBorderStrokeThickness}"
-                                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
-                                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                                        <Rectangle
+                                            Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                            Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"
+                                            Stroke="{TemplateBinding Foreground}"
+                                            StrokeThickness="{DynamicResource TextboxBorderStrokeThickness}" />
                                     </VisualBrush.Visual>
                                 </VisualBrush>
                             </Border.BorderBrush>
                         </Border>
 
-                        <!-- Text host. -->
-                        <ScrollViewer x:Name="PART_ContentHost" 
-                                      Focusable="False"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      HorizontalScrollBarVisibility="Hidden" 
-                                      VerticalScrollBarVisibility="Hidden"
-                                      Margin="{DynamicResource TextboxContentMargin}"/>
+                        <!--  Text host.  -->
+                        <ScrollViewer
+                            x:Name="PART_ContentHost"
+                            Margin="{DynamicResource TextboxContentMargin}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Focusable="False"
+                            HorizontalScrollBarVisibility="Hidden"
+                            VerticalScrollBarVisibility="Hidden" />
 
-                        <!-- Block of default text to display if no text in real textbox. -->
-                        <TextBlock IsHitTestVisible="False" 
-                                   Text="{TemplateBinding Tag}" 
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}" 
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}">
+                        <!--  Block of default text to display if no text in real textbox.  -->
+                        <TextBlock
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            IsHitTestVisible="False"
+                            Text="{TemplateBinding Tag}">
                             <TextBlock.Style>
                                 <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="{DynamicResource BorderColorBrush}"/>
-                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource BorderColorBrush}" />
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Mode=TemplatedParent}}" Value="">
-                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Setter Property="Visibility" Value="Visible" />
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -167,9 +216,9 @@
                     </Grid>
                     <ControlTemplate.Triggers>
 
-                        <!-- Change text when unavailable. -->
+                        <!--  Change text when unavailable.  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Text" Value="{DynamicResource TextboxDisabledSymbol}"/>
+                            <Setter Property="Text" Value="{DynamicResource TextboxDisabledSymbol}" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>
@@ -179,60 +228,68 @@
         </Setter>
     </Style>
 
-    <!-- Styles not fully inheriting from Control -->
+    <!--  Styles not fully inheriting from Control  -->
     <Style x:Key="LabelButton" TargetType="{x:Type Button}">
 
-        <Setter Property="Focusable" Value="True"/>
-        <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Foreground" Value="{DynamicResource BorderColorBrush}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="BorderThickness" Value="0"/>
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource ReloadedFocusVisual}"/>
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource BorderColorBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource ReloadedFocusVisual}" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ButtonBase}">
 
-                    <!-- Background and border color -->
-                    <Border x:Name="border" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            Background="{TemplateBinding Background}" 
-                            SnapsToDevicePixels="True">
-                        <TextBlock Text="{TemplateBinding Content}"
-                                   FontSize="{TemplateBinding FontSize}"
-                                   FontStyle="{TemplateBinding FontStyle}"
-                                   FontWeight="{TemplateBinding FontWeight}"
-                                   FontFamily="{TemplateBinding FontFamily}"
-                                   FontStretch="{TemplateBinding FontStretch}"
-                                   Foreground="{TemplateBinding Foreground}"
-                                   Background="{TemplateBinding Background}"
-                                   SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                   HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                                   Margin="{TemplateBinding Padding}"
-                                   Focusable="False"  />
+                    <!--  Background and border color  -->
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <TextBlock
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Background="{TemplateBinding Background}"
+                            Focusable="False"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            FontStretch="{TemplateBinding FontStretch}"
+                            FontStyle="{TemplateBinding FontStyle}"
+                            FontWeight="{TemplateBinding FontWeight}"
+                            Foreground="{TemplateBinding Foreground}"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                            Text="{TemplateBinding Content}" />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <!-- Tooltip for Properties -->
-    <Style x:Key="PropertyGridTooltip" TargetType="{x:Type ToolTip}" BasedOn="{StaticResource DefaultToolTip}">
-        <Setter Property="Padding" Value="10"/>
+    <!--  Tooltip for Properties  -->
+    <Style
+        x:Key="PropertyGridTooltip"
+        BasedOn="{StaticResource DefaultToolTip}"
+        TargetType="{x:Type ToolTip}">
+        <Setter Property="Padding" Value="10" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Border Background="{TemplateBinding Background}" CornerRadius="{DynamicResource TooltipCornerRadius}">
-                        <!-- Bindings Map to HandyControl.Controls.PropertyItem s-->
+                        <!--  Bindings Map to HandyControl.Controls.PropertyItem s  -->
                         <StackPanel Margin="{TemplateBinding Padding}">
-                            <TextBlock Text="{Binding DisplayName}" FontSize="{DynamicResource FontSizeLarge}" FontWeight="Bold"/>
-                            <TextBlock Text="{Binding Description}" FontSize="{DynamicResource FontSizeSmaller}" />
+                            <TextBlock
+                                FontSize="{DynamicResource FontSizeLarge}"
+                                FontWeight="Bold"
+                                Text="{Binding DisplayName}" />
+                            <TextBlock FontSize="{DynamicResource FontSizeSmaller}" Text="{Binding Description}" />
                             <TextBlock Visibility="{Binding DefaultValue, Converter={x:Static converters:NotNullToVisibleConverter.Instance}}">
-                                <Run Text="Default Value: "/>
-                                <Run Text="{Binding DefaultValue}"/>
+                                <Run Text="Default Value: " />
+                                <Run Text="{Binding DefaultValue}" />
                             </TextBlock>
                         </StackPanel>
                     </Border>
@@ -243,106 +300,125 @@
     </Style>
 
 
-    <!-- Hyperlink without special mouse effect -->
-    <Style x:Key="HyperlinkWithoutMouseEffects" TargetType="{x:Type Hyperlink}" BasedOn="{StaticResource DefaultHyperlink}">
+    <!--  Hyperlink without special mouse effect  -->
+    <Style
+        x:Key="HyperlinkWithoutMouseEffects"
+        BasedOn="{StaticResource DefaultHyperlink}"
+        TargetType="{x:Type Hyperlink}">
 
-        <!-- Disable from base style -->
+        <!--  Disable from base style  -->
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Trigger.EnterActions/>
-                <Trigger.ExitActions/>
+                <Trigger.EnterActions />
+                <Trigger.ExitActions />
             </Trigger>
         </Style.Triggers>
 
     </Style>
 
-    <!-- Download Menu Title -->
-    <Style x:Key="DownloadModTitleTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource RIIDefaultTextBlock}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}"/>
-        <Setter Property="FontFamily" Value="{DynamicResource FontBold}"/>
+    <!--  Download Menu Title  -->
+    <Style
+        x:Key="DownloadModTitleTextBlock"
+        BasedOn="{StaticResource RIIDefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarge}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontBold}" />
     </Style>
 
-    <!-- Package Preview Page Title -->
-    <Style x:Key="PackagePreviewModTitleTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource DownloadModTitleTextBlock}">
-        <Setter Property="FontSize" Value="32"/>
+    <!--  Package Preview Page Title  -->
+    <Style
+        x:Key="PackagePreviewModTitleTextBlock"
+        BasedOn="{StaticResource DownloadModTitleTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="32" />
     </Style>
 
-    <!-- Download Menu Title -->
-    <Style x:Key="ModPackTitleTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource RIIDefaultTextBlock}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLargest}"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="FontFamily" Value="{DynamicResource FontBold}"/>
+    <!--  Download Menu Title  -->
+    <Style
+        x:Key="ModPackTitleTextBlock"
+        BasedOn="{StaticResource RIIDefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLargest}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontBold}" />
     </Style>
 
-    <Style x:Key="ModPackSummaryTextBlock" TargetType="{x:Type TextBlock}" BasedOn="{StaticResource RIIDefaultTextBlock}">
-        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarger}"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
+    <Style
+        x:Key="ModPackSummaryTextBlock"
+        BasedOn="{StaticResource RIIDefaultTextBlock}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="{DynamicResource FontSizeLarger}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
     </Style>
 
-    <!-- Custom Toggle Button -->
-    <Style x:Key="PopupToggleButton" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource BaseStyle}">
+    <!--  Custom Toggle Button  -->
+    <Style
+        x:Key="PopupToggleButton"
+        BasedOn="{StaticResource BaseStyle}"
+        TargetType="{x:Type ToggleButton}">
 
-        <!-- Cannot be StaticResource in combination with Animations
-             As local BG colour will not be shared with global. 
+        <!--
+            Cannot be StaticResource in combination with Animations
+            As local BG colour will not be shared with global.
         -->
-        <Setter Property="Background" Value="{StaticResource AccentColorLightBrush}"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Background" Value="{StaticResource AccentColorLightBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="8" />
 
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
 
-                    <!-- Background and border color -->
-                    <Border x:Name="border" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            Background="{TemplateBinding Background}" 
-                            SnapsToDevicePixels="True">
+                    <!--  Background and border color  -->
+                    <Border
+                        x:Name="border"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="True">
+                        <ContentPresenter
+                            x:Name="contentPresenter"
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Content="{TemplateBinding Content}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            Focusable="False"
+                            RecognizesAccessKey="True"
+                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
 
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
                                 <VisualState x:Name="Normal" />
-                                <VisualState x:Name="MouseOver"/>
+                                <VisualState x:Name="MouseOver" />
                                 <VisualState x:Name="Pressed" />
-                                <VisualState x:Name="Disabled"/>
+                                <VisualState x:Name="Disabled" />
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="CheckStates">
-                                <VisualState x:Name="Checked"/>
+                                <VisualState x:Name="Checked" />
                                 <VisualState x:Name="Unchecked" />
                                 <VisualState x:Name="Indeterminate" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
-
-                        <ContentPresenter 
-                            x:Name="contentPresenter" 
-                            ContentTemplate="{TemplateBinding ContentTemplate}" 
-                            Content="{TemplateBinding Content}" 
-                            ContentStringFormat="{TemplateBinding ContentStringFormat}" 
-                            Focusable="False" 
-                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" 
-                            Margin="{TemplateBinding Padding}" 
-                            RecognizesAccessKey="True" 
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" 
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
                     </Border>
 
                     <ControlTemplate.Triggers>
 
-                        <!-- Mouseover Color Switch -->
+                        <!--  Mouseover Color Switch  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
-                                <BeginStoryboard Storyboard="{StaticResource BackgroundFadeAccentLightToAccent}"/>
+                                <BeginStoryboard Storyboard="{StaticResource BackgroundFadeAccentLightToAccent}" />
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
-                                <BeginStoryboard Storyboard="{StaticResource BackgroundFadeAccentToAccentLight}"/>
+                                <BeginStoryboard Storyboard="{StaticResource BackgroundFadeAccentToAccentLight}" />
                             </Trigger.ExitActions>
                         </Trigger>
 
-                        <!-- Gray on Disabled -->
+                        <!--  Gray on Disabled  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Background" TargetName="border" Value="{StaticResource BorderColorBrush}"/>
+                            <Setter TargetName="border" Property="Background" Value="{StaticResource BorderColorBrush}" />
                         </Trigger>
 
                     </ControlTemplate.Triggers>

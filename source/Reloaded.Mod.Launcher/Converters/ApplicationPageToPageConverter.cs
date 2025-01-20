@@ -16,7 +16,7 @@ public class ApplicationPageToPageConverter : IValueConverter
             case Page.SettingsPage:
                 return Lib.IoC.Get<SettingsPage>();
             case Page.Application:
-                return Lib.IoC.Get<ApplicationPage>();
+                return Lib.IoC.Get<Pages.Alt.BaseSubpages.ApplicationPage>();
             case Page.DownloadMods:
                 return Lib.IoC.Get<DownloadPackagesPage>();
             default:
