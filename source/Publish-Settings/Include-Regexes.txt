@@ -1,0 +1,5 @@
+^Theme[\\\/]Default*
+^Theme[\\\/]Halogen*
+^Theme[\\\/]Helpers*
+^Assets[\\\/]Languages[\\\/].*\.xaml
+^version\.txt

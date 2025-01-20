@@ -1,0 +1,207 @@
+﻿<local:ApplicationSubPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages.AppSummaryPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages"
+      xmlns:system="clr-namespace:System;assembly=mscorlib"
+      xmlns:dd="urn:gong-wpf-dragdrop"
+      xmlns:controls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
+      xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+      xmlns:properties="clr-namespace:Reloaded.Mod.Launcher.Controls.Properties"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" 
+      d:DesignWidth="576"
+      Title="{DynamicResource TitleConfigureMods}">
+
+    <Grid x:Name="Contents"
+          Margin="{DynamicResource PageMargin}"
+          DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+
+        <!-- Resources -->
+        <Grid.Resources>
+            <system:String x:Key="DummyText">Uses Reloaded to tell you to get some mods. Reloaded-II is cool! Cuteness is justice, its the law!.</system:String>
+            <system:Double x:Key="ImageSize">180</system:Double>
+
+            <!-- Filtered Mod List -->
+            <CollectionViewSource x:Key="FilteredMods" Source="{Binding AllMods, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" IsLiveFilteringRequested="True">
+                <!-- Filtering setup in code behind. -->
+            </CollectionViewSource>
+
+        </Grid.Resources>
+
+        <!-- Layout -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Search Filter -->
+        <DockPanel Grid.Row="0" LastChildFill="True" Margin="{DynamicResource PanelMargin}">
+
+            <ComboBox DockPanel.Dock="Right"
+                      SelectedItem="{Binding SelectedTag}"
+                      ItemsSource="{Binding AllTags}"
+                      Margin="{DynamicResource CommonItemHorizontalMarginLeft}"
+                      ToolTip="{DynamicResource ConfigureModsSelectTagTooltip}" 
+                      AutomationProperties.Name="{DynamicResource ConfigureModsSelectTagTooltip}"
+                      ToolTipService.InitialShowDelay="0" 
+                      Width="130" />
+
+            <TextBox x:Name="ModsFilter" 
+                     Style="{DynamicResource TextboxWithPlaceholder}" 
+                     Tag="{DynamicResource ModManagerSearchMods}"
+                     AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                     TextChanged="ModsFilter_TextChanged"/>
+
+        </DockPanel>
+
+        <!-- Items -->
+        <Grid Grid.Row="1" Margin="{DynamicResource PanelMargin}">
+            <ListView 
+                x:Name="ModListView"
+                Focusable="False"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding Source={StaticResource FilteredMods}}"
+                SelectedItem="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="{DynamicResource ConfigureModsListItemTooltip}"
+                ToolTipService.InitialShowDelay="250"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Recycling"
+                PreviewKeyDown="KeyboardControls_KeyDown"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="{DynamicResource ModManagerContextPublish}" Command="{Binding PublishModCommand}" />
+                        <MenuItem Header="{DynamicResource ModManagerContextEditMod}" Command="{Binding EditModCommand}" />
+                        <MenuItem Header="{DynamicResource ModManagerContextOpenFolder}" Command="{Binding OpenModFolderCommand}" />
+                        <MenuItem Header="{DynamicResource ModManagerContextEditModUser}" Command="{Binding EditModUserConfigCommand}" >
+                            <MenuItem Header="{DynamicResource ModManagerContextEdit}" Command="{Binding EditModUserConfigCommand}" />
+                            <MenuItem Header="{DynamicResource ModManagerContextOpenFolder}" Command="{Binding OpenUserConfigFolderCommand}" />
+                        </MenuItem>
+                        <MenuItem Header="{DynamicResource ModManagerContextConfigure}" Command="{Binding ConfigureModCommand}" />
+                        <MenuItem Header="{DynamicResource ModManagerContextVisitWebsite}" Command="{Binding VisitModProjectUrlCommand}" />
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <CheckBox IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                      IsEnabled="{Binding IsEditable}"
+                                      Margin="{DynamicResource ListEntryItemMarginSmall}" 
+                                      Style="{DynamicResource DefaultCheckBox}"
+                                      HorizontalAlignment="Center" 
+                                      VerticalAlignment="Center" 
+                                      Height="{DynamicResource ListEntryCheckboxHeightSmall}"
+                                      Grid.Column="0"
+                                      Focusable="False"
+                                      IsThreeState="False" />
+
+                            <TextBlock Text="{Binding Tuple.Config.ModDisplayName, UpdateSourceTrigger=PropertyChanged}" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Left" 
+                                       Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                       Grid.Column="1"/>
+
+                            <TextBlock Text="{Binding Tuple.Config.ModAuthor, UpdateSourceTrigger=PropertyChanged}" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Center" 
+                                       Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                       Grid.Column="2"/>
+
+                            <TextBlock Text="{Binding Tuple.Config.ModVersion, UpdateSourceTrigger=PropertyChanged}" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Center" 
+                                       Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                       Grid.Column="3"/>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
+
+
+        <!-- Bottom Panel -->
+        <Grid Grid.Row="2" Margin="{DynamicResource PanelMargin}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="{DynamicResource GridInterPanelMargin}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Mod Image -->
+            <Border Grid.Column="0" x:Name="BannerImage" BorderBrush="{DynamicResource BorderColorBrush}" Background="Transparent" BorderThickness="1" >
+                <Viewbox Width="{StaticResource ImageSize}"
+                         Height="{Binding Width, RelativeSource={RelativeSource Mode=Self}}">
+                    <Image Style="{DynamicResource HighQualityImage}">
+                        <Image.Source>
+                            <MultiBinding Converter="{x:Static converters:ModConfigToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding Path="SelectedMod.Tuple" IsAsync="True" />
+                                <Binding Path="SelectedMod.Tuple.Config.ModIcon" IsAsync="True" />
+                                <Binding IsAsync="True" />
+                            </MultiBinding>
+                        </Image.Source>
+                    </Image>
+                </Viewbox>
+            </Border>
+
+            <!-- Mod Details -->
+            <Grid Grid.Column="2" MaxHeight="{Binding Path=ActualHeight, ElementName=BannerImage}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="{DynamicResource GridInterPanelMargin}"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="{DynamicResource GridInterPanelMargin}"/>
+                    <RowDefinition Height='Auto'/>
+                </Grid.RowDefinitions>
+
+
+                <!-- Actions for current Mod -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="{DynamicResource GridInterPanelMargin}"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Button Content="{DynamicResource ConfigureModsConfigure}" 
+                            Command="{Binding ConfigureModCommand}"
+                            HorizontalAlignment="Stretch"
+                            Focusable="True"
+                            Grid.Column="0" />
+
+                    <Button Content="{DynamicResource ConfigureModsOpenFolder}" 
+                            Command="{Binding OpenModFolderCommand}"
+                            HorizontalAlignment="Stretch"
+                            Focusable="True"
+                            Grid.Column="2" />
+                </Grid>
+
+                <!-- Mod Details -->
+                <TextBlock Text="{Binding SelectedMod.Tuple.Config.ModDescription, UpdateSourceTrigger=PropertyChanged, FallbackValue={StaticResource DummyText}}" 
+                           Grid.Row="2"
+                           HorizontalAlignment="Stretch"
+                           VerticalAlignment="Stretch"
+                           Style="{DynamicResource TextblockWithColourChange}" 
+                           TextWrapping="Wrap" />
+
+
+                <TextBlock Grid.Row="4"
+                           Text="{DynamicResource ConfigureModsRightClickAdvice}" 
+                           Style="{DynamicResource DefaultTextBlock}" 
+                           HorizontalAlignment="Center" />
+            </Grid>
+        </Grid>
+    </Grid>
+</local:ApplicationSubPage>

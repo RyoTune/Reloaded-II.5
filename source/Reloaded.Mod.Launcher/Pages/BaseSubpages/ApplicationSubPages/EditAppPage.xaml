@@ -1,0 +1,195 @@
+﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages.EditAppPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:launcher="clr-namespace:Reloaded.Mod.Launcher"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+             xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600" 
+             d:DesignWidth="756"
+             Title="{DynamicResource TitleEditApplication}">
+    <ScrollViewer DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+
+        <ScrollViewer.Resources>
+            <!-- Layout properties -->
+            <sys:Double x:Key="DetailsImageWidth">180</sys:Double>
+            <sys:Double x:Key="DetailsColumnWidth">280</sys:Double>
+        </ScrollViewer.Resources>
+
+        <Grid Margin="{DynamicResource PageMargin}"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Center">
+
+            <!-- Grid Contents -->
+            <StackPanel Orientation="Vertical" Grid.Column="0">
+
+                <!-- Application Image -->
+                <Viewbox Width="{StaticResource DetailsImageWidth}" 
+                             Height="{Binding Width, RelativeSource={RelativeSource Mode=Self}}"
+                             Margin="{DynamicResource CommonItemVerticalMargin}">
+                    <Image ToolTip="{DynamicResource AddAppImageTooltip}" 
+                           ToolTipService.InitialShowDelay="0"
+                           PreviewMouseDown="Image_PreviewMouseDown">
+                        <Image.Source>
+                            <MultiBinding Converter="{x:Static converters:ApplicationPathTupleToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
+                                <Binding Path="Application"/>
+                                <Binding Path="Application.Config.AppIcon"/>
+                            </MultiBinding>
+                        </Image.Source>
+                    </Image>
+                </Viewbox>
+
+                <TextBlock Text="{Binding Application.Config.AppId}" 
+                           Style="{DynamicResource DefaultTextBlock}" 
+                           ToolTip="{DynamicResource AddAppId}"
+                           ToolTipService.InitialShowDelay="0"
+                           HorizontalAlignment="Center" />
+
+                <!-- Delete -->
+                <Button Margin="{DynamicResource CommonItemVerticalMargin}"    
+                        Content="{DynamicResource AddAppDeleteButton}"
+                        Style="{DynamicResource UnpaddedStretchedGridButton}"
+                        Width="{StaticResource DetailsColumnWidth}"
+                        Command="{Binding DeleteApplicationCommand, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <!--  Name, Executable Location, Commandline Arguments. -->
+                <TextBox Style="{DynamicResource TextboxWithPlaceholder}" 
+                         Tag="{DynamicResource AddAppName}" 
+                         ToolTip="{DynamicResource AddAppName}"
+                         ToolTipService.InitialShowDelay="0"
+                         Text="{Binding Application.Config.AppName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="{DynamicResource CommonItemVerticalMargin}" 
+                         MinWidth="{StaticResource DetailsColumnWidth}"
+                         HorizontalAlignment="Stretch" 
+                         VerticalAlignment="Center"/>
+
+                <Grid MinWidth ="{StaticResource DetailsColumnWidth}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="{DynamicResource GridInterPanelMargin}"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+                        x:Name="ApplicationPathTextbox"
+                        Grid.Column="0"
+                        Text="{Binding Application.Config.AppLocation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="{DynamicResource CommonItemVerticalMargin}"
+                        Style="{DynamicResource TextboxWithPlaceholder}" 
+                        Tag="{DynamicResource AddAppLocation}" 
+                        ToolTip="{DynamicResource AddAppLocation}"
+                        ToolTipService.InitialShowDelay="0"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center"/>
+
+                    <Button  Margin="{DynamicResource CommonItemVerticalMargin}"    
+                             Content="{DynamicResource AddAppUpdate}"
+                             Grid.Column="2"
+                             Click="UpdateExecutablePath_Click"/>
+                </Grid>
+
+                <TextBox Style="{DynamicResource TextboxWithPlaceholder}" 
+                        Text="{Binding Application.Config.AppArguments, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Tag="{DynamicResource AddAppArguments}" 
+                        ToolTip="{DynamicResource AddAppArguments}"
+                        ToolTipService.InitialShowDelay="0"
+                        Margin="{DynamicResource CommonItemVerticalMargin}" 
+                        MinWidth="{StaticResource DetailsColumnWidth}"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center"/>
+                
+                <TextBox 
+                    x:Name="WorkingDirectory"
+                    Style="{DynamicResource TextboxWithPlaceholder}" 
+                        Text="{Binding Application.Config.WorkingDirectory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Tag="{DynamicResource AddAppWorkingDirectory}" 
+                        ToolTip="{DynamicResource AddAppWorkingDirectory}"
+                        ToolTipService.InitialShowDelay="0"
+                        Margin="{DynamicResource CommonItemVerticalMargin}" 
+                        MinWidth="{StaticResource DetailsColumnWidth}"
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Center"/>
+
+                <!-- Preserve Disabled Mod Order -->
+                <CheckBox DockPanel.Dock="Left" HorizontalAlignment="Center" 
+                              Margin="{DynamicResource CommonItemCombinedMargin}"
+                              IsChecked="{Binding Application.Config.PreserveDisabledModOrder}"
+                              Content="{DynamicResource PreserveDisabledModOrder}"
+                              ToolTip="{DynamicResource PreserveDisabledModOrderTooltip}" ToolTipService.InitialShowDelay="0"
+                              Style="{DynamicResource DefaultCheckBox}" />
+                
+                <!-- Package Resolver Options. -->
+                <controls:PopupLabel ButtonText="{DynamicResource AddAppModSources}"
+                                     FontSize="{DynamicResource FontSizeSmall}"
+                                     HiddenVisibilityType="Collapsed"
+                                     IsOpen="False">
+                    <controls:PopupLabel.HiddenContent>
+                        <ItemsControl ItemsSource="{Binding PackageProviders}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel>
+                                        <CheckBox Content="{Binding Factory.FriendlyName, Mode=OneTime}" IsChecked="{Binding IsEnabled}" 
+                                                  Style="{DynamicResource DefaultCheckBox}"
+                                                  HorizontalAlignment="Center" Margin="{DynamicResource CommonItemVerticalMargin}" />
+
+                                        <controls:PropertyGridEx MinWidth="500" 
+                                                                 Width="Auto"
+                                                                 MaxHeight="9999999"
+                                                                 FlattenChildProperties="ParentNameAsCategory"
+                                                                 Background="Transparent"
+                                                                 SelectedObject="{Binding Configuration}"
+                                                                 Visibility="{Binding IsEnabled, Converter={x:Static converters:BooleanToVisibilityConverter.InstanceCollapsed}}"
+                                                                 Margin="{DynamicResource CommonItemVerticalMargin}"
+                                                                 Style="{StaticResource PropertyGridBaseStyle}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </controls:PopupLabel.HiddenContent>
+                </controls:PopupLabel>
+
+                <!-- The text can be a tiny bit too long, no width cap here. -->
+                <controls:PopupLabel ButtonText="{DynamicResource AddAppAdvancedOptions}"
+                                         FontSize="{DynamicResource FontSizeSmall}"
+                                         HiddenVisibilityType="Collapsed"
+                                         IsOpen="False">
+                    <controls:PopupLabel.HiddenContent>
+                        <StackPanel>
+
+                            <!-- Don't Inject -->
+                            <CheckBox DockPanel.Dock="Left" HorizontalAlignment="Center" 
+                                      Margin="{DynamicResource CommonItemVerticalMargin}"
+                                      IsChecked="{Binding Application.Config.DontInject}"
+                                      Content="{DynamicResource EditModDontInject}"
+                                      ToolTip="{DynamicResource EditModDontInjectTooltip}" ToolTipService.InitialShowDelay="0"
+                                      Style="{DynamicResource DefaultCheckBox}" />
+                            
+                            <Button Margin="{DynamicResource CommonItemVerticalMargin}"
+                                    Content="{DynamicResource AsiLoaderInstall}"
+                                    Command="{Binding DeployAsiLoaderCommand}"/>
+
+                            <CheckBox IsChecked="{Binding Application.Config.AutoInject}" 
+                                    Margin="{DynamicResource CommonItemVerticalMargin}" 
+                                    HorizontalAlignment="Center"
+                                    Content="{DynamicResource AddAppAutoInject}"
+                                    ToolTip="{DynamicResource AddAppAutoInjectMessage}"
+                                    ToolTipService.InitialShowDelay = "0"/>
+
+                            <Button Margin="{DynamicResource CommonItemVerticalMargin}"
+                                    Content="{DynamicResource AddAppRepoTestButton}"
+                                    ToolTip="{DynamicResource AddAppRepoTestButtonTooltip}"
+                                    ToolTipService.InitialShowDelay = "0"
+                                    Click="TestRepoConfiguration_Click"/>
+
+                        </StackPanel>
+                    </controls:PopupLabel.HiddenContent>
+                </controls:PopupLabel>
+            </StackPanel>
+
+        </Grid>
+    </ScrollViewer>
+</pages:ReloadedIIPage>

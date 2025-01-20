@@ -1,0 +1,123 @@
+﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.BasePage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
+             xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+             xmlns:launcher="clr-namespace:Reloaded.Mod.Launcher"
+             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+             xmlns:properties="clr-namespace:Reloaded.Mod.Launcher.Controls.Properties"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             AllowDrop="True"
+             Title="{DynamicResource TitleMainPage}">
+
+    <Grid x:Name="Contents" DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+        <Grid.Resources>
+            <Style TargetType="{x:Type controls:CircleButton}" BasedOn="{StaticResource CircleButtonControlStyle}">
+                <Setter Property="Margin" Value="{DynamicResource SidebarElementMargin}"/>
+                <Setter Property="Width"  Value="Auto"/>
+                <Setter Property="Height" Value="Auto"/>
+                <Setter Property="properties:MoveTooltipWithMouse.OffsetY" Value="-15"/>
+            </Style>
+
+            <!-- Sort the mod list -->
+            <CollectionViewSource x:Key="FilteredApps" Source="{Binding ConfigService.Items, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True" IsLiveFilteringRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <componentModel:SortDescription PropertyName="Config.AppName"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+
+        </Grid.Resources>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{DynamicResource SidebarWidth}"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Our icons need to be scrollable. -->
+        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Grid.Column="0">
+
+            <!-- Background provided by this grid -->
+            <Grid x:Name="Sidebar" Background="{DynamicResource AccentColorBrush}">
+
+                <StackPanel Margin="{DynamicResource SidebarMargin}">
+                    
+                    <!-- Theme Page Buttons -->
+                    <controls:CircleButton
+                        ImageSource="{DynamicResource IconDownloadMods}" 
+                        TooltipText="{DynamicResource TitleDownloadMods}" Click="DownloadMods_Click" />
+
+                    <controls:CircleButton
+                        ImageSource="{DynamicResource IconMods}" 
+                        TooltipText="{DynamicResource TitleManageMods}" Click="ManageMods_Click"/>
+
+                    <controls:CircleButton 
+                        ImageSource="{DynamicResource IconSettings}"
+                        TooltipText="{DynamicResource TitleLoaderSettings}" Click="LoaderSettings_Click"/>
+
+                    <!-- Separator -->
+                    <Separator Margin="{DynamicResource SidebarElementMargin}" Style="{DynamicResource AltSeparatorStyle}" RenderTransformOrigin="0.5,0.5" Focusable="False">
+                        <Separator.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleY="{DynamicResource SeparatorHeight}"/>
+                                <SkewTransform/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Separator.RenderTransform>
+                    </Separator>
+
+                    <!-- List of Games -->
+                    <ItemsControl Name="ProcessesPanel" ItemsSource="{Binding Source={StaticResource FilteredApps}}"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling" Focusable="False">
+
+                        <!-- Allow for virtualization of stack panel. -->
+                        <ItemsControl.Template>
+                            <ControlTemplate TargetType="{x:Type ItemsControl}">
+                                <ItemsPresenter/>
+                            </ControlTemplate>
+                        </ItemsControl.Template>
+
+                        <!-- The actual panel of visible items -->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel IsItemsHost="True"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <!-- Define each control. -->
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:CircleButton TooltipText="{Binding Path=Config.AppName}"
+                                                       Click="Application_Click">
+                                    <controls:CircleButton.ImageSource>
+                                        <MultiBinding Converter="{x:Static converters:ApplicationPathTupleToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
+                                            <Binding Path="."/>
+                                            <Binding Path="Config.AppIcon"/>
+                                        </MultiBinding>
+                                    </controls:CircleButton.ImageSource>
+                                </controls:CircleButton>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    
+                    <controls:CircleButton 
+                        ImageSource="{DynamicResource IconAddApp}"
+                        TooltipText="{DynamicResource TitleAddApplication}" Click="AddApp_Click"/>
+
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Window Content -->
+        <controls:PageHost Grid.Column="1" 
+               Name="ContentFrame" 
+               ClipToBounds="True"
+               CurrentPage="{Binding Path=Page,
+                                     Converter={x:Static converters:ApplicationPageToPageConverter.Instance}}"/>
+    </Grid>
+</pages:ReloadedIIPage>

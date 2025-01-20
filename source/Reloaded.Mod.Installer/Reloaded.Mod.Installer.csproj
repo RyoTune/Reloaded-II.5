@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>NET472;net8.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <LangVersion>preview</LangVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <AssemblyName>Setup</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ApplicationIcon>appicon.ico</ApplicationIcon>
+    <DisableWinExeOutputInference>true</DisableWinExeOutputInference>
+    <StartupObject>Reloaded.Mod.Installer.Program</StartupObject>
+    <DebugType>portable</DebugType>
+    <_SuppressWpfTrimError>true</_SuppressWpfTrimError>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0-windows'))">
+    <PublishAot>true</PublishAot>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WeaverConfiguration>
+      <Weavers>
+        <Costura IncludeDebugSymbols="false" Condition="'$(TargetFramework)' == 'net472'" />
+        <PropertyChanged />
+      </Weavers>
+    </WeaverConfiguration>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Content Include="appicon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25" PrivateAssets="All" />
+    <PackageReference Include="ConsoleProgressBar" Version="2.0.0" />
+    <PackageReference Include="Costura.Fody" Condition="'$(TargetFramework)' == 'net472'" Version="5.7.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="HandyControl" Version="3.2.0" />
+    <PackageReference Include="Microsoft.Windows.CsWin32" Version="0.3.106">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="PropertyChanged.Fody" Version="4.1.0">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Reloaded.Mod.Installer.Cli\Reloaded.Mod.Installer.Cli.csproj" />
+    <ProjectReference Include="..\Reloaded.Mod.Installer.Lib\Reloaded.Mod.Installer.Lib.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,70 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Common Page Settings -->
+    <Thickness x:Key="PageMargin">30</Thickness>       <!-- Space between the page content and edges of the window. -->
+    <Thickness x:Key="PageMarginSmall">20</Thickness>  <!-- Alternative: Space between the page content and edges of the window. -->
+    <Thickness x:Key="PanelMargin">10</Thickness>      <!-- Space between individual panels/grids of a page when/if multiple panels exist. -->
+    
+    <!-- Control Layout Properties -->
+    <Thickness x:Key="CommonItemVerticalMargin">0,10</Thickness>
+    <Thickness x:Key="CommonItemVerticalMarginSmall">0,7.5</Thickness>
+    <Thickness x:Key="CommonItemVerticalMarginSmaller">0,5</Thickness>
+    <Thickness x:Key="CommonItemVerticalMarginSmallest">0,2.5</Thickness>
+    <Thickness x:Key="CommonItemVerticalMarginTop">0,10,0,0</Thickness>
+
+    <Thickness x:Key="CommonItemHorizontalMarginLeft">10,0,0,0</Thickness>
+    <Thickness x:Key="CommonItemHorizontalMargin">10,0</Thickness>
+    <Thickness x:Key="CommonItemHorizontalMarginSmall">7.5,0</Thickness>
+    <Thickness x:Key="CommonItemHorizontalMarginSmaller">5,0</Thickness>
+    <Thickness x:Key="CommonItemHorizontalMarginSmallest">2.5,0</Thickness>
+
+    <Thickness x:Key="CommonItemCombinedMargin">10,10</Thickness>
+    <Thickness x:Key="CommonItemCombinedMarginSmall">7.5,7.5</Thickness>
+    <Thickness x:Key="CommonItemCombinedMarginSmaller">5,5</Thickness>
+    <Thickness x:Key="CommonItemCombinedMarginSmallest">2.5,2.5</Thickness>
+
+    <Thickness x:Key="ListEntryItemMarginSmall">5,0</Thickness>
+    <sys:Double x:Key="ListEntryCheckboxHeightSmall">18</sys:Double>
+
+    <GridLength x:Key="GridInterPanelMargin">20</GridLength> <!-- Spacing between the items in the bottom row. -->
+    <sys:Double x:Key="UpdateLoaderProgressbarHeight">25</sys:Double> <!-- Height of Progressbar in update loader menu. -->
+
+    <!-- Splash Properties -->
+    <Thickness x:Key="SplashImageMargin">100</Thickness>           <!-- Space between the splash image and edges of the window. -->
+    <sys:Double x:Key="SplashFontSize">28</sys:Double>             <!-- Size of the font used in the splash screen. -->
+    <sys:Int32 x:Key="SplashMinimumTime">0</sys:Int32>             <!-- The minimum amount of time to show the splash screen on startup. -->
+
+    <!-- Sidebar Properties -->
+    <GridLength x:Key="SidebarWidth">44</GridLength>               <!-- The width of the sidebar. -->
+    <Thickness x:Key="SidebarMargin">5,0</Thickness>               <!-- Margin between the sidebar and elements inside. -->
+    <Thickness x:Key="SidebarElementMargin">0,5,0,5</Thickness>    <!-- The margin between the individual items of the sidebar. -->
+    <sys:Double x:Key="SeparatorHeight">2</sys:Double>             <!-- Height of the separator between the default pages and processes. -->
+
+    <!-- Application Bar Properties -->
+    <GridLength x:Key="ApplicationBarWidth">180</GridLength>       <!-- Width of the bar when an application page is open. -->
+    <GridLength x:Key="ApplicationBarHeaderHeight">44</GridLength> <!-- Height of the bar when an application page is open. -->
+
+    <Thickness x:Key="ApplicationBarMargin">10</Thickness>         <!-- Margin between all the contents and the edges of the bar. -->
+
+
+    <!-- Popup Label Properties -->
+    <sys:Double x:Key="PopupLabelSlideAnimationDuration">0.250</sys:Double>  <!-- Length of the slide in part of the animation in Milliseconds -->
+    <sys:Double x:Key="PopupLabelFadeAnimationDuration">0.366</sys:Double>   <!-- Length of the fade in part of the animation in Milliseconds -->
+    <sys:Double x:Key="PopupLabelFadeOpacityStart">0.0</sys:Double>          <!-- The opacity to start fading in at (0.0 to 1.0). -->
+
+    <sys:Double x:Key="PopupLabelExitSlideAnimationDuration">0.666</sys:Double>   <!-- Length of the slide out part of the animation in Milliseconds -->
+    <sys:Double x:Key="PopupLabelExitFadeAnimationDuration">0.666</sys:Double>    <!-- Length of the fade out part of the animation in Milliseconds -->
+    <sys:Double x:Key="PopupLabelExitFadeOpacityEnd">0.0</sys:Double>             <!-- The opacity to fade out to (from 1.0). -->
+
+    <!-- Download Menu Stuff Properties -->
+    <Thickness x:Key="DownloadMenuHorizontalItemMargin">0,0,10,0</Thickness>
+
+    <!-- SVG Icon Related Properties -->
+    <Thickness x:Key="SVGIconToTextMargin">0,0,5,0</Thickness>
+
+    <!-- Create Pack Menu -->
+    <GridLength x:Key="PackEditorBarWidth">240</GridLength>
+
+</ResourceDictionary>

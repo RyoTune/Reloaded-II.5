@@ -1,0 +1,226 @@
+﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ManageModsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+             xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+             xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="756"
+             AllowDrop="True"
+             Title="{DynamicResource TitleManageMods}">
+
+    <Grid Margin="{DynamicResource PageMargin}" x:Name="Contents" DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+
+        <Grid.Resources>
+            <!-- Layout properties -->
+            <GridLength x:Key="LeftPanelWidth">250</GridLength>
+
+            <!-- Sort the mod list -->
+            <CollectionViewSource x:Key="SortedMods" Source="{Binding ModConfigService.Items, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True" IsLiveFilteringRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <componentModel:SortDescription PropertyName="Config.ModDisplayName" />
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+
+            <!-- Sort the app list -->
+            <CollectionViewSource x:Key="SortedApps" Source="{Binding EnabledAppIds, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True" IsLiveFilteringRequested="True">
+                <CollectionViewSource.SortDescriptions>
+                    <componentModel:SortDescription PropertyName="Generic.AppName"/>
+                </CollectionViewSource.SortDescriptions>
+            </CollectionViewSource>
+
+        </Grid.Resources>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{DynamicResource LeftPanelWidth}"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Left Side. -->
+            <ScrollViewer Margin="{DynamicResource PanelMargin}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+
+                    <!-- Application Image -->
+                    <Border BorderBrush="{DynamicResource BorderColorBrush}" Background="Transparent" BorderThickness="1">
+                        <Viewbox>
+                            <Image ToolTip="{DynamicResource AddAppImageTooltip}"
+                                   ToolTipService.InitialShowDelay="0"
+                                   PreviewMouseDown="Image_PreviewMouseDown"
+                                   Width="512"
+                                   Height="512"
+                                   Style="{DynamicResource HighQualityImage}">
+                                <Image.Source>
+                                    <MultiBinding Converter="{x:Static converters:ModConfigToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding Path="SelectedModTuple" />
+                                        <Binding Path="SelectedModTuple.Config.ModIcon" />
+                                        <Binding />
+                                    </MultiBinding>
+                                </Image.Source>
+                            </Image>
+                        </Viewbox>
+                    </Border>
+
+                    <!-- Add / Delete Mod -->
+                    <Grid Margin="{DynamicResource CommonItemVerticalMargin}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <Button Grid.Column="0"
+                                Grid.Row="0"
+                                Margin="0"
+                                Style="{DynamicResource UnpaddedStretchedGridButton}"
+                                Content="{DynamicResource AddAppNewButton}" 
+                                Click="New_Click"/>
+
+                        <Button Grid.Column="1"
+                                Grid.Row="0"
+                                Margin="0"
+                                Style="{DynamicResource UnpaddedStretchedGridButton}"
+                                Content="{DynamicResource AddAppDeleteButton}" 
+                                Command="{Binding DeleteModCommand}"/>
+
+                        <Button Grid.Row="1"
+                                Grid.Column="0"
+                                Style="{DynamicResource UnpaddedStretchedButton}"
+                                Content="{DynamicResource ModManagerContextEdit}" 
+                                Margin="0"
+                                Command="{Binding EditModCommand}"/>
+
+                        <Button Grid.Row="1"
+                                Grid.Column="1"
+                                Style="{DynamicResource UnpaddedStretchedButton}"
+                                Content="{DynamicResource ModManagerContextPublish}" 
+                                Margin="0"
+                                Command="{Binding PublishModCommand}"/>
+                        
+                        <Button Grid.Row="2"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="2"
+                                Style="{DynamicResource UnpaddedStretchedButton}"
+                                Content="{DynamicResource CreateModPackTitle}" 
+                                Margin="0"
+                                Command="{Binding CreateModPackCommand}"/>
+                    </Grid>
+
+                    <!-- Mod Properties -->
+                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="{DynamicResource CommonItemVerticalMargin}" 
+                         ToolTip="{DynamicResource CreateModDialogName}"
+                         HorizontalAlignment="Stretch" />
+
+                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="{DynamicResource CommonItemVerticalMargin}" 
+                         ToolTip="{DynamicResource CreateModDialogAuthor}"
+                         HorizontalAlignment="Stretch" />
+
+                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                         Margin="{DynamicResource CommonItemVerticalMargin}" 
+                         ToolTip="{DynamicResource CreateModDialogVersion}"
+                         HorizontalAlignment="Stretch" />
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- Right Side. -->
+            <Grid Margin="{DynamicResource PanelMargin}" Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3*"/>
+                    <RowDefinition Height="2*"/>
+                </Grid.RowDefinitions>
+
+                <!-- First Half -->
+                <Grid Grid.Row="0">
+
+                    <!-- Search Textboxes -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    
+                    <TextBox x:Name="ModsFilter" Style="{DynamicResource TextboxWithPlaceholder}" 
+                             Margin="{DynamicResource PanelMargin}"
+                             Tag="{DynamicResource ModManagerSearchMods}"
+                             AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                             TextChanged="ModsFilter_TextChanged" 
+                             Grid.Column="0" 
+                             Grid.Row="0"/>
+
+                    <TextBox x:Name="AppsFilter" 
+                             Margin="{DynamicResource PanelMargin}"
+                             Style="{DynamicResource TextboxWithPlaceholder}" 
+                             Tag="{DynamicResource ModManagerSearchApps}"
+                             AutomationProperties.Name="{DynamicResource ModManagerSearchApps}"
+                             TextChanged="AppsFilter_TextChanged" 
+                             Grid.Column="1" 
+                             Grid.Row="0"/>
+
+                    <!-- List of Mods -->
+                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="{DynamicResource PanelMargin}">
+                        <ListView 
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding Source={StaticResource SortedMods}}"
+                            SelectedItem="{Binding SelectedModTuple, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                            ToolTip="{DynamicResource ModManagerSelectMod}"
+                            SelectionChanged="ListView_SelectionChanged"
+                            SelectionMode="Single"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Top">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Config.ModDisplayName}"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="{DynamicResource ListEntryItemMarginSmall}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Grid>
+
+                <Grid Grid.Row="1" Margin="{DynamicResource PanelMargin}">
+                    <ListView 
+                        ToolTip="{DynamicResource ModManagerSelectApp}"
+                        ItemsSource="{Binding Source={StaticResource SortedApps}}"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        VerticalContentAlignment="Top">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <CheckBox IsChecked="{Binding Enabled}" 
+                                              Style="{DynamicResource DefaultCheckBox}" 
+                                              Height="{DynamicResource ListEntryCheckboxHeightSmall}" 
+                                              HorizontalAlignment="Center" 
+                                              VerticalAlignment="Center" 
+                                              Margin="{DynamicResource ListEntryItemMarginSmall}" />
+
+                                    <TextBlock Text="{Binding Generic.AppName}" 
+                                               VerticalAlignment="Center" 
+                                               HorizontalAlignment="Center" 
+                                               Margin="{DynamicResource ListEntryItemMarginSmall}"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</pages:ReloadedIIPage>

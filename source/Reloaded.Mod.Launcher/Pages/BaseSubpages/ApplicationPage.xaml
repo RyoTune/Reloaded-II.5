@@ -1,0 +1,223 @@
+﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:launcher="clr-namespace:Reloaded.Mod.Launcher"
+      xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+      xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+      xmlns:reloadedWpfControls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
+      xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+      mc:Ignorable="d"              
+      d:DesignHeight="600" 
+      d:DesignWidth="756"
+      AllowDrop="True"
+      Title="{DynamicResource TitleApplication}">
+
+    <Grid DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+        <Grid.Resources>
+
+            <converters:ProcessToNameStringConverter x:Key="ReloadedPrcConverter" Prefix="[RLD]" />
+            <converters:ProcessToNameStringConverter x:Key="NonReloadedPrcConverter" Prefix="[SYS]" />
+            <Style x:Key="ProcessListStyle" TargetType="{x:Type ItemsControl}">
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden"/>
+                <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
+                <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
+
+                <!-- Allow for virtualization of stack panel. -->
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ItemsControl}">
+                            <ScrollViewer CanContentScroll="True">
+                                <ItemsPresenter/>
+                            </ScrollViewer>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+
+                <!-- The actual panel of visible items -->
+                <Setter Property="ItemsPanel">
+                    <Setter.Value>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel IsItemsHost="True"/>
+                        </ItemsPanelTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+        </Grid.Resources>
+        
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{DynamicResource ApplicationBarWidth}"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Side -->
+        <ScrollViewer Grid.Column="0">
+            <Grid Background="{DynamicResource AccentColorBrushDark}">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="{DynamicResource ApplicationBarHeaderHeight}"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Background="{DynamicResource AccentColorBrushDarker}">
+                    <!-- Main Header -->
+                    <TextBlock Style="{DynamicResource SidebarHeaderTextBlock}" 
+                               Text="{Binding ApplicationTuple.Config.AppName}"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               FontStyle="Normal"
+                               Margin="{DynamicResource CommonItemVerticalMarginSmallest}" />
+                </Grid>
+
+                <Grid Margin="{DynamicResource ApplicationBarMargin}" Grid.Row="1">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0">
+
+                        <!-- Main Header -->
+                        <TextBlock Style="{DynamicResource SidebarHeaderTextBlock}" 
+                                   Text="{DynamicResource AppCategoryMain}"/>
+
+                        <Separator/>
+
+                        <!-- Load Game -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource ApplicationLaunch}"
+                                   PreviewMouseLeftButtonDown="LaunchApplication_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+
+                        <!-- Main Page -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource TitleConfigureMods}"
+                                   PreviewMouseLeftButtonDown="Summary_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+
+                        <!-- Edit Page -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource TitleEditApplication}"
+                                   PreviewMouseLeftButtonDown="Edit_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1">
+
+                        <!-- Actions Header -->
+                        <TextBlock Style="{DynamicResource SidebarHeaderTextBlock}" 
+                                   Text="{DynamicResource AppCategoryActions}"/>
+
+                        <Separator/>
+
+                        <!-- Make Shortcut -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource AddAppCreateShortcut}"
+                                   ToolTipService.InitialShowDelay="0"
+                                   ToolTip="{DynamicResource ApplicationTooltipCreateShortcutDescription}"
+                                   PreviewMouseLeftButtonDown="MakeShortcut_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+
+                        <!-- Load Mod Collection -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource LoadModSet}"
+                                   ToolTipService.InitialShowDelay="0"
+                                   ToolTip="{DynamicResource ApplicationTooltipLoadModSet}"
+                                   PreviewMouseLeftButtonDown="LoadModSet_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+
+                        <!-- Save Mod Collection -->
+                        <TextBlock Style="{DynamicResource SidebarTextblock}" 
+                                   Text="{DynamicResource SaveModSet}"
+                                   ToolTipService.InitialShowDelay="0"
+                                   ToolTip="{DynamicResource ApplicationTooltipSaveModSet}"
+                                   PreviewMouseLeftButtonDown="SaveModSet_PreviewMouseDown"
+                                   KeyboardNavigation.IsTabStop="True"
+                                   Focusable="True"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2">
+
+                        <!-- Instances Header -->
+                        <TextBlock Style="{DynamicResource SidebarHeaderTextBlock}" 
+                                   Text="{DynamicResource AppCategoryProcesses}"/>
+
+                        <Separator/>
+                        
+                        <StackPanel Margin="{DynamicResource CommonItemVerticalMarginSmall}">
+
+                            <!-- Reloaded Processes -->
+                            <ItemsControl ItemsSource="{Binding ProcessesWithReloaded, UpdateSourceTrigger=PropertyChanged}"
+                                          Style="{DynamicResource ProcessListStyle}"
+                                          Focusable="False">
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{DynamicResource TextblockWithColourChange}" HorizontalAlignment="Center" 
+                                                   FontSize="{DynamicResource FontSizeSmaller}"
+                                                   Text="{Binding ., Converter={StaticResource ReloadedPrcConverter}}"
+                                                   ToolTipService.InitialShowDelay="0"
+                                                   ToolTip="{DynamicResource ApplicationTooltipProcessRldDescription}"
+                                                   PreviewMouseLeftButtonDown="ReloadedMod_PreviewMouseLeftButtonDown"
+                                                   KeyboardNavigation.IsTabStop="True"
+                                                   Focusable="True"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+
+                            <!-- Non-Reloaded Processes -->
+                            <ItemsControl ItemsSource="{Binding ProcessesWithoutReloaded, UpdateSourceTrigger=PropertyChanged}"
+                                      Style="{DynamicResource ProcessListStyle}" Focusable="False">
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Style="{DynamicResource TextblockWithColourChange}" HorizontalAlignment="Center" 
+                                                   FontSize="{DynamicResource FontSizeSmaller}"
+                                                   Text="{Binding ., Converter={StaticResource NonReloadedPrcConverter}}"
+                                                   ToolTipService.InitialShowDelay="0"
+                                                   ToolTip="{DynamicResource ApplicationTooltipProcessSysDescription}"
+                                                   PreviewMouseLeftButtonDown="NonReloadedMod_PreviewMouseLeftButtonDown"/>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+
+                            </ItemsControl>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- Statistics -->
+                    <StackPanel Grid.Row="3">
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center">
+                            <TextBlock Text="{DynamicResource ApplicationTotalMods}"
+                                   Margin="{DynamicResource CommonItemVerticalMarginSmallest}"
+                                   Style="{DynamicResource RIIDefaultTextBlock}"
+                                   VerticalAlignment="Center"/>
+
+                            <TextBlock Text=":"
+                                   Style="{DynamicResource RIIDefaultTextBlock}"
+                                   VerticalAlignment="Center"/>
+
+                            <TextBlock Text="{Binding NumModsForThisApp, UpdateSourceTrigger=PropertyChanged, FallbackValue=123}"
+                                   Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                   Style="{DynamicResource RIIDefaultTextBlock}"
+                                   VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+
+        <!-- Right Side -->
+        <reloadedWpfControls:PageHost x:Name="PageHost" Grid.Column="1" />
+
+    </Grid>
+</pages:ReloadedIIPage>

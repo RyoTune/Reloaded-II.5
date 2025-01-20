@@ -1,0 +1,83 @@
+﻿<local:ApplicationSubPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages.ReloadedProcessPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages"
+      xmlns:misc="clr-namespace:Reloaded.Mod.Launcher.Misc"
+      mc:Ignorable="d" 
+      d:DesignHeight="600" 
+      d:DesignWidth="576"
+      Title="{DynamicResource TitleReloadedProcess}">
+
+    <Grid x:Name="Contents"
+          Margin="{DynamicResource PageMargin}"
+          DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+
+        <!-- Layout -->
+        <Grid.RowDefinitions>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- List of mods -->
+        <Grid Grid.Row="0" Margin="{DynamicResource PanelMargin}">
+            <DataGrid 
+                x:Name="ModListView"
+                HorizontalAlignment="Stretch"
+                ItemsSource="{Binding CurrentMods, UpdateSourceTrigger=PropertyChanged}"
+                SelectedValue="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                misc:FixDataGridColumnWidths.Value="true"
+            
+                ColumnWidth="*" 
+                CanUserResizeColumns="False"
+                CanUserResizeRows="False"
+                CanUserAddRows="False"
+                CanUserDeleteRows="False"
+                CanUserSortColumns="False"
+                CanUserReorderColumns="False"
+
+                IsReadOnly="True"
+                AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="{DynamicResource CreateModDialogName}" Binding="{Binding Config.ModName, NotifyOnTargetUpdated=True}" Width="*" IsReadOnly="True" />
+                    <DataGridTextColumn Header="{DynamicResource ReloadedProcessState}" Binding="{Binding State}" Width="Auto" IsReadOnly="True" />
+                    <DataGridTextColumn Header="{DynamicResource ReloadedProcessUnload}" Binding="{Binding CanUnload}" Width="Auto" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="{DynamicResource ReloadedProcessSuspend}" Binding="{Binding CanSuspend}" Width="Auto" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="1" Margin="{DynamicResource PanelMargin}" 
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal">
+            <Button Content="{DynamicResource ReloadedProcessLoadMod}"   Margin="{DynamicResource CommonItemHorizontalMargin}" 
+                    Click="LoadMod_Click"
+            />
+            <Button Content="{DynamicResource ReloadedProcessResume}"   Margin="{DynamicResource CommonItemHorizontalMargin}" 
+                    IsEnabled="{Binding SelectedMod.CanSendResume, FallbackValue=False}"
+                    Click="Resume_Click"
+                    />
+            <Button Content="{DynamicResource ReloadedProcessSuspend}"  Margin="{DynamicResource CommonItemHorizontalMargin}" 
+                    IsEnabled="{Binding SelectedMod.CanSendSuspend, FallbackValue=False}"
+                    Click="Suspend_Click"
+                    />
+            <Button Content="{DynamicResource ReloadedProcessUnload}"   Margin="{DynamicResource CommonItemHorizontalMargin}" 
+                    IsEnabled="{Binding SelectedMod.CanUnload, FallbackValue=False}"
+                    Click="Unload_Click"
+                    />
+        </StackPanel>
+
+        <!-- Text -->
+        <Grid Grid.Row="2" Margin="{DynamicResource PanelMargin}">
+            <TextBlock Text="{DynamicResource ReloadedProcessNoticeNew}"
+                       Style="{DynamicResource RIIDefaultTextBlock}"
+                       HorizontalAlignment="Center" />
+        </Grid>
+
+    </Grid>
+</local:ApplicationSubPage>

@@ -1,0 +1,344 @@
+﻿<default:ReloadedWindow x:Class="Reloaded.Mod.Launcher.Pages.Dialogs.PublishModDialog"
+                        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                        xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+                        xmlns:viewModel="clr-namespace:Reloaded.Mod.Launcher.Lib.Models.ViewModel.Dialog;assembly=Reloaded.Mod.Launcher.Lib"
+                        xmlns:attachedProperties="clr-namespace:Reloaded.WPF.Theme.Default.AttachedProperties;assembly=Reloaded.WPF.Theme.Default"
+                        xmlns:default="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
+                        xmlns:utilities="clr-namespace:Reloaded.WPF.Utilities;assembly=Reloaded.WPF"
+                        xmlns:converter="clr-namespace:Reloaded.Mod.Launcher.Converters"
+                        xmlns:packages="clr-namespace:Reloaded.Mod.Loader.Update.Packaging;assembly=Reloaded.Mod.Loader.Update.Packaging"
+                        xmlns:sevenZip="clr-namespace:SevenZip;assembly=SevenZipSharp"
+                        mc:Ignorable="d"
+                Height="Auto" 
+                Width="850"
+                MinWidth="600"
+                MaxHeight="700"
+                SizeToContent="Height"
+                WindowStartupLocation="CenterOwner"
+                Title="{DynamicResource TitlePublishModDialog}" 
+                Style="{DynamicResource ReloadedWindow}">
+
+    <ScrollViewer DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}"
+                  Margin="{DynamicResource PageMargin}">
+
+        <StackPanel>
+
+            <TextBlock Text="{DynamicResource PublishModTarget}" 
+                       Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                       HorizontalAlignment="Center" 
+                       VerticalAlignment="Center"
+                       Style="{DynamicResource DefaultTextBlock}" />
+
+            <ComboBox VerticalAlignment="Center" HorizontalAlignment="Center"
+                      Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                      IsSynchronizedWithCurrentItem="True"
+                      SelectedItem="{Binding PublishTarget, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                      ItemsSource="{utilities:EnumBindingSource EnumType=packages:Publisher+PublishTarget}"
+                      ToolTip="{DynamicResource PublishModTargetTooltip}"
+                      ToolTipService.InitialShowDelay="0"
+                      Width="200" />
+
+            <!-- Previous Versions -->
+            <controls:PopupLabel ButtonText="{DynamicResource PublishModPreviousVersionsTitle}" IsOpen="False" HiddenVisibilityType="Collapsed"
+                                 FontSize="{DynamicResource FontSizeRegular}"
+                                 Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                 FontFamily="{DynamicResource FontLight}"
+                                 Visibility="{Binding ShowLastVersionUiItems, Converter={x:Static converter:BooleanToVisibilityConverter.InstanceCollapsed}, UpdateSourceTrigger=PropertyChanged}">
+                <controls:PopupLabel.HiddenContent>
+                    <StackPanel>
+
+                        <ListView HorizontalAlignment="Stretch"
+                              SelectedItem="{Binding SelectedOlderVersionFolder, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                              IsSynchronizedWithCurrentItem="True"
+                              ItemsSource="{Binding OlderVersionFolders}"
+                              Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                              ToolTip="{DynamicResource ModManagerSelectMod}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Path=Value, Mode=TwoWay}" Margin="{DynamicResource ListEntryItemMarginSmall}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" >
+                            <Button Content="{DynamicResource AddAppDeleteButton}" 
+                                Margin="{DynamicResource CommonItemHorizontalMarginSmaller}" 
+                                Style="{DynamicResource DefaultButton}"
+                                Click="RemoveLastVersion_Click" />
+
+                            <Button Content="{DynamicResource AddAppNewButton}" 
+                                Margin="{DynamicResource CommonItemHorizontalMarginSmaller}"
+                                Style="{DynamicResource DefaultButton}"
+                                Click="AddVersion_Click" />
+
+                        </StackPanel>
+
+                        <TextBlock Text="{DynamicResource PublishModPreviousVersionsDescription}" 
+                                   Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}"
+                                   TextWrapping="Wrap" />
+
+                        <CheckBox Content="{DynamicResource PublishAutoDelta}"
+                                  IsChecked="{Binding AutomaticDelta, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                  ToolTip="{DynamicResource PublishAutoDeltaDescription}"
+                                  Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                  ToolTipService.InitialShowDelay="0"
+                                  HorizontalAlignment="Center" />
+
+                    </StackPanel>
+                </controls:PopupLabel.HiddenContent>
+            </controls:PopupLabel>
+
+            <!-- Include Regex -->
+            <controls:PopupLabel ButtonText="{DynamicResource PublishModRegexSectionTitle}" IsOpen="False" HiddenVisibilityType="Collapsed"
+                                 FontSize="{DynamicResource FontSizeRegular}"
+                                 Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                 FontFamily="{DynamicResource FontLight}">
+                <controls:PopupLabel.HiddenContent>
+                    <StackPanel>
+                        <TextBlock Text="{DynamicResource PublishModExcludeTitle}" 
+                                   Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}" />
+
+                        <DataGrid Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  ItemsSource="{Binding IgnoreRegexes, Mode=TwoWay}"
+                                  SelectedItem="{Binding SelectedIgnoreRegex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  AutoGenerateColumns="False"
+                                  CanUserSortColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="False"
+                                  CanUserDeleteRows="False"
+                                  attachedProperties:FixDataGridAutoGeneratingColumnStyle.Value="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource PublishModRegexTitle}" Binding="{Binding Path=Value, Mode=TwoWay}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="{DynamicResource AddAppDeleteButton}" 
+                                    Margin="{DynamicResource CommonItemHorizontalMarginSmaller}" 
+                                    Style="{DynamicResource DefaultButton}"
+                                    Click="RemoveIgnoreRegex_Click" />
+
+                            <Button Content="{DynamicResource AddAppNewButton}" 
+                                    Margin="{DynamicResource CommonItemHorizontalMarginSmaller}"
+                                    Style="{DynamicResource DefaultButton}"
+                                    Click="AddIgnoreRegex_Click" />
+                        </StackPanel>
+
+                        <DataGrid Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                  HorizontalAlignment="Center" 
+                                  VerticalAlignment="Center" 
+                                  ItemsSource="{Binding IncludeRegexes, Mode=TwoWay}"
+                                  SelectedItem="{Binding SelectedIncludeRegex, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  AutoGenerateColumns="False" 
+                                  CanUserSortColumns="False"
+                                  CanUserAddRows="False"
+                                  CanUserReorderColumns="False"
+                                  CanUserResizeColumns="False"
+                                  CanUserDeleteRows="False"
+                                  attachedProperties:FixDataGridAutoGeneratingColumnStyle.Value="True">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="{DynamicResource PublishModRegexTitle}" Binding="{Binding Path=Value, Mode=TwoWay}"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Button Content="{DynamicResource AddAppDeleteButton}" 
+                                    Margin="{DynamicResource CommonItemHorizontalMarginSmaller}" 
+                                    Style="{DynamicResource DefaultButton}"
+                                    Click="RemoveIncludeRegex_Click" />
+
+                            <Button Content="{DynamicResource AddAppNewButton}" 
+                                    Margin="{DynamicResource CommonItemHorizontalMarginSmaller}"
+                                    Style="{DynamicResource DefaultButton}"
+                                    Click="AddIncludeRegex_Click" />
+                        </StackPanel>
+
+                        <Button Content="{DynamicResource PublishModRegexTest}" 
+                                Click="TestRegex_Click"
+                                Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                Style="{DynamicResource DefaultButton}"/>
+
+
+                    </StackPanel>
+                </controls:PopupLabel.HiddenContent>
+            </controls:PopupLabel>
+
+            <!-- Compression -->
+            <controls:PopupLabel ButtonText="{DynamicResource PublishModCompSettings}" IsOpen="False" HiddenVisibilityType="Collapsed"
+                                 FontSize="{DynamicResource FontSizeRegular}"
+                                 Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                 FontFamily="{DynamicResource FontLight}">
+                <controls:PopupLabel.HiddenContent>
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" MinWidth="200"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Left Side -->
+                        <TextBlock Text="{DynamicResource PublishModCompLevel}" 
+                                   Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}" 
+                                   Grid.Column="0"
+                                   Grid.Row="0"/>
+
+                        <TextBlock Text="{DynamicResource PublishModCompMethod}" 
+                                   Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                   HorizontalAlignment="Center" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}" 
+                                   Grid.Column="0"
+                                   Grid.Row="1"/>
+
+                        <!-- Right Side -->
+                        <ComboBox VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                  Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  SelectedItem="{Binding CompressionLevel, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  ItemsSource="{utilities:EnumBindingSource EnumType=sevenZip:CompressionLevel}"
+                                  Grid.Column="1"
+                                  Grid.Row="0"/>
+
+                        <ComboBox VerticalAlignment="Center" HorizontalAlignment="Stretch"
+                                  Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                  IsSynchronizedWithCurrentItem="True"
+                                  SelectedItem="{Binding CompressionMethod, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                                  ItemsSource="{utilities:EnumBindingSource EnumType=sevenZip:CompressionMethod}"
+                                  Grid.Column="1"
+                                  Grid.Row="1"/>
+                    </Grid>
+                </controls:PopupLabel.HiddenContent>
+
+            </controls:PopupLabel>
+
+            <!-- Readme -->
+            <controls:PopupLabel ButtonText="{DynamicResource PublishModReadmeSectionTitle}" IsOpen="False" HiddenVisibilityType="Collapsed"
+                                 FontSize="{DynamicResource FontSizeRegular}"
+                                 Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                                 FontFamily="{DynamicResource FontLight}">
+                <controls:PopupLabel.HiddenContent>
+                    <Grid HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Left Side -->
+                        <TextBlock Text="{Binding ChangelogPath}" 
+                                   Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                   HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}" 
+                                   Grid.Column="0"
+                                   Grid.Row="0"/>
+
+                        <TextBlock Text="{Binding ReadmePath}" 
+                                   Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                   HorizontalAlignment="Right" 
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource DefaultTextBlock}" 
+                                   Grid.Column="0"
+                                   Grid.Row="1"/>
+
+                        <!-- Right Side -->
+                        <Button Content="{DynamicResource PublishModChangelogSet}" 
+                                Click="SetChangelogPath_Click"
+                                Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                Style="{DynamicResource DefaultButton}"
+                                ToolTip="{DynamicResource PublishModChangelogTooltip}"
+                                ToolTipService.InitialShowDelay="0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Stretch"
+                                Grid.Column="1"
+                                Grid.Row="0"/>
+
+                        <Button Content="{DynamicResource PublishModReadmeSet}" 
+                                Click="SetReadmePath_Click"
+                                Margin="{DynamicResource CommonItemCombinedMarginSmaller}"
+                                Style="{DynamicResource DefaultButton}"
+                                ToolTip="{DynamicResource PublishModReadmeTooltip}"
+                                ToolTipService.InitialShowDelay="0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                Grid.Column="1"
+                                Grid.Row="1"/>
+
+                    </Grid>
+                </controls:PopupLabel.HiddenContent>
+
+            </controls:PopupLabel>
+
+            <!-- Progress -->
+            <TextBox Text="{Binding PackageName, UpdateSourceTrigger=PropertyChanged}" 
+                     Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                     MinWidth="200"
+                     ToolTip="{DynamicResource PublishFileNameTooltip}" ToolTipService.InitialShowDelay="0" 
+                     HorizontalAlignment="Center" 
+                     VerticalAlignment="Center"
+                     Style="{DynamicResource DefaultTextBox}" />
+
+            <TextBlock Text="{Binding OutputFolder}" Style="{DynamicResource DefaultTextBlock}"
+                       ToolTip="{DynamicResource PublishOutputFolder}" ToolTipService.InitialShowDelay="0" 
+                       Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                       HorizontalAlignment="Center" />
+
+            <ProgressBar Height="32"
+                         Value="{Binding BuildProgress, UpdateSourceTrigger=PropertyChanged}"
+                         Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                         Maximum="100" />
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+
+                <Button Content="{DynamicResource PublishModTutorial}" 
+                        Click="PublishTutorial_Click"
+                        Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                        Style="{DynamicResource DefaultButton}"/>
+
+                <Button Content="{DynamicResource PublishSetOutputFolder}" 
+                        Click="SetOutputFolder_Click"
+                        Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                        Style="{DynamicResource DefaultButton}"
+                        IsEnabled="{Binding CanBuild, UpdateSourceTrigger=PropertyChanged}"/>
+
+                <Button Content="{DynamicResource PublishModButtonText}" 
+                        Click="Publish_Click"
+                        Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                        Style="{DynamicResource DefaultButton}"
+                        IsEnabled="{Binding CanBuild, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </StackPanel>
+
+            <TextBlock Text="{DynamicResource PublishModNotice}" Style="{DynamicResource DefaultTextBlock}"
+                       ToolTipService.InitialShowDelay="0" Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                       HorizontalAlignment="Center" />
+
+        </StackPanel>
+
+    </ScrollViewer>
+</default:ReloadedWindow>

@@ -1,0 +1,30 @@
+﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.SplashPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:launcher="clr-namespace:Reloaded.Mod.Launcher"
+             xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+             mc:Ignorable="d"
+             d:DesignHeight="600" d:DesignWidth="800"
+             Title="{DynamicResource TitleSplashPage}">
+
+    <Grid>
+        <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+            <Image 
+                RenderOptions.BitmapScalingMode="HighQuality"
+                RenderOptions.EdgeMode="Aliased"
+                RenderOptions.CachingHint="Cache"
+                StretchDirection="Both"
+                MaxWidth="650"
+                Source="{DynamicResource ReloadedNoBrackets}"/>
+
+            <TextBlock
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                FontSize="{DynamicResource SplashFontSize}"
+                Text="{Binding Text, FallbackValue='Initializing Reloaded'}" 
+                Style="{DynamicResource RIIDefaultTextBlock}"/>
+        </StackPanel>
+    </Grid>
+</pages:ReloadedIIPage>
