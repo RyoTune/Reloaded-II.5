@@ -101,7 +101,7 @@ public partial class App : Application
         
         // Hack: Disable client side decoration (glow) on Linux
         // This reduces flicker on XWayland.
-        if (Environment.IsWine)
+        //if (Environment.IsWine)
             new DictionaryResourceManipulator(Application.Current.Resources).Set("EnableGlow", false);
     }
 
