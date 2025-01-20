@@ -66,6 +66,7 @@
 
   <ItemGroup>
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25" PrivateAssets="All" />
+    <PackageReference Include="FontAwesome.Sharp" Version="6.6.0" />
     <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
     <PackageReference Include="HandyControl" Version="3.2.0-reloaded-1.1.0" />
     <PackageReference Include="HandyControl.Lang.en" Version="3.3.0" />

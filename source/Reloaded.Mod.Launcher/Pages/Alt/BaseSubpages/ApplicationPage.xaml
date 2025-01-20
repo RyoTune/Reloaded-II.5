@@ -5,6 +5,7 @@
     xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:launcher="clr-namespace:Reloaded.Mod.Launcher"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
@@ -14,10 +15,6 @@
     d:DesignWidth="756"
     AllowDrop="True"
     mc:Ignorable="d">
-    <pages:ReloadedIIPage.Resources>
-        <Style TargetType="{x:Type Button}" />
-    </pages:ReloadedIIPage.Resources>
-
     <Grid DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
         <Grid.Resources>
 
@@ -65,7 +62,7 @@
         <Grid Grid.ColumnSpan="2">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -80,14 +77,35 @@
                 Style="{DynamicResource SidebarHeaderTextBlockAlt}"
                 Text="{Binding ApplicationTuple.Config.AppName}" />
 
-            <Grid Grid.Row="1">
+            <Grid
+                Grid.Row="1"
+                Width="200"
+                HorizontalAlignment="Left">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="4" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button HorizontalAlignment="Stretch">Play</Button>
-                <Button Grid.Column="1" HorizontalAlignment="Stretch">
-                    Config
+
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}">
+                        <Setter Property="HorizontalContentAlignment" Value="Left" />
+                        <Setter Property="Padding" Value="8,4" />
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    </Style>
+                </Grid.Resources>
+
+                <Button VerticalContentAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock VerticalAlignment="Center" Icon="Play" />
+                        <TextBlock Margin="8,0" Text="Play" />
+                    </StackPanel>
+                </Button>
+                <Button Grid.Column="2">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock VerticalAlignment="Center" Icon="Gears" />
+                        <TextBlock Margin="8,0" Text="Config" />
+                    </StackPanel>
                 </Button>
             </Grid>
         </Grid>
