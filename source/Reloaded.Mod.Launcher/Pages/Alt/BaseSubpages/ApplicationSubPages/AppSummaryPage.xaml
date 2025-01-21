@@ -87,7 +87,7 @@
                         <CheckBox
                             Grid.RowSpan="2"
                             Height="{DynamicResource ListEntryCheckboxHeightSmall}"
-                            Margin="{DynamicResource ListEntryItemMarginSmall}"
+                            Margin="4,0,8,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Focusable="False"
@@ -98,13 +98,14 @@
 
                         <TextBlock
                             Grid.Column="1"
-                            FontFamily="FontBold"
+                            FontFamily="{DynamicResource FontBold}"
                             FontSize="14"
                             Text="{Binding Tuple.Config.ModDisplayName, UpdateSourceTrigger=PropertyChanged}" />
 
                         <StackPanel
                             Grid.Row="1"
                             Grid.Column="1"
+                            Opacity="0.9"
                             Orientation="Horizontal">
 
                             <TextBlock
