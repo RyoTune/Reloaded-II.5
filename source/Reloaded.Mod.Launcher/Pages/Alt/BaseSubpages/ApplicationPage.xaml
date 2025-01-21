@@ -11,8 +11,9 @@
     xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
     xmlns:reloadedWpfControls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
     Title="{DynamicResource TitleApplication}"
-    d:DesignHeight="600"
-    d:DesignWidth="756"
+    Margin="20,12"
+    d:DesignHeight="360"
+    d:DesignWidth="640"
     AllowDrop="True"
     mc:Ignorable="d">
     <Grid DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
@@ -70,7 +71,6 @@
 
             <!--  Main Header  -->
             <TextBlock
-                Margin="{DynamicResource CommonItemVerticalMarginSmallest}"
                 d:Text="Application Name"
                 Style="{DynamicResource SidebarHeaderTextBlockAlt}"
                 Text="{Binding ApplicationTuple.Config.AppName}" />
