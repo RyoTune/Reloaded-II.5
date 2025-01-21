@@ -139,7 +139,7 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
             ApplicationSubPage.Null => null,
             ApplicationSubPage.NonReloadedProcess => new NonReloadedProcessPage(ViewModel),
             ApplicationSubPage.ReloadedProcess => new ReloadedProcessPage(ViewModel),
-            ApplicationSubPage.ApplicationSummary => new AppSummaryPage(ViewModel),
+            ApplicationSubPage.ApplicationSummary => new ApplicationSubPages.AppSummaryPage(ViewModel),
             ApplicationSubPage.EditApplication => new EditAppPage(ViewModel),
             _ => throw new ArgumentOutOfRangeException(nameof(page), page, null)
         };

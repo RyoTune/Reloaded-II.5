@@ -17,7 +17,6 @@
     mc:Ignorable="d">
     <Grid DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
         <Grid.Resources>
-
             <converters:ProcessToNameStringConverter x:Key="ReloadedPrcConverter" Prefix="[RLD]" />
             <converters:ProcessToNameStringConverter x:Key="NonReloadedPrcConverter" Prefix="[SYS]" />
             <Style x:Key="ProcessListStyle" TargetType="{x:Type ItemsControl}">
@@ -71,16 +70,12 @@
 
             <!--  Main Header  -->
             <TextBlock
-                Grid.ColumnSpan="2"
                 Margin="{DynamicResource CommonItemVerticalMarginSmallest}"
                 d:Text="Application Name"
                 Style="{DynamicResource SidebarHeaderTextBlockAlt}"
                 Text="{Binding ApplicationTuple.Config.AppName}" />
 
-            <Grid
-                Grid.Row="1"
-                Width="200"
-                HorizontalAlignment="Left">
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="4" />
@@ -95,7 +90,7 @@
                     </Style>
                 </Grid.Resources>
 
-                <Button VerticalContentAlignment="Center">
+                <Button>
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock VerticalAlignment="Center" Icon="Play" />
                         <TextBlock Margin="8,0" Text="Play" />
@@ -104,7 +99,7 @@
                 <Button Grid.Column="2">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock VerticalAlignment="Center" Icon="Gears" />
-                        <TextBlock Margin="8,0" Text="Config" />
+                        <TextBlock Margin="8,0" Text="Settings" />
                     </StackPanel>
                 </Button>
             </Grid>
@@ -114,7 +109,8 @@
         <reloadedWpfControls:PageHost
             x:Name="PageHost"
             Grid.Row="1"
-            Grid.ColumnSpan="2" />
+            Grid.ColumnSpan="2"
+            Margin="0,8" />
 
     </Grid>
 </pages:ReloadedIIPage>
