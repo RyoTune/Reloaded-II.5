@@ -63,6 +63,9 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
     public VisitModProjectUrlCommand VisitModProjectUrlCommand { get; set; } = null!;
 
     /// <summary/>
+    public DeleteModCommand DeleteModCommand { get; set; } = null!;
+
+    /// <summary/>
     public EditModCommand EditModCommand { get; set; } = null!;
 
     /// <summary/>
@@ -264,6 +267,7 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
         EditModCommand = new EditModCommand(SelectedMod.Tuple, null);
         PublishModCommand = new PublishModCommand(SelectedMod.Tuple);
         VisitModProjectUrlCommand = new VisitModProjectUrlCommand(SelectedMod.Tuple);
+        DeleteModCommand = new DeleteModCommand(SelectedMod.Tuple);
 
         var userConfig = _userConfigService.ItemsById.GetValueOrDefault(SelectedMod.Tuple.Config.ModId);
         EditModUserConfigCommand = new EditModUserConfigCommand(userConfig);
