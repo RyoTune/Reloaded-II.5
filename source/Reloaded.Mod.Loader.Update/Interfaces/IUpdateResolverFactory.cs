@@ -61,7 +61,7 @@ public static class ResolverFactoryExtensions
     /// <param name="mod">The mod config to get configuration from.</param>
     /// <param name="configuration">The returned configuration.</param>
     /// <returns>Whether the configuration was found or not.</returns>
-    public static bool TryGetConfiguration<T>(this IUpdateResolverFactory factory, PathTuple<ModConfig> mod, out T? configuration)
+    public static bool TryGetConfiguration<T>(this IUpdateResolverFactory factory, PathTuple<ModConfig> mod, [NotNullWhen(true)] out T? configuration)
     {
         return mod.Config.PluginData.TryGetValue<T>(factory.ResolverId, out configuration);
     }
