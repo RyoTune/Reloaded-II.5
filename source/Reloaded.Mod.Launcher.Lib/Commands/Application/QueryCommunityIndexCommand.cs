@@ -94,11 +94,11 @@ public class QueryCommunityIndexCommand : ICommand
                 GameId = (int)indexApp.GameBananaId
             });
 
-        if (!hashMatches)
-        {
-            var viewModel = new AddAppHashMismatchDialogViewModel(indexApp.BadHashDescription!);
-            Actions.ShowAddAppHashMismatchDialog(viewModel);
-        }
+        //if (!hashMatches)
+        //{
+        //    var viewModel = new AddAppHashMismatchDialogViewModel(indexApp.BadHashDescription!);
+        //    Actions.ShowAddAppHashMismatchDialog(viewModel);
+        //}
 
         var appLocation = ApplicationConfig.GetAbsoluteAppLocation(pathTuple);
         if (indexApp.TryGetError(Path.GetDirectoryName(appLocation)!, out var errors))
