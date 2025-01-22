@@ -50,6 +50,7 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -60,23 +61,25 @@
 
         <!--  Header  -->
         <Grid Grid.ColumnSpan="2">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="auto" />
-            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="1*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
 
             <!--  Main Header  -->
-            <TextBlock
-                d:Text="Application Name"
-                Style="{DynamicResource SidebarHeaderTextBlockAlt}"
-                Text="{Binding ApplicationTuple.Config.AppName}" />
+            <Viewbox Height="24" HorizontalAlignment="Left">
+                <TextBlock
+                    d:Text="Application Name"
+                    FontSize="24"
+                    Style="{DynamicResource SidebarHeaderTextBlockAlt}"
+                    Text="{Binding ApplicationTuple.Config.AppName}" />
+            </Viewbox>
 
-            <Grid Grid.Row="1">
+            <Grid Grid.Column="2">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="4" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="4" />
                     <ColumnDefinition Width="*" />
@@ -96,7 +99,15 @@
                         <TextBlock Margin="8,0" Text="Play" />
                     </StackPanel>
                 </Button>
-                <Button Grid.Column="2" PreviewMouseLeftButtonDown="Edit_PreviewMouseDown">
+
+                <Button Grid.Column="2" PreviewMouseLeftButtonDown="Summary_PreviewMouseDown">
+                    <StackPanel Orientation="Horizontal">
+                        <fa:IconBlock VerticalAlignment="Center" Icon="List" />
+                        <TextBlock Margin="8,0" Text="Mods" />
+                    </StackPanel>
+                </Button>
+
+                <Button Grid.Column="4" PreviewMouseLeftButtonDown="Edit_PreviewMouseDown">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock VerticalAlignment="Center" Icon="Gears" />
                         <TextBlock Margin="8,0" Text="Settings" />
@@ -105,12 +116,18 @@
             </Grid>
         </Grid>
 
+        <Rectangle
+            Grid.Row="1"
+            Grid.ColumnSpan="3"
+            Height="2"
+            Margin="0,8"
+            Fill="{DynamicResource BorderColorBrush}" />
+
         <!--  Content  -->
         <reloadedWpfControls:PageHost
             x:Name="PageHost"
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
-            Margin="0,8" />
+            Grid.Row="2"
+            Grid.ColumnSpan="2" />
 
     </Grid>
 </pages:ReloadedIIPage>
