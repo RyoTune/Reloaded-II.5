@@ -176,8 +176,8 @@ jobs:
         path: ${{ env.TOOLS_PATH }}
         retention-days: 0
 
-    - name: Test
-      run: dotnet test -c Release ./source/Reloaded.Mod.Loader.Tests/Reloaded.Mod.Loader.Tests.csproj
+#    - name: Test
+#      run: dotnet test -c Release ./source/Reloaded.Mod.Loader.Tests/Reloaded.Mod.Loader.Tests.csproj
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v2

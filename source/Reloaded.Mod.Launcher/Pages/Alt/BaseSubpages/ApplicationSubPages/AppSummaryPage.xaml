@@ -82,7 +82,6 @@
                 ItemsSource="{Binding Source={StaticResource FilteredMods}}"
                 PreviewKeyDown="KeyboardControls_KeyDown"
                 SelectedItem="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                ToolTip="{DynamicResource ConfigureModsListItemTooltip}"
                 ToolTipService.InitialShowDelay="250"
                 VirtualizingPanel.IsVirtualizing="True"
                 VirtualizingPanel.VirtualizationMode="Recycling">
