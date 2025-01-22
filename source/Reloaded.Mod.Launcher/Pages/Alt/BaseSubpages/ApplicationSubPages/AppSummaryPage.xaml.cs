@@ -52,8 +52,8 @@ public partial class AppSummaryPage : ApplicationSubPage, IDisposable
 
         // Filter name
         var config = tuple.Tuple.Config;
-        //if (ModsFilter.Text.Length > 0)
-        //    e.Accepted = config.ModName.Contains(ModsFilter.Text, StringComparison.InvariantCultureIgnoreCase);
+        if (ModsFilter.Text.Length > 0)
+            e.Accepted = config.ModName.Contains(ModsFilter.Text, StringComparison.InvariantCultureIgnoreCase);
 
         if (e.Accepted == false)
             return;

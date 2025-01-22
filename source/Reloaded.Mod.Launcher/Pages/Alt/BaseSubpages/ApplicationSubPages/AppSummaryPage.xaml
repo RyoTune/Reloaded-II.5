@@ -35,96 +35,127 @@
 
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
-            <ColumnDefinition Width="4" />
+            <ColumnDefinition Width="8" />
             <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
 
         <!--  Items  -->
-        <ListView
-            x:Name="ModListView"
-            Grid.Column="2"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            VerticalContentAlignment="Top"
-            dd:DragDrop.IsDragSource="True"
-            dd:DragDrop.IsDropTarget="True"
-            Focusable="False"
-            ItemsSource="{Binding Source={StaticResource FilteredMods}}"
-            PreviewKeyDown="KeyboardControls_KeyDown"
-            SelectedItem="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-            ToolTip="{DynamicResource ConfigureModsListItemTooltip}"
-            ToolTipService.InitialShowDelay="250"
-            VirtualizingPanel.IsVirtualizing="True"
-            VirtualizingPanel.VirtualizationMode="Recycling">
-            <ListView.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Command="{Binding ConfigureModCommand}" Header="{DynamicResource ModManagerContextConfigure}" />
-                    <MenuItem Command="{Binding OpenModFolderCommand}" Header="{DynamicResource ModManagerContextOpenFolder}" />
-                    <MenuItem Command="{Binding VisitModProjectUrlCommand}" Header="{DynamicResource ModManagerContextVisitWebsite}" />
-                    <Separator Height="2" />
-                    <MenuItem Command="{Binding EditModCommand}" Header="{DynamicResource ModManagerContextEdit}" />
-                    <MenuItem Command="{Binding PublishModCommand}" Header="{DynamicResource ModManagerContextPublish}" />
-                    <Separator Height="2" />
-                    <MenuItem Command="{Binding DeleteModCommand}" Header="{DynamicResource AddAppDeleteButton}" />
-                    <!--<MenuItem Command="{Binding EditModUserConfigCommand}" Header="{DynamicResource ModManagerContextEditModUser}">
+        <Grid Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <DockPanel
+                Grid.Row="0"
+                Margin="{DynamicResource PanelMargin}"
+                LastChildFill="True">
+
+                <ComboBox
+                    Width="130"
+                    Margin="{DynamicResource CommonItemHorizontalMarginLeft}"
+                    AutomationProperties.Name="{DynamicResource ConfigureModsSelectTagTooltip}"
+                    DockPanel.Dock="Right"
+                    ItemsSource="{Binding AllTags}"
+                    SelectedItem="{Binding SelectedTag}"
+                    ToolTip="{DynamicResource ConfigureModsSelectTagTooltip}"
+                    ToolTipService.InitialShowDelay="0" />
+
+                <TextBox
+                    x:Name="ModsFilter"
+                    AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                    Style="{DynamicResource TextboxWithPlaceholder}"
+                    Tag="{DynamicResource ModManagerSearchMods}"
+                    TextChanged="ModsFilter_TextChanged" />
+
+            </DockPanel>
+
+            <ListView
+                x:Name="ModListView"
+                Grid.Row="1"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                VerticalContentAlignment="Top"
+                dd:DragDrop.IsDragSource="True"
+                dd:DragDrop.IsDropTarget="True"
+                Focusable="False"
+                ItemsSource="{Binding Source={StaticResource FilteredMods}}"
+                PreviewKeyDown="KeyboardControls_KeyDown"
+                SelectedItem="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                ToolTip="{DynamicResource ConfigureModsListItemTooltip}"
+                ToolTipService.InitialShowDelay="250"
+                VirtualizingPanel.IsVirtualizing="True"
+                VirtualizingPanel.VirtualizationMode="Recycling">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Command="{Binding ConfigureModCommand}" Header="{DynamicResource ModManagerContextConfigure}" />
+                        <MenuItem Command="{Binding OpenModFolderCommand}" Header="{DynamicResource ModManagerContextOpenFolder}" />
+                        <MenuItem Command="{Binding VisitModProjectUrlCommand}" Header="{DynamicResource ModManagerContextVisitWebsite}" />
+                        <Separator Height="2" />
+                        <MenuItem Command="{Binding EditModCommand}" Header="{DynamicResource ModManagerContextEdit}" />
+                        <MenuItem Command="{Binding PublishModCommand}" Header="{DynamicResource ModManagerContextPublish}" />
+                        <Separator Height="2" />
+                        <MenuItem Command="{Binding DeleteModCommand}" Header="{DynamicResource AddAppDeleteButton}" />
+                        <!--<MenuItem Command="{Binding EditModUserConfigCommand}" Header="{DynamicResource ModManagerContextEditModUser}">
                         <MenuItem Command="{Binding EditModUserConfigCommand}" Header="{DynamicResource ModManagerContextEdit}" />
                         <MenuItem Command="{Binding OpenUserConfigFolderCommand}" Header="{DynamicResource ModManagerContextOpenFolder}" />
                     </MenuItem>-->
-                </ContextMenu>
-            </ListView.ContextMenu>
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
+                    </ContextMenu>
+                </ListView.ContextMenu>
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="auto" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
 
-                        <CheckBox
-                            Grid.RowSpan="2"
-                            Height="{DynamicResource ListEntryCheckboxHeightSmall}"
-                            Margin="4,0,8,0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Focusable="False"
-                            IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            IsEnabled="{Binding IsEditable}"
-                            IsThreeState="False"
-                            Style="{DynamicResource DefaultCheckBox}" />
-
-                        <TextBlock
-                            Grid.Column="1"
-                            FontFamily="{DynamicResource FontBold}"
-                            FontSize="14"
-                            Text="{Binding Tuple.Config.ModDisplayName, UpdateSourceTrigger=PropertyChanged}" />
-
-                        <StackPanel
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Opacity="0.9"
-                            Orientation="Horizontal">
+                            <CheckBox
+                                Grid.RowSpan="2"
+                                Height="{DynamicResource ListEntryCheckboxHeightSmall}"
+                                Margin="4,0,8,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                IsEnabled="{Binding IsEditable}"
+                                IsThreeState="False"
+                                Style="{DynamicResource DefaultCheckBox}" />
 
                             <TextBlock
                                 Grid.Column="1"
-                                FontSize="12"
-                                Text="{Binding Tuple.Config.ModVersion, UpdateSourceTrigger=PropertyChanged}" />
+                                FontFamily="{DynamicResource FontBold}"
+                                FontSize="14"
+                                Text="{Binding Tuple.Config.ModDisplayName, UpdateSourceTrigger=PropertyChanged}" />
 
-                            <TextBlock
+                            <StackPanel
+                                Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="8,0"
-                                FontSize="12"
-                                Text="|" />
+                                Opacity="0.9"
+                                Orientation="Horizontal">
 
-                            <TextBlock FontSize="12" Text="{Binding Tuple.Config.ModAuthor, UpdateSourceTrigger=PropertyChanged}" />
-                        </StackPanel>
-                    </Grid>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
+                                <TextBlock
+                                    Grid.Column="1"
+                                    FontSize="12"
+                                    Text="{Binding Tuple.Config.ModVersion, UpdateSourceTrigger=PropertyChanged}" />
+
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Margin="8,0"
+                                    FontSize="12"
+                                    Text="|" />
+
+                                <TextBlock FontSize="12" Text="{Binding Tuple.Config.ModAuthor, UpdateSourceTrigger=PropertyChanged}" />
+                            </StackPanel>
+                        </Grid>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </Grid>
 
         <!--  Mod Panel  -->
         <Border
@@ -133,6 +164,7 @@
             Background="Transparent"
             BorderBrush="{DynamicResource BorderColorBrush}"
             BorderThickness="1">
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="128" />
@@ -206,7 +238,6 @@
                             ToolTip="{DynamicResource ModManagerContextConfigure}" />
                     </Grid>
                 </Grid>
-
 
                 <!--  Mod Name  -->
                 <TextBlock
