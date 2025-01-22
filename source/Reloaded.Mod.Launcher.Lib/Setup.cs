@@ -317,7 +317,7 @@ public static class Setup
             await DependencyMetadataWriterFactory.ExecuteAllAsync(IoC.Get<ModConfigService>());
 
         //await Update.CheckForLoaderUpdatesAsync(); // Disable normal Reloaded II updates.
-        //await Task.Run(Update.CheckForModUpdatesAsync); // Disable startup mod update checks.
+        await Task.Run(Update.CheckForModUpdatesAsync); // Disable startup mod update checks.
         await CheckForMissingModDependenciesAsync();
     }
 
