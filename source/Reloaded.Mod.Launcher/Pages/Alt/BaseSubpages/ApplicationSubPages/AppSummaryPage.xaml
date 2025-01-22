@@ -281,17 +281,18 @@
                         <ColumnDefinition Width="auto" />
                         <ColumnDefinition Width="4" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="4" />
+                        <ColumnDefinition Width="auto" />
                     </Grid.ColumnDefinitions>
 
                     <Button
-                        Grid.Row="2"
                         Width="32"
                         Height="32"
                         Padding="0"
                         HorizontalContentAlignment="Center"
                         Command="{Binding DeleteModCommand}"
                         Content="{fa:Icon Trash}"
-                        ToolTip="Delete" />
+                        ToolTip="{DynamicResource AddAppDeleteButton}" />
 
                     <Button
                         Grid.Column="2"
@@ -302,11 +303,22 @@
                         <StackPanel Orientation="Horizontal">
                             <fa:IconBlock
                                 VerticalAlignment="Center"
-                                Icon="FileZipper"
+                                Icon="Upload"
                                 IconFont="Solid" />
                             <TextBlock Margin="8,0" Text="{DynamicResource ModManagerContextPublish}" />
                         </StackPanel>
                     </Button>
+
+                    <Button
+                        Grid.Column="4"
+                        Width="32"
+                        Height="32"
+                        Padding="0"
+                        HorizontalContentAlignment="Center"
+                        Command="{Binding EditModCommand}"
+                        Content="{fa:Icon PenToSquare,
+                                          IconFont=Solid}"
+                        ToolTip="{DynamicResource ModManagerContextEdit}" />
                 </Grid>
             </Grid>
         </Border>
