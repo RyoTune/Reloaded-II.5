@@ -166,7 +166,7 @@
 
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="128" />
+                    <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="auto" />
                     <RowDefinition Height="*" />
@@ -183,7 +183,8 @@
 
                     <Border
                         x:Name="BannerImage"
-                        Height="128"
+                        Height="{Binding Path=ActualWidth, RelativeSource={RelativeSource self}}"
+                        MaxWidth="256"
                         Background="{DynamicResource BorderColorDarkBrush}"
                         BorderBrush="{DynamicResource BorderColorBrush}"
                         BorderThickness="1">
