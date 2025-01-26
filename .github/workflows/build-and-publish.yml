@@ -25,6 +25,9 @@ env:
 
 jobs:
   build:
+    permissions:
+        contents: write
+
     runs-on: windows-2022
     defaults:
       run:
@@ -98,15 +101,15 @@ jobs:
         echo "$env:RELEASE_TAG" > "version.txt"
         Compress-Archive -update "version.txt" "$env:PUBLISH_RELEASE_PATH" 
      
-    - name: Create NuGet Package Artifacts
-      run: |
-        [System.IO.Directory]::CreateDirectory("$env:PUBLISH_PACKAGES_PATH")
-        $items = Get-ChildItem -Path "." -Recurse | Where-Object { $_.Name -match "^Reloaded\..*\.nupkg" }
-        foreach ($item in $items)
-        {
-          Write-Host "Moving $item -> $env:PUBLISH_PACKAGES_PATH"
-          Move-Item -Path "$item" -Destination "$env:PUBLISH_PACKAGES_PATH"
-        }
+    # - name: Create NuGet Package Artifacts
+    #   run: |
+    #     [System.IO.Directory]::CreateDirectory("$env:PUBLISH_PACKAGES_PATH")
+    #     $items = Get-ChildItem -Path "." -Recurse | Where-Object { $_.Name -match "^Reloaded\..*\.nupkg" }
+    #     foreach ($item in $items)
+    #     {
+    #       Write-Host "Moving $item -> $env:PUBLISH_PACKAGES_PATH"
+    #       Move-Item -Path "$item" -Destination "$env:PUBLISH_PACKAGES_PATH"
+    #     }
       
     - name: Create Changelog (on Tag)
       run: |
@@ -120,14 +123,14 @@ jobs:
             auto-changelog --sort-commits date --hide-credit --template changelog-template.hbs --commit-limit false --unreleased --output "$env:PUBLISH_CHANGELOG_PATH"
         }
         
-    - name: Upload Chocolatey Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        # Artifact name
-        name: Chocolatey Package
-        # A file, directory or wildcard pattern that describes what to upload
-        path: ${{ env.PUBLISH_CHOCO_PATH }}/*
-        retention-days: 0
+    # - name: Upload Chocolatey Artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     # Artifact name
+    #     name: Chocolatey Package
+    #     # A file, directory or wildcard pattern that describes what to upload
+    #     path: ${{ env.PUBLISH_CHOCO_PATH }}/*
+    #     retention-days: 0
         
     - name: Upload Reloaded Artifact
       uses: actions/upload-artifact@v4
@@ -149,14 +152,14 @@ jobs:
           ${{ env.PUBLISH_INSTALLER_STATIC_PATH }}
         retention-days: 0
          
-    - name: Upload NuGet Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        # Artifact name
-        name: NuGet Packages
-        # A file, directory or wildcard pattern that describes what to upload
-        path: ${{ env.PUBLISH_PACKAGES_PATH }}/*
-        retention-days: 0
+    # - name: Upload NuGet Artifacts
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     # Artifact name
+    #     name: NuGet Packages
+    #     # A file, directory or wildcard pattern that describes what to upload
+    #     path: ${{ env.PUBLISH_PACKAGES_PATH }}/*
+    #     retention-days: 0
         
     - name: Upload Changelog Artifact
       uses: actions/upload-artifact@v4
@@ -167,17 +170,17 @@ jobs:
         path: ${{ env.PUBLISH_CHANGELOG_PATH }}
         retention-days: 0
     
-    - name: Upload Tools Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        # Artifact name
-        name: Tools
-        # A file, directory or wildcard pattern that describes what to upload
-        path: ${{ env.TOOLS_PATH }}
-        retention-days: 0
+    # - name: Upload Tools Artifact
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     # Artifact name
+    #     name: Tools
+    #     # A file, directory or wildcard pattern that describes what to upload
+    #     path: ${{ env.TOOLS_PATH }}
+    #     retention-days: 0
 
-#    - name: Test
-#      run: dotnet test -c Release ./source/Reloaded.Mod.Loader.Tests/Reloaded.Mod.Loader.Tests.csproj
+    # - name: Test
+    #   run: dotnet test -c Release ./source/Reloaded.Mod.Loader.Tests/Reloaded.Mod.Loader.Tests.csproj
 
     - name: Upload to GitHub Releases
       uses: softprops/action-gh-release@v2
@@ -188,18 +191,18 @@ jobs:
         # Newline-delimited list of path globs for asset files to upload
         files: |
           ${{ env.PUBLISH_RELEASE_FOLDER }}/*
-          ${{ env.TOOLS_PATH }}
+          # ${{ env.TOOLS_PATH }}
           ${{ env.PUBLISH_INSTALLER_PATH }}
           ${{ env.PUBLISH_INSTALLER_STATIC_PATH }}
         
-    - name: Upload to NuGet (on Tag)
-      env: 
-        NUGET_KEY: ${{ secrets.NUGET_KEY }}
-      if: env.IS_RELEASE == 'true'
-      run: |
-        $items = Get-ChildItem -Path "$env:PUBLISH_PACKAGES_PATH/*.nupkg"
-        Foreach ($item in $items)
-        {
-            Write-Host "Pushing $item"
-            dotnet nuget push "$item" -k "$env:NUGET_KEY" -s "https://api.nuget.org/v3/index.json" --skip-duplicate
-        }
+    # - name: Upload to NuGet (on Tag)
+    #   env: 
+    #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
+    #   if: env.IS_RELEASE == 'true'
+    #   run: |
+    #     $items = Get-ChildItem -Path "$env:PUBLISH_PACKAGES_PATH/*.nupkg"
+    #     Foreach ($item in $items)
+    #     {
+    #         Write-Host "Pushing $item"
+    #         dotnet nuget push "$item" -k "$env:NUGET_KEY" -s "https://api.nuget.org/v3/index.json" --skip-duplicate
+    #     }
