@@ -2,16 +2,16 @@ name: MkDocs Build and Deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ "main", "master" ]
-    paths:
-      - "mkdocs.yml"
-      - "docs/**"
-  pull_request:
-    branches: [ "main", "master" ]
-    paths:
-      - "mkdocs.yml"
-      - "docs/**"
+  # push:
+  #   branches: [ "main", "master" ]
+  #   paths:
+  #     - "mkdocs.yml"
+  #     - "docs/**"
+  # pull_request:
+  #   branches: [ "main", "master" ]
+  #   paths:
+  #     - "mkdocs.yml"
+  #     - "docs/**"
 
 jobs:
   build:
