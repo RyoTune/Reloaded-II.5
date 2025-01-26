@@ -1,5 +1,6 @@
 ^Theme[\\\/]Default*
 ^Theme[\\\/]Halogen*
 ^Theme[\\\/]Helpers*
+^Theme[\\\/]R-II.5*
 ^Assets[\\\/]Languages[\\\/].*\.xaml
 ^version\.txt
