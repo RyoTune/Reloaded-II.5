@@ -28,7 +28,10 @@
         <Setter Property="Padding" Value="8,0" />
     </Style>
 
-    <Style BasedOn="{StaticResource DefaultCheckBox}" TargetType="{x:Type CheckBox}">
+    <Style
+        x:Key="DefaultCheckBox"
+        BasedOn="{StaticResource DefaultCheckBox}"
+        TargetType="{x:Type CheckBox}">
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 </ResourceDictionary>
