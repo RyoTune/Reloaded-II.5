@@ -101,6 +101,16 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     public bool ShowConsole { get; set; } = true;
 
     /// <summary>
+    /// Mods list displays mods compactly.
+    /// </summary>
+    public bool ModsList_IsCompact { get; set; }
+
+    /// <summary>
+    /// Mods lists expands horizontally.
+    /// </summary>
+    public bool ModsList_IsHorizontal { get; set; }
+
+    /// <summary>
     /// Amount of time in hours since last modified that log files get updated.
     /// </summary>
     public int LogFileCompressTimeHours { get; set; } = 6;

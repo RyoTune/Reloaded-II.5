@@ -1,3 +1,5 @@
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
+
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel.Application;
 
 /// <summary>
@@ -77,18 +79,42 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
     /// <summary/>
     public OpenUserConfigFolderCommand OpenUserConfigFolderCommand { get; set; } = null!;
 
+    /// <summary/>
+    public bool IsCompact
+    {
+        get => _loaderConfig.ModsList_IsCompact;
+        set
+        {
+            SetProperty(_loaderConfig.ModsList_IsCompact, value, _loaderConfig, (m, newValue) => m.ModsList_IsCompact = newValue);
+            IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
+        }
+    }
+
+    /// <summary/>
+    public bool IsHorizontal
+    {
+        get => _loaderConfig.ModsList_IsHorizontal;
+        set
+        {
+            SetProperty(_loaderConfig.ModsList_IsHorizontal, value, _loaderConfig, (m, newValue) => m.ModsList_IsHorizontal = newValue);
+            IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
+        }
+    }
+
     private ModEntry? _cachedModEntry;
     private ApplicationViewModel _applicationViewModel;
     private readonly ModUserConfigService _userConfigService;
     private CancellationTokenSource _saveToken;
+    private readonly LoaderConfig _loaderConfig;
 
     /// <inheritdoc />
-    public ConfigureModsViewModel(ApplicationViewModel model, ModUserConfigService userConfigService)
+    public ConfigureModsViewModel(ApplicationViewModel model, ModUserConfigService userConfigService, LoaderConfig loaderConfig)
     {
         ApplicationTuple = model.ApplicationTuple;
         _applicationViewModel = model;
         _userConfigService = userConfigService;
         _saveToken = new CancellationTokenSource();
+        _loaderConfig = loaderConfig;
 
         // Wait for parent to fully initialize.
         _applicationViewModel.OnGetModsForThisApp += BuildModList;
