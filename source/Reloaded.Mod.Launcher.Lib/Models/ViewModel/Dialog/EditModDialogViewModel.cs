@@ -207,6 +207,7 @@ public class EditModDialogViewModel : ObservableObject, IDisposable
             CanGoToLastPage = Page > EnumValues<EditModPage>.Min;
             CanGoToNextPage = Page < EnumValues<EditModPage>.Max;
             IsOnLastPage = Page == EnumValues<EditModPage>.Max;
+            ModsFilter = string.Empty;
         }
     }
 }
