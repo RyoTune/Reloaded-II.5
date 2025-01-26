@@ -61,7 +61,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <Page Remove="Theme\Default\R-II\Colours.xaml" />
+    <Page Remove="Theme\R-II.5\Resources.xaml" />
   </ItemGroup>
 
   <ItemGroup>
