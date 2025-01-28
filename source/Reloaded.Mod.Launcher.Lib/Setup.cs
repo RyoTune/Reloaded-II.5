@@ -1,3 +1,4 @@
+using Reloaded.Mod.Launcher.Lib.Remix.Updates;
 using Application = System.Windows.Application;
 using Environment = System.Environment;
 
@@ -316,8 +317,10 @@ public static class Setup
         if (Update.CheckMissingDependencies().AllAvailable)
             await DependencyMetadataWriterFactory.ExecuteAllAsync(IoC.Get<ModConfigService>());
 
-        //await Update.CheckForLoaderUpdatesAsync(); // Disable normal Reloaded II updates.
-        await Task.Run(Update.CheckForModUpdatesAsync); // Disable startup mod update checks.
+        //await Update.CheckForLoaderUpdatesAsync(); // Disable Reloaded updates.
+        //await Task.Run(Update.CheckForModUpdatesAsync); // Disable normal mod updates.
+        await Task.Run(UpdateService.CheckForUpdates);
+
         await CheckForMissingModDependenciesAsync();
     }
 

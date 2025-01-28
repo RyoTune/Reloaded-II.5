@@ -108,31 +108,46 @@ public static class Update
         }
     }
 
+    public static async Task<(ModUpdateSummary?, Updater?)> GetUpdateData()
+    {
+        if (!HasInternetConnection)
+            return (null, null);
+
+        try
+        {
+            var loaderConfig = IoC.Get<LoaderConfig>();
+            var modConfigService = IoC.Get<ModConfigService>();
+            var modUserConfigService = IoC.Get<ModUserConfigService>();
+
+            var nugetFeeds = IoC.Get<AggregateNugetRepository>().Sources.Select(x => x.SourceUrl).ToList();
+            var resolverSettings = new CommonPackageResolverSettings() { AllowPrereleases = loaderConfig.ForceModPrereleases };
+            var updaterData = new UpdaterData(nugetFeeds, resolverSettings);
+            var updater = new Updater(modConfigService, modUserConfigService, updaterData);
+            var updateDetails = await updater.GetUpdateDetailsAsync();
+
+            return (updateDetails, updater);
+        }
+        catch (Exception) { }
+
+        return (null, null);
+    }
+
     /// <summary>
     /// Checks if there are updates for any of the installed mods and/or new dependencies to fetch.
     /// </summary>
     public static async Task<bool> CheckForModUpdatesAsync()
     {
-        if (!HasInternetConnection)
-            return false;
-
-        var loaderConfig = IoC.Get<LoaderConfig>();
-        var modConfigService = IoC.Get<ModConfigService>();
-        var modUserConfigService = IoC.Get<ModUserConfigService>();
-
         try
         {
-            var nugetFeeds       = IoC.Get<AggregateNugetRepository>().Sources.Select(x => x.SourceUrl).ToList();
-            var resolverSettings = new CommonPackageResolverSettings() { AllowPrereleases = loaderConfig.ForceModPrereleases };
-            var updaterData      = new UpdaterData(nugetFeeds, resolverSettings);
-            var updater          = new Updater(modConfigService, modUserConfigService, updaterData);
-            var updateDetails    = await updater.GetUpdateDetailsAsync();
+            var (summary, updater) = await GetUpdateData();
+            if (summary == null || updater == null)
+                return false;
 
-            if (updateDetails.HasUpdates())
+            if (summary.HasUpdates())
             {
                 Actions.SynchronizationContext.Send(_ =>
                 {
-                    Actions.ShowModUpdateDialog.Invoke(new ModUpdateDialogViewModel(updater, updateDetails));
+                    Actions.ShowModUpdateDialog.Invoke(new ModUpdateDialogViewModel(updater, summary));
                 }, null);
 
                 return true;
