@@ -244,7 +244,8 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
     private ModEntry MakeSaveSubscribedModEntry(bool? isEnabled, PathTuple<ModConfig> item)
     {
         // Make BooleanGenericTuple that saves application on Enabled change.
-        var tuple = new ModEntry(isEnabled, item);
+        var userConfig = _userConfigService.ItemsById.GetValueOrDefault(item.Config.ModId);
+        var tuple = new ModEntry(isEnabled, item, new(item, userConfig, ApplicationTuple));
         tuple.PropertyChanged += SaveOnEnabledPropertyChanged;
         return tuple;
     }
