@@ -74,7 +74,7 @@
                         <Style TargetType="{x:Type local:ModItem}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static Orientation.Horizontal}">
-                                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource Divider}, ConverterParameter=2.5}" />
+                                    <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource Divider}, ConverterParameter=2.5, FallbackValue=200, TargetNullValue=200}" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
