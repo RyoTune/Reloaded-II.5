@@ -33,6 +33,15 @@
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
+
+            <!--
+                Fix binding errors from the use of WrapPanel as ItemsPanelTemplate.
+                Solution: https://stackoverflow.com/a/23455790
+            -->
+            <Style TargetType="{x:Type ListViewItem}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
         </ListView.Resources>
         <ListView.Style>
             <Style BasedOn="{StaticResource DefaultListViewStyle}" TargetType="{x:Type ListView}">
@@ -67,6 +76,16 @@
                     </MenuItem>-->
             </ContextMenu>
         </ListView.ContextMenu>
+        <ListView.ItemContainerStyle>
+            <!--
+                Fix binding errors from the use of WrapPanel as ItemsPanelTemplate.
+                Solution: https://stackoverflow.com/a/23455790
+            -->
+            <Style BasedOn="{StaticResource DefaultListViewItemStyle}" TargetType="{x:Type ListViewItem}">
+                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                <Setter Property="VerticalContentAlignment" Value="Center" />
+            </Style>
+        </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
             <DataTemplate>
                 <local:ModItem IsCompact="{Binding IsCompact, RelativeSource={RelativeSource AncestorType=UserControl}}">

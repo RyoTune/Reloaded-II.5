@@ -34,4 +34,41 @@
         TargetType="{x:Type CheckBox}">
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
+
+    <!--  ListView  -->
+
+    <!--
+        For use in fixing binding errors from the use of WrapPanel as ItemsPanelTemplate, such as ModsList.
+        Solution: https://stackoverflow.com/a/23455790
+    -->
+    <Style x:Key="DefaultListViewItemStyle" TargetType="{x:Type ListViewItem}">
+        <Setter Property="Padding" Value="{DynamicResource ListViewItemPadding}" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource ReloadedFocusVisual}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                    <Grid>
+                        <!--  Margin of 1 prevents listbox item from overlapping with border.  -->
+                        <Rectangle Margin="1" Fill="{TemplateBinding Background}" />
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+
+        <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+                <Trigger.EnterActions>
+                    <BeginStoryboard Storyboard="{StaticResource BackgroundFadeBackgroundToBorderDark}" />
+                </Trigger.EnterActions>
+                <Trigger.ExitActions>
+                    <BeginStoryboard Storyboard="{StaticResource BackgroundFadeBorderDarkToBackground}" />
+                </Trigger.ExitActions>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
