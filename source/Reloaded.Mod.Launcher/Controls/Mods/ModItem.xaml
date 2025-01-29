@@ -68,7 +68,7 @@
                 <fa:IconBlock.Style>
                     <Style BasedOn="{StaticResource StatusIcon}" TargetType="{x:Type fa:IconBlock}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding Tuple.Config.SupportUrl, Converter={StaticResource IsNullOrEmpty}}" Value="False">
+                            <DataTrigger Binding="{Binding Tuple.Config.CreatorUrl, Converter={StaticResource IsNullOrEmpty}}" Value="False">
                                 <Setter Property="Opacity" Value="1" />
                                 <Setter Property="ToolTip" Value="Support the creator!" />
                                 <Setter Property="Cursor" Value="Hand" />
