@@ -1,7 +1,16 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:re="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+
+    <Style x:Key="FormTextBlockHeader" TargetType="{x:Type TextBlock}">
+        <Setter Property="Margin" Value="0,0,0,4" />
+        <Setter Property="FontFamily" Value="{DynamicResource FontBold}" />
+        <Setter Property="FontSize" Value="14" />
+    </Style>
 
     <!--  Glow  -->
     <Color x:Key="AccentColorHighlight">#FF9999</Color>
@@ -35,6 +44,41 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
+    <Style
+        x:Key="ReloadedWindow"
+        BasedOn="{StaticResource ReloadedWindow}"
+        TargetType="{x:Type re:ReloadedWindow}">
+        <Setter Property="Foreground" Value="{DynamicResource TextColorBrush}" />
+    </Style>
+
+    <!--  *********************************************************  -->
+    <!--  Control Colors  -->
+
+    <!--  Fix TextBox border disappearing on mouse hover.  -->
+    <SolidColorBrush x:Key="SecondaryBorderBrush" Color="{DynamicResource BorderColorLight}" />
+
+    <!--  Reloaded doesn't have the colors for "regions"; always use background color.  -->
+    <SolidColorBrush x:Key="RegionBrush" Color="{DynamicResource BackgroundColor}" />
+
+    <!--  *********************************************************  -->
+    <!--  TextBox  -->
+    <Style
+        x:Key="TextBoxBaseStyle"
+        BasedOn="{StaticResource TextBoxBaseStyle}"
+        TargetType="{x:Type TextBox}">
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="hc:BorderElement.CornerRadius" Value="0" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+
+    <Style
+        x:Key="DefaultTextBox"
+        BasedOn="{StaticResource TextBoxBaseStyle}"
+        TargetType="{x:Type TextBox}" />
+
+    <Style BasedOn="{StaticResource TextBoxBaseStyle}" TargetType="{x:Type TextBox}" />
+
+    <!--  *********************************************************  -->
     <!--  ListView  -->
 
     <!--
