@@ -1,0 +1,345 @@
+﻿<re:ReloadedWindow
+    x:Class="Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs.EditModDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+    xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
+    xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:mods="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
+    xmlns:re="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
+    Width="800"
+    Height="480"
+    MinWidth="760"
+    MinHeight="440"
+    d:DesignHeight="360"
+    d:DesignWidth="640"
+    Style="{DynamicResource ReloadedWindow}"
+    mc:Ignorable="d">
+
+    <Grid
+        x:Name="Grid"
+        Margin="8"
+        DataContext="{Binding Path=RealViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}}">
+
+        <Grid.Resources>
+            <ResourceDictionary>
+                <!--  Sort the mod list  -->
+                <CollectionViewSource
+                    x:Key="SortedDependencies"
+                    IsLiveSortingRequested="True"
+                    Source="{Binding DisabledDependencies, UpdateSourceTrigger=PropertyChanged}">
+                    <CollectionViewSource.SortDescriptions>
+                        <componentModel:SortDescription PropertyName="Generic.ModName" />
+                    </CollectionViewSource.SortDescriptions>
+                </CollectionViewSource>
+
+                <CollectionViewSource
+                    x:Key="SortedApplications"
+                    IsLiveSortingRequested="True"
+                    Source="{Binding Applications, UpdateSourceTrigger=PropertyChanged}">
+                    <CollectionViewSource.SortDescriptions>
+                        <componentModel:SortDescription PropertyName="Generic.AppName" />
+                    </CollectionViewSource.SortDescriptions>
+                </CollectionViewSource>
+            </ResourceDictionary>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock
+                FontFamily="{DynamicResource FontBold}"
+                FontSize="24"
+                Text="{Binding Config.ModName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <Separator />
+        </StackPanel>
+        <TabControl
+            Grid.Row="1"
+            Margin="0,8"
+            TabStripPlacement="Left">
+            <TabItem Header="Details" Style="{DynamicResource TabItemStyle}">
+                <TabItem.Resources>
+                    <Style BasedOn="{StaticResource TextBoxBaseStyle}" TargetType="{x:Type TextBox}">
+                        <Setter Property="Margin" Value="0,0,0,8" />
+                    </Style>
+                </TabItem.Resources>
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="2*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--  Icon  -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+
+                        <Border
+                            Width="{Binding ActualHeight, RelativeSource={RelativeSource self}}"
+                            Margin="0,0,0,4"
+                            Background="{DynamicResource BorderColorDarkBrush}"
+                            BorderBrush="{DynamicResource BorderColorBrush}"
+                            BorderThickness="1"
+                            Cursor="Hand"
+                            PreviewMouseDown="ModIcon_PreviewMouseDown"
+                            ToolTip="{DynamicResource AddAppImageTooltip}"
+                            ToolTipService.InitialShowDelay="0">
+                            <Image Stretch="Uniform" Style="{DynamicResource HighQualityImage}">
+                                <Image.Source>
+                                    <MultiBinding Converter="{x:Static converters:ModConfigToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
+                                        <Binding IsAsync="True" Path="ConfigTuple" />
+                                        <Binding IsAsync="True" Path="ConfigTuple.Config.ModIcon" />
+                                        <Binding IsAsync="True" />
+                                    </MultiBinding>
+                                </Image.Source>
+                            </Image>
+                        </Border>
+
+                        <Grid Grid.Row="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Description" />
+                            <TextBox
+                                Grid.Row="1"
+                                AcceptsReturn="True"
+                                Text="{Binding Config.ModDescription, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextWrapping="Wrap" />
+                        </Grid>
+                    </Grid>
+
+                    <StackPanel
+                        Grid.RowSpan="2"
+                        Grid.Column="1"
+                        Margin="8,0"
+                        VerticalAlignment="Top">
+                        <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Name" />
+                        <TextBox Text="{Binding Config.ModName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Author(s)" />
+                        <TextBox Text="{Binding Config.ModAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Version" />
+                        <TextBox Text="{Binding Config.ModVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Website Link" />
+                        <TextBox Text="{Binding Config.ProjectUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Creator Link" />
+                        <TextBox Text="{Binding Config.CreatorUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Dependencies">
+                <TabItem.Resources>
+                    <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="Margin" Value="0,2" />
+                        <Setter Property="Height" Value="24" />
+                        <Setter Property="FontSize" Value="14" />
+                    </Style>
+                    <Style TargetType="ScrollViewer">
+                        <Setter Property="Padding" Value="0,0,4,0" />
+                    </Style>
+                </TabItem.Resources>
+                <Grid Margin="8,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="8" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.ColumnSpan="3">
+                        <Label Content="{DynamicResource EditModDependenciesDescription}" />
+                        <TextBox
+                            Margin="{DynamicResource CommonItemVerticalMarginSmall}"
+                            Style="{DynamicResource TextboxWithPlaceholder}"
+                            Tag="{DynamicResource ModManagerSearchMods}"
+                            Text="{Binding ModsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            TextChanged="ModsFilter_TextChanged" />
+                    </StackPanel>
+
+                    <TextBlock
+                        Grid.Row="1"
+                        Style="{DynamicResource FormTextBlockHeader}"
+                        Text="Mods" />
+                    <TextBlock
+                        Grid.Row="1"
+                        Grid.Column="2"
+                        Style="{DynamicResource FormTextBlockHeader}"
+                        Text="Mod Dependencies" />
+
+                    <ScrollViewer Grid.Row="2">
+                        <ItemsControl ItemsSource="{Binding Source={StaticResource SortedDependencies}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.AddRemoveDepCommand, ElementName=Grid}"
+                                        CommandParameter="{Binding Generic.ModId}"
+                                        Content="{Binding Generic.ModName}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <ScrollViewer Grid.Row="2" Grid.Column="3">
+                        <ItemsControl ItemsSource="{Binding EnabledDependencies}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Command="{Binding DataContext.AddRemoveDepCommand, ElementName=Grid}"
+                                        CommandParameter="{Binding Generic.ModId}"
+                                        Content="{Binding Generic.ModName}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="Updates">
+                <TabControl ItemsSource="{Binding Updates}">
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Factory.FriendlyName}" />
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="auto" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+
+                                <DockPanel Margin="8,8,8,0">
+                                    <CheckBox
+                                        Content="Enabled"
+                                        IsChecked="{Binding IsEnabled}"
+                                        Style="{DynamicResource DefaultCheckBox}" />
+
+                                    <TextBox
+                                        Margin="8,0,0,0"
+                                        Text="{Binding DataContext.Config.ReleaseMetadataFileName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, ElementName=Grid}"
+                                        ToolTip="{DynamicResource EditModMetadataNameTooltip}"
+                                        ToolTipService.InitialShowDelay="0" />
+                                </DockPanel>
+
+                                <Border
+                                    Grid.Row="1"
+                                    Margin="8,8,8,0"
+                                    Background="Transparent"
+                                    BorderBrush="{DynamicResource BorderColorBrush}"
+                                    BorderThickness="1">
+                                    <controls:PropertyGridEx
+                                        DefaultSorting="Category"
+                                        FlattenChildProperties="ParentNameAsCategory"
+                                        SelectedObject="{Binding Configuration}"
+                                        ShowSearchBar="False"
+                                        ShowSortButton="False">
+                                        <controls:PropertyGridEx.Style>
+                                            <Style BasedOn="{StaticResource PropertyGridBaseStyle}" TargetType="{x:Type controls:PropertyGridEx}">
+                                                <Setter Property="Opacity" Value="0.25" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsEnabled}" Value="True">
+                                                        <Setter Property="Opacity" Value="1" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </controls:PropertyGridEx.Style>
+                                    </controls:PropertyGridEx>
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+            </TabItem>
+
+            <TabItem Header="Settings">
+                <Grid Margin="8,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox
+                            Margin="{DynamicResource CommonItemVerticalMarginSmaller}"
+                            Content="{DynamicResource EditModUniversalMod}"
+                            IsChecked="{Binding Config.IsUniversalMod}"
+                            ToolTip="{DynamicResource EditModUniversalModDescription}" />
+
+                        <CheckBox
+                            Margin="12,0"
+                            Content="{DynamicResource EditModLibrary}"
+                            IsChecked="{Binding Config.IsLibrary}"
+                            ToolTip="{DynamicResource EditModLibraryDescription}" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Margin="0,12,0,0">
+                        <StackPanel.Style>
+                            <Style TargetType="{x:Type StackPanel}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Config.IsUniversalMod}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </StackPanel.Style>
+                        <Label Content="{DynamicResource EditModAppsDescription}" />
+                        <TextBox
+                            Margin="{DynamicResource CommonItemVerticalMarginSmall}"
+                            Style="{DynamicResource TextboxWithPlaceholder}"
+                            Tag="{DynamicResource ModManagerSearchApps}"
+                            Text="{Binding ModsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            TextChanged="AppsFilter_TextChanged" />
+
+                        <ListView
+                            MaxHeight="200"
+                            HorizontalAlignment="Stretch"
+                            VerticalAlignment="Stretch"
+                            VerticalContentAlignment="Top"
+                            ItemsSource="{Binding Source={StaticResource SortedApplications}}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <CheckBox
+                                            Height="{DynamicResource ListEntryCheckboxHeightSmall}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                            Style="{DynamicResource DefaultCheckBox}" />
+
+                                        <TextBlock
+                                            Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"
+                                            Text="{Binding Generic.AppName, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <Grid Grid.Row="2">
+            <Button
+                HorizontalAlignment="Stretch"
+                Click="Button_Click"
+                Content="Close" />
+        </Grid>
+    </Grid>
+</re:ReloadedWindow>
