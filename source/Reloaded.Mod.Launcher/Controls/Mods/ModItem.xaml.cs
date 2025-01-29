@@ -41,9 +41,9 @@ public partial class ModItem : UserControl
         {
             if (DataContext is ModEntry entry)
             {
-                if (!string.IsNullOrEmpty(entry.Tuple.Config.SupportUrl))
+                if (!string.IsNullOrEmpty(entry.Tuple.Config.CreatorUrl))
                 {
-                    ProcessExtensions.OpenHyperlink(entry.Tuple.Config.SupportUrl);
+                    ProcessExtensions.OpenHyperlink(entry.Tuple.Config.CreatorUrl);
                 }
             }
         };
