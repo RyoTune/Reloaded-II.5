@@ -302,7 +302,7 @@
                             Margin="{DynamicResource CommonItemVerticalMarginSmall}"
                             Style="{DynamicResource TextboxWithPlaceholder}"
                             Tag="{DynamicResource ModManagerSearchApps}"
-                            Text="{Binding ModsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Text="{Binding AppsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             TextChanged="AppsFilter_TextChanged" />
 
                         <ListView

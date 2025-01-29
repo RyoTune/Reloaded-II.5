@@ -47,6 +47,8 @@ public partial class EditModDialogViewModel : ObservableObject, IDisposable
     /// </summary>
     public string ModsFilter { get; set; } = "";
 
+    public string AppsFilter { get; set; } = "";
+
     /// <summary>
     /// The current page for the modification.
     /// </summary>
@@ -182,10 +184,10 @@ public partial class EditModDialogViewModel : ObservableObject, IDisposable
     /// </summary>
     public bool FilterApp(BooleanGenericTuple<IApplicationConfig> item)
     {
-        if (ModsFilter.Length <= 0)
+        if (AppsFilter.Length <= 0)
             return true;
 
-        return item.Generic.AppName.IndexOf(ModsFilter, StringComparison.InvariantCultureIgnoreCase) >= 0;
+        return item.Generic.AppName.IndexOf(AppsFilter, StringComparison.InvariantCultureIgnoreCase) >= 0;
     }
 
     /// <summary>
