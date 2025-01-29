@@ -1,3 +1,4 @@
+using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 using IconConverter = Reloaded.Mod.Launcher.Interop.IconConverter;
 using Window = System.Windows.Window;
 
@@ -91,7 +92,7 @@ public static class LibraryBindings
 
     private static bool EditModDialog(EditModDialogViewModel viewmodel, object? owner)
     {
-        var createModDialog = new EditModDialog(viewmodel);
+        var createModDialog = new Pages.Alt.BaseSubpages.Dialogs.EditModDialog(viewmodel);
         if (owner != null)
             createModDialog.Owner = Window.GetWindow((DependencyObject)owner);
         

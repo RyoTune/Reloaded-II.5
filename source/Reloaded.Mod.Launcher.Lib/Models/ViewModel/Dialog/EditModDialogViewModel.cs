@@ -1,11 +1,12 @@
-using IoC;
+using CommunityToolkit.Mvvm.Input;
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel.Dialog;
 
 /// <summary>
 /// The ViewModel for a dialog which allows us to edit the details of an individual mod.
 /// </summary>
-public class EditModDialogViewModel : ObservableObject, IDisposable
+public partial class EditModDialogViewModel : ObservableObject, IDisposable
 {
     /// <summary>
     /// The individual mod configuration to be edited.
@@ -21,6 +22,10 @@ public class EditModDialogViewModel : ObservableObject, IDisposable
     /// All possible dependencies for the mod configurations.
     /// </summary>
     public ObservableCollection<BooleanGenericTuple<IModConfig>> Dependencies { get; set; } = new ObservableCollection<BooleanGenericTuple<IModConfig>>();
+
+    public ObservableCollection<BooleanGenericTuple<IModConfig>> EnabledDependencies { get; set; } = [];
+
+    public ObservableCollection<BooleanGenericTuple<IModConfig>> DisabledDependencies { get; set; } = [];
 
     /// <summary>
     /// All tags used.
@@ -86,7 +91,17 @@ public class EditModDialogViewModel : ObservableObject, IDisposable
         foreach (var mod in mods)
         {
             bool isEnabled = modTuple.Config.ModDependencies.Contains(mod.Config.ModId, StringComparer.OrdinalIgnoreCase);
-            Dependencies.Add(new BooleanGenericTuple<IModConfig>(isEnabled, mod.Config));
+            var dep = new BooleanGenericTuple<IModConfig>(isEnabled, mod.Config);
+            Dependencies.Add(dep);
+
+            if (isEnabled)
+            {
+                EnabledDependencies.Add(dep);
+            }
+            else
+            {
+                DisabledDependencies.Add(dep);
+            }
         }
 
         // Build Applications
@@ -131,7 +146,7 @@ public class EditModDialogViewModel : ObservableObject, IDisposable
 
         // Save Config
         string configSavePath  = Path.Combine(modDirectory, ModConfig.ConfigFileName);
-        Config.ModDependencies = Dependencies.Where(x => x.Enabled).Select(x => x.Generic.ModId).ToArray();
+        Config.ModDependencies = EnabledDependencies.Select(x => x.Generic.ModId).ToArray();
         Config.SupportedAppId = Applications.Where(x => x.Enabled).Select(x => x.Generic.AppId).ToArray();
         Config.Tags = Tags.ToArray();
 
@@ -208,6 +223,25 @@ public class EditModDialogViewModel : ObservableObject, IDisposable
             CanGoToNextPage = Page < EnumValues<EditModPage>.Max;
             IsOnLastPage = Page == EnumValues<EditModPage>.Max;
             ModsFilter = string.Empty;
+        }
+    }
+
+    [RelayCommand]
+    private void AddRemoveDep(string depId)
+    {
+        var enabledDep = EnabledDependencies.FirstOrDefault(x => x.Generic.ModId == depId);
+        if (enabledDep != null)
+        {
+            EnabledDependencies.Remove(enabledDep);
+            DisabledDependencies.Add(enabledDep);
+            return;
+        }
+
+        var disabledDep = DisabledDependencies.FirstOrDefault(x => x.Generic.ModId == depId);
+        if (disabledDep != null)
+        {
+            DisabledDependencies.Remove(disabledDep);
+            EnabledDependencies.Add(disabledDep);
         }
     }
 }
