@@ -42,7 +42,7 @@
                     IsLiveSortingRequested="True"
                     Source="{Binding Applications, UpdateSourceTrigger=PropertyChanged}">
                     <CollectionViewSource.SortDescriptions>
-                        <componentModel:SortDescription PropertyName="Generic.AppName" />
+                        <componentModel:SortDescription PropertyName="Generic.AppId" />
                     </CollectionViewSource.SortDescriptions>
                 </CollectionViewSource>
             </ResourceDictionary>
