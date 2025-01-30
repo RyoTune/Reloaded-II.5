@@ -338,8 +338,25 @@
                                         <TextBlock
                                             Margin="{DynamicResource ListEntryItemMarginSmall}"
                                             HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"
-                                            Text="{Binding Generic.AppName, UpdateSourceTrigger=PropertyChanged}" />
+                                            VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="{x:Type TextBlock}">
+                                                    <Setter Property="Text" Value="{Binding Generic.AppId, UpdateSourceTrigger=PropertyChanged}" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Generic.AppName, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:StringNullOrEmptyConverter.Instance}}" Value="False">
+                                                            <Setter Property="Text">
+                                                                <Setter.Value>
+                                                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                                                        <Binding Path="Generic.AppName" />
+                                                                        <Binding Path="Generic.AppId" />
+                                                                    </MultiBinding>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
                                     </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
