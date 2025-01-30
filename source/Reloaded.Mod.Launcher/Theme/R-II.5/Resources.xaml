@@ -51,6 +51,17 @@
         <Setter Property="Foreground" Value="{DynamicResource TextColorBrush}" />
     </Style>
 
+    <sys:Double x:Key="TooltipBackgroundOpacity">1</sys:Double>
+
+    <!--  *********************************************************  -->
+    <!--  Window Glow/Shadow  -->
+    <Color x:Key="GlowColorInactive">#000</Color>
+    <Color x:Key="GlowColorDefault">#000</Color>
+    <Color x:Key="GlowColorEngaged">#000</Color>
+    <sys:Double x:Key="GlowOpacity">1</sys:Double>
+    <sys:Double x:Key="GlowDirection">315</sys:Double>
+    <sys:Double x:Key="GlowDepth">0</sys:Double>
+
     <!--  *********************************************************  -->
     <!--  Control Colors  -->
 
