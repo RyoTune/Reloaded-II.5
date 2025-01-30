@@ -30,6 +30,9 @@ public class DeleteModCommand : WithCanExecuteChanged, ICommand
             return;
         
         var directory = Path.GetDirectoryName(_modTuple!.Path) ?? throw new InvalidOperationException(Resources.ErrorFailedToGetDirectoryOfMod.Get());
-        Directory.Delete(directory, true);
+        if (Directory.Exists(directory))
+        {
+            Directory.Delete(directory, true);
+        }
     }
 }
