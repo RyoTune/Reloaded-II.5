@@ -26,10 +26,27 @@ public partial class MainWindow : ReloadedWindow
         // Bind other models.
         Lib.IoC.BindToConstant((WPF.Theme.Default.WindowViewModel)DataContext);// Controls window properties.
         Lib.IoC.BindToConstant(this);
+
+        // Easily allows DragDrop app wide.
+        this.MouseEnter += MainWindow_MouseEnter;
+        this.MouseLeave += MainWindow_MouseLeave;
+    }
+
+    private void MainWindow_MouseEnter(object sender, MouseEventArgs e)
+    {
+        //Trace.WriteLine(nameof(MainWindow_MouseEnter));
+        this.Border_DragDropCapturer.IsHitTestVisible = false;
+    }
+
+    private void MainWindow_MouseLeave(object sender, MouseEventArgs e)
+    {
+        //Trace.WriteLine(nameof(MainWindow_MouseLeave));
+        this.Border_DragDropCapturer.IsHitTestVisible = true;
     }
 
     private void InstallMod_DragOver(object sender, DragEventArgs e)
     {
+        //Trace.WriteLine(nameof(InstallMod_DragOver));
         if (e.Data.GetDataPresent(DataFormats.FileDrop))
         {
             var files = (string[])e.Data.GetData(DataFormats.FileDrop)!;
@@ -52,6 +69,7 @@ public partial class MainWindow : ReloadedWindow
 
     private async void InstallMod_Drop(object sender, DragEventArgs e)
     {
+        //Trace.WriteLine(nameof(InstallMod_Drop));
         if (!e.Data.GetDataPresent(DataFormats.FileDrop)) 
             return;
 

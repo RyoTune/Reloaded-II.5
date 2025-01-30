@@ -13,11 +13,17 @@
     MinWidth="960"
     MinHeight="540"
     AllowDrop="True"
-    DragOver="InstallMod_DragOver"
-    Drop="InstallMod_Drop"
     Style="{DynamicResource ReloadedWindow}"
     mc:Ignorable="d">
 
     <!--  Window Content  -->
-    <controls:PageHost CurrentPage="{Binding Path=RealViewModel.CurrentPage, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Converter={x:Static converters:ApplicationPageBaseToPageConverter.Instance}}" />
+    <Grid>
+        <controls:PageHost CurrentPage="{Binding Path=RealViewModel.CurrentPage, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Converter={x:Static converters:ApplicationPageBaseToPageConverter.Instance}}" />
+
+        <Border
+            x:Name="Border_DragDropCapturer"
+            Background="Transparent"
+            DragOver="InstallMod_DragOver"
+            Drop="InstallMod_Drop" />
+    </Grid>
 </default:ReloadedWindow>

@@ -6,7 +6,6 @@
     xmlns:controls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:dd="urn:gong-wpf-dragdrop"
     xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
