@@ -1,6 +1,4 @@
-using HandyControl.Controls;
-using System.Windows.Controls;
-using static Reloaded.Input.Implementations.Implementations;
+using Reloaded.Input.Implementations;
 using static Sewer56.UI.Controller.Core.Enums.Button;
 using Image = System.Windows.Controls.Image;
 using Path = System.IO.Path;
@@ -32,9 +30,13 @@ public static class ControllerSupport
         if (!File.Exists(savePath))
             File.Copy(Path.Combine(AppContext.BaseDirectory, "Assets\\DefaultSettings\\Controller.json"), savePath);
 
-        var controllerSupport = XInput | DInput;
-        if (loaderConf.DisableDInput)
-            controllerSupport &= ~DInput;
+        Implementations controllerSupport = 0;
+        if (loaderConf.EnableControllerInput)
+        {
+            controllerSupport = Implementations.XInput | Implementations.DInput;
+            if (loaderConf.DisableDInput)
+                controllerSupport &= ~Implementations.DInput;
+        }
             
         Controller = new ReloadedInputControllerWithConfigurator(savePath, new ReloadedInputLocalizationProvider(), controllerSupport);
         

@@ -173,6 +173,11 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// </summary>
     public bool DisableDInput { get; set; }
 
+    /// <summary>
+    /// Enables support for controlling GUI via gamepad.
+    /// </summary>
+    public bool EnableControllerInput { get; set; } = true;
+
     private string _launcherFolder;
 
     /* Some mods are universal :wink: */
