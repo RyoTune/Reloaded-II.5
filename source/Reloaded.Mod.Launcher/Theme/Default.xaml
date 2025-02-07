@@ -12,8 +12,7 @@
                     If you want to override stuff, add another ResourceDictionary BELOW such that existing values will be overwritten.
                 -->
                 <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Default/R-II/Root.xaml" />
-
-                <ResourceDictionary Source="R-II.5/Resources.xaml" />
+                <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Remix/Resources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
