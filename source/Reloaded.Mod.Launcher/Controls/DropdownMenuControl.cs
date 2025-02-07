@@ -44,4 +44,14 @@ public class DropdownMenuControl : ContentControl
     // Using a DependencyProperty as the backing store for IsOpen.  This enables animation, styling, binding, etc...
     public static readonly DependencyProperty IsOpenProperty =
         DependencyProperty.Register("IsOpen", typeof(bool), typeof(DropdownMenuControl), new PropertyMetadata(false));
+
+    public object? Icon
+    {
+        get { return (object?)GetValue(IconProperty); }
+        set { SetValue(IconProperty, value); }
+    }
+
+    // Using a DependencyProperty as the backing store for Icon.  This enables animation, styling, binding, etc...
+    public static readonly DependencyProperty IconProperty =
+        DependencyProperty.Register("Icon", typeof(object), typeof(DropdownMenuControl), new PropertyMetadata(null));
 }
