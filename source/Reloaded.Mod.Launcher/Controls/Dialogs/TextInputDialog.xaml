@@ -1,0 +1,39 @@
+﻿<rxui:ReactiveWindow
+    x:Class="Reloaded.Mod.Launcher.Controls.Dialogs.TextInputDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Controls.Dialogs"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:vm="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.ViewModels;assembly=Reloaded.Mod.Launcher.Lib"
+    Title="{Binding Title}"
+    Width="400"
+    x:TypeArguments="vm:TextInputViewModel"
+    ResizeMode="NoResize"
+    SizeToContent="Height"
+    Style="{DynamicResource ReloadedReactiveWindow}"
+    WindowStartupLocation="CenterScreen"
+    mc:Ignorable="d">
+    <StackPanel Margin="4">
+        <TextBlock
+            Margin="0,4"
+            FontFamily="{DynamicResource FontBold}"
+            FontSize="16"
+            Style="{DynamicResource TextBlockDefault}"
+            Text="{Binding Description}" />
+        <TextBox Margin="0,4" Text="{Binding Text}" />
+        <Grid Margin="0,4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="Button_Cancel" Content="Cancel" />
+            <Button
+                x:Name="Button_Confirm"
+                Grid.Column="2"
+                Content="Confirm" />
+        </Grid>
+    </StackPanel>
+</rxui:ReactiveWindow>
