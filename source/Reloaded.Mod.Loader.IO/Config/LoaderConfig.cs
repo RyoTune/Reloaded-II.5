@@ -1,4 +1,5 @@
 using static System.String;
+using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 namespace Reloaded.Mod.Loader.IO.Config;
 
@@ -173,12 +174,24 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// </summary>
     public bool DisableDInput { get; set; }
 
+    // Remix
+
     /// <summary>
     /// Enables support for controlling GUI via gamepad.
     /// </summary>
-    public bool EnableControllerInput { get; set; } = true;
+    public bool EnableControllerInput { get; set; } = false;
+
+    /// <summary>
+    /// Display shortcut buttons for presets.
+    /// </summary>
+    public bool PresetShortcutsEnabled
+    {
+        get => _presetShortcutsEnabled;
+        set => this.SetProperty(ref _presetShortcutsEnabled, value);
+    }
 
     private string _launcherFolder;
+    private bool _presetShortcutsEnabled = true;
 
     /* Some mods are universal :wink: */
 

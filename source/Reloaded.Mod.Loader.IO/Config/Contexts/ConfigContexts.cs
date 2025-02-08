@@ -1,4 +1,6 @@
-﻿namespace Reloaded.Mod.Loader.IO.Config.Contexts;
+﻿using Reloaded.Mod.Loader.IO.Remix.Mods;
+
+namespace Reloaded.Mod.Loader.IO.Config.Contexts;
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(LoaderConfig))]
@@ -18,3 +20,7 @@ internal partial class ModSetContext : JsonSerializerContext { }
 [JsonSourceGenerationOptions(WriteIndented = true)]
 [JsonSerializable(typeof(ModUserConfig))]
 internal partial class ModUserConfigContext : JsonSerializerContext { }
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(ModsPreset))]
+internal partial class ModsPresetContext : JsonSerializerContext { }
