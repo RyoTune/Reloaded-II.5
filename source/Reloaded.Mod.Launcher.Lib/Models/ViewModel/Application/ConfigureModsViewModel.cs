@@ -1,11 +1,19 @@
-using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
+using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.Commands;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+using Reloaded.Mod.Loader.IO.Remix.Mods;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel.Application;
 
 /// <summary>
 /// ViewModel allowing for the configuration of mods to be loaded for a certain game.
 /// </summary>
-public class ConfigureModsViewModel : ObservableObject, IDisposable
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
 {
     /// <summary>
     /// Special tag that includes all items.
@@ -101,10 +109,14 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
         }
     }
 
+    /// <summary/>
+    public ModsControlPanelViewModel ModsControlPanelVm { get; }
+
     private ModEntry? _cachedModEntry;
     private ApplicationViewModel _applicationViewModel;
     private readonly ModUserConfigService _userConfigService;
     private CancellationTokenSource _saveToken;
+    private IDisposable? _saveStream;
     private readonly LoaderConfig _loaderConfig;
 
     /// <inheritdoc />
@@ -124,38 +136,71 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
         SelectedMod = AllMods.FirstOrDefault();
         PropertyChanged += OnSelectedModChanged;
         UpdateCommands();
-    }
 
-    /// <summary/>
-    ~ConfigureModsViewModel() => Dispose();
+        ModsControlPanelVm = new(this, loaderConfig);
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        _applicationViewModel.OnLoadModSet -= BuildModList;
-        _applicationViewModel.OnGetModsForThisApp -= BuildModList;
-        _saveToken?.Dispose();
-        GC.SuppressFinalize(this);
+        _showShortcuts = _loaderConfig.WhenPropertyChanged(x => x.PresetShortcutsEnabled).Select(x => x.Value).ToProperty(this, vm => vm.ShowShortcuts);
+        _shortcuts = ApplicationTuple.Config.Presets.ToObservableChangeSet().AutoRefresh()
+            .Select(x =>
+            {
+                var shortcuts = new List<PresetShortcut>();
+                for (int i = 0; i < ApplicationTuple.Config.Presets.Count && i < 9; i++)
+                {
+                    shortcuts.Add(new(i + 1, ApplicationTuple.Config.Presets[i], new(this, ApplicationTuple.Config.Presets[i])));
+                }
+
+                return shortcuts.ToArray();
+            })
+            .ToProperty(this, vm => vm.Shortcuts);
+
+        this.WhenActivated((CompositeDisposable disp) =>
+        {
+            _showShortcuts.DisposeWith(disp);
+            _shortcuts.DisposeWith(disp);
+
+            Disposable.Create(() =>
+            {
+                _applicationViewModel.OnLoadModSet -= BuildModList;
+                _applicationViewModel.OnGetModsForThisApp -= BuildModList;
+                _saveToken?.Dispose();
+                _saveStream?.Dispose();
+            })
+            .DisposeWith(disp);
+        });
     }
+    public ViewModelActivator Activator { get; } = new();
+
+    // Remix
+    private readonly ObservableAsPropertyHelper<bool> _showShortcuts;
+    public bool ShowShortcuts => _showShortcuts.Value;
+
+    public record PresetShortcut(int Id, ModsPreset Preset, ApplyPresetCommand ApplyPresetCommand);
+
+    private readonly ObservableAsPropertyHelper<PresetShortcut[]> _shortcuts;
+    public PresetShortcut[] Shortcuts => _shortcuts.Value;
 
     /// <summary>
     /// Builds the list of mods displayed to the user.
     /// </summary>
     private void BuildModList()
     {
-        if (AllMods != null)
-            AllMods.CollectionChanged -= OnReorderMods;
-        
+        if (_saveStream != null)
+        {
+            _saveStream.Dispose();
+        }
+
         var modsForThisApp = _applicationViewModel.ModsForThisApp.ToArray();
         AllMods = new ObservableCollection<ModEntry>(GetInitialModSet(modsForThisApp, ApplicationTuple));
-        AllMods.CollectionChanged += OnReorderMods;
-        
+
+        var enableObs = AllMods.Select(x => x.WhenPropertyChanged(m => m.Enabled)).Merge();
+        var modsChangedObs = AllMods.ToObservableChangeSet().AutoRefresh();
+
+        _saveStream = Observable.Merge<object>(enableObs, modsChangedObs).Throttle(TimeSpan.FromMilliseconds(250)).Skip(1).Subscribe(async _ => await SaveApp());
+
         Collections.ModifyObservableCollection(AllTags, GetTags(modsForThisApp).OrderBy(x => x));
         if (string.IsNullOrEmpty(SelectedTag))
             SelectedTag = AllTags[0];
     }
-
-    private async void OnReorderMods(object? sender, NotifyCollectionChangedEventArgs e) => await SaveApplication();
 
     /// <summary>
     /// Builds the initial set of mods to display in the list.
@@ -180,16 +225,16 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
 
             // Add sorted mods.
             foreach (var sortedModId in sortedModIds)
-                totalModList.Add(MakeSaveSubscribedModEntry(enabledModIdSet.Contains(sortedModId), modDictionary[sortedModId]));
+                totalModList.Add(MakeModEntry(enabledModIdSet.Contains(sortedModId), modDictionary[sortedModId]));
 
             // Add enabled mods that were not in the sorted mod collection.
             // This can happen in case of config upgrade from an older version.
             foreach (var enabledModId in enabledModIds.Where(x => !sortedModIdSet.Contains(x)))
-                totalModList.Add(MakeSaveSubscribedModEntry(true, modDictionary[enabledModId]));
+                totalModList.Add(MakeModEntry(true, modDictionary[enabledModId]));
 
             // Add the remaining mods on the bottom of the list as disabled.
             var remainingMods = modsForThisApp.Where(x => !enabledModIdSet.Contains(x.Config.ModId) && !sortedModIdSet.Contains(x.Config.ModId)).OrderBy(x => x.Config.ModName);
-            totalModList.AddRange(remainingMods.Select(x => MakeSaveSubscribedModEntry(false, x)));
+            totalModList.AddRange(remainingMods.Select(x => MakeModEntry(false, x)));
         }
         else
         {
@@ -200,13 +245,13 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
             foreach (var enabledModId in enabledModIds)
             {
                 if (modDictionary.ContainsKey(enabledModId))
-                    totalModList.Add(MakeSaveSubscribedModEntry(true, modDictionary[enabledModId]));
+                    totalModList.Add(MakeModEntry(true, modDictionary[enabledModId]));
             }
 
             // Add disabled mods.
             var enabledModIdSet = enabledModIds.ToHashSet();
             var disabledMods = modsForThisApp.Where(x => !enabledModIdSet.Contains(x.Config.ModId)).OrderBy(x => x.Config.ModName);
-            totalModList.AddRange(disabledMods.Select(x => MakeSaveSubscribedModEntry(false, x)));
+            totalModList.AddRange(disabledMods.Select(x => MakeModEntry(false, x)));
         }
 
         return totalModList;
@@ -241,23 +286,17 @@ public class ConfigureModsViewModel : ObservableObject, IDisposable
         return tags;
     }
 
-    private ModEntry MakeSaveSubscribedModEntry(bool? isEnabled, PathTuple<ModConfig> item)
+    private ModEntry MakeModEntry(bool? isEnabled, PathTuple<ModConfig> item)
     {
         // Make BooleanGenericTuple that saves application on Enabled change.
         var userConfig = _userConfigService.ItemsById.GetValueOrDefault(item.Config.ModId);
         var tuple = new ModEntry(isEnabled, item, new(item, userConfig, ApplicationTuple));
-        tuple.PropertyChanged += SaveOnEnabledPropertyChanged;
         return tuple;
     }
 
     // == Events ==
-    private async void SaveOnEnabledPropertyChanged(object? sender, PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == BooleanGenericTuple<IModConfig>.NameOfEnabled)
-            await SaveApplication();
-    }
 
-    private async Task SaveApplication()
+    private async Task SaveApp()
     {
         _saveToken.Cancel();
         _saveToken = new CancellationTokenSource();
