@@ -1,4 +1,8 @@
 using System.Text;
+using ReactiveUI;
+using Reloaded.Mod.Launcher.Controls.Dialogs;
+using Reloaded.Mod.Launcher.Lib.Remix;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Loader.Update.Providers.Web;
 using Sewer56.DeltaPatchGenerator.Lib.Utility;
 using Sewer56.Update.Extractors.SevenZipSharp;
@@ -30,6 +34,26 @@ public partial class MainWindow : ReloadedWindow
         // Easily allows DragDrop app wide.
         this.MouseEnter += MainWindow_MouseEnter;
         this.MouseLeave += MainWindow_MouseLeave;
+
+#if DEBUG
+        this.Border_DragDropCapturer.Visibility = Visibility.Collapsed;
+#endif
+
+        // Interactions.
+        Interactions.PromptTextInput.RegisterHandler(HandleTextInput);
+    }
+
+    private void HandleTextInput(IInteractionContext<TextInputViewModel, string?> context)
+    {
+        var textInputDialog = new TextInputDialog() { ViewModel = context.Input };
+        if (textInputDialog.ShowDialog() == true && !string.IsNullOrEmpty(textInputDialog.ViewModel.Text))
+        {
+            context.SetOutput(textInputDialog.ViewModel.Text);
+        }
+        else
+        {
+            context.SetOutput(null);
+        }
     }
 
     private void MainWindow_MouseEnter(object sender, MouseEventArgs e)
