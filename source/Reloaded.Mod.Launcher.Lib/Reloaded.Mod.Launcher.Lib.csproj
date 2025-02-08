@@ -22,6 +22,7 @@
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ReactiveUI" Version="20.1.63" />
     <PackageReference Include="System.Management" Version="6.0.0" />
   </ItemGroup>
 

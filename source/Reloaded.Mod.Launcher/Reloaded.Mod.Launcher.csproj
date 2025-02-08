@@ -59,10 +59,6 @@
   <ItemGroup>
     <Compile Remove="Theme\Helpers\ThemeHelpers.cs" />
   </ItemGroup>
-	
-  <ItemGroup>
-    <Page Remove="Theme\R-II.5\Resources.xaml" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.25" PrivateAssets="All" />
@@ -76,6 +72,11 @@
     <PackageReference Include="PropertyChanged.Fody" Version="4.1.0">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="ReactiveUI.SourceGenerators" Version="2.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ReactiveUI.WPF" Version="20.1.63" />
     <PackageReference Include="Reloaded.Input" Version="2.2.0" />
     <PackageReference Include="Reloaded.Memory" Version="9.4.2" />
     <PackageReference Include="Reloaded.WPF" Version="3.3.2" />

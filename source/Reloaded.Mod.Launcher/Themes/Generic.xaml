@@ -41,7 +41,7 @@
                             PlacementTarget="{Binding ElementName=Dropdown_Checkbox}"
                             StaysOpen="False">
                             <Border
-                                Padding="8,4"
+                                Padding="4"
                                 Background="{DynamicResource BackgroundColorBrush}"
                                 BorderBrush="{DynamicResource BorderColorBrush}"
                                 BorderThickness="2">
