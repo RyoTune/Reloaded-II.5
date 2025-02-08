@@ -14,8 +14,8 @@ public static class Constants
     public const string ParameterR2Pack = "--r2pack";
     public const string ParameterR2PackDownload = "--r2packdl";
 
-    public const string GitRepositoryAccount = "Reloaded-Project";
-    public const string GitRepositoryName = "Reloaded-II";
+    public const string GitRepositoryAccount = "RyoTune";
+    public const string GitRepositoryName = "Reloaded-II.5";
     public const string GitRepositoryReleaseName = "Release.zip";
 
     public const string ReloadedProtocol = "R2";
