@@ -1,0 +1,187 @@
+﻿<rxui:ReactiveUserControl
+    x:Class="Reloaded.Mod.Launcher.Controls.Mods.ModsControlPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:cc="clr-namespace:Reloaded.Mod.Launcher.Controls"
+    xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+    xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:rxui="http://reactiveui.net"
+    xmlns:vm="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.ViewModels;assembly=Reloaded.Mod.Launcher.Lib"
+    Width="500"
+    Height="500"
+    x:TypeArguments="vm:ModsControlPanelViewModel"
+    mc:Ignorable="d">
+    <DockPanel>
+        <Grid DockPanel.Dock="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock
+                FontFamily="{DynamicResource FontBold}"
+                FontSize="20"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="Control Panel" />
+
+            <cc:DropdownMenuControl Grid.Column="1" Header="Actions">
+                <cc:DropdownMenuControl.Icon>
+                    <fa:IconBlock Margin="8,0,0,0" Icon="Bolt" />
+                </cc:DropdownMenuControl.Icon>
+                <StackPanel>
+                    <Button
+                        Margin="0,2,0,8"
+                        Command="{Binding SetModsEnableStateCommand}"
+                        CommandParameter="{StaticResource True}">
+                        Enable All
+                    </Button>
+                    <Button
+                        Margin="0,0,0,8"
+                        Command="{Binding SetModsEnableStateCommand}"
+                        CommandParameter="{StaticResource False}">
+                        Disable All
+                    </Button>
+                    <CheckBox
+                        Margin="0,0,0,2"
+                        Content="Show Shortcuts"
+                        IsChecked="{Binding ShortcutsEnabled}" />
+                </StackPanel>
+            </cc:DropdownMenuControl>
+        </Grid>
+
+        <Grid Margin="0,0" DockPanel.Dock="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="4" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                VerticalAlignment="Bottom"
+                FontSize="20"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="Presets" />
+
+            <Grid VerticalAlignment="Top">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Margin="4,0,0,0" Command="{Binding SavePresetCommand}">
+                        <fa:IconBlock Icon="Save" IconFont="Solid" />
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedPreset}" Value="{x:Null}">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock
+                Grid.Column="2"
+                VerticalAlignment="Bottom"
+                FontSize="20"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="Active Mods" />
+
+            <Border
+                Grid.Row="2"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                BorderBrush="{DynamicResource AccentColorLightBrush}"
+                BorderThickness="2">
+                <ListView
+                    x:Name="ListView_Presets"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Top"
+                    dd:DragDrop.IsDragSource="True"
+                    dd:DragDrop.IsDropTarget="True"
+                    BorderBrush="Transparent"
+                    BorderThickness="0"
+                    FontSize="14"
+                    ItemsSource="{Binding Presets}"
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    SelectedIndex="{Binding SelectedPreset}"
+                    SelectionMode="Single">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    FontFamily="{DynamicResource FontBold}"
+                                    Foreground="{DynamicResource AccentColorLightestBrush}"
+                                    Text="{Binding Converter={x:Static converters:ModsPresetShortcutIdTextConverter.Instance}, ConverterParameter={x:Reference Name=ListView_Presets}}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    ToolTip="{Binding Name}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </Border>
+
+            <Border
+                Grid.Row="2"
+                Grid.Column="2"
+                Padding="2"
+                VerticalAlignment="Stretch"
+                Background="Transparent"
+                BorderBrush="{DynamicResource BorderColorBrush}"
+                BorderThickness="0,2,0,0">
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding SelectedMods}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock
+                                    FontSize="14"
+                                    Style="{DynamicResource DefaultTextBlock}"
+                                    Text="{Binding Name}"
+                                    TextTrimming="CharacterEllipsis"
+                                    ToolTip="{Binding Name}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </Border>
+
+            <Grid
+                Grid.Row="3"
+                Grid.ColumnSpan="3"
+                Margin="0,4,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="4" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding DeletePresetCommand}">
+                    <fa:IconBlock Icon="Trash" IconFont="Solid" />
+                </Button>
+                <Button
+                    Grid.Column="2"
+                    Command="{Binding ApplyPresetCommand}"
+                    Content="Apply" />
+            </Grid>
+        </Grid>
+    </DockPanel>
+</rxui:ReactiveUserControl>
