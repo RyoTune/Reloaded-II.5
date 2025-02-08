@@ -7,15 +7,22 @@
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mods="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
     xmlns:properties="clr-namespace:Reloaded.Mod.Launcher.Controls.Properties"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:vm="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.ViewModels;assembly=Reloaded.Mod.Launcher.Lib"
     Title="{DynamicResource TitleConfigureMods}"
     d:DesignHeight="540"
     d:DesignWidth="960"
     mc:Ignorable="d">
+    <local:ApplicationSubPage.Resources>
+        <DataTemplate DataType="{x:Type vm:ModsControlPanelViewModel}">
+            <mods:ModsControlPanel />
+        </DataTemplate>
+    </local:ApplicationSubPage.Resources>
 
     <Grid x:Name="Contents" DataContext="{Binding ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
 
@@ -47,23 +54,12 @@
 
             <Grid Margin="0,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <TextBox
-                    x:Name="ModsFilter"
-                    VerticalAlignment="Bottom"
-                    AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
-                    Style="{DynamicResource TextboxWithPlaceholder}"
-                    Tag="{DynamicResource ModManagerSearchMods}"
-                    TextChanged="ModsFilter_TextChanged" />
-
-                <cc:DropdownMenuControl
-                    Grid.Column="2"
-                    Margin="8,0,0,0"
-                    Header="Display">
+                <cc:DropdownMenuControl Header="Display">
                     <StackPanel>
                         <StackPanel.Resources>
                             <Style BasedOn="{StaticResource DefaultCheckBox}" TargetType="{x:Type CheckBox}">
@@ -80,24 +76,83 @@
                             ToolTip="Mods list will expand horizontally." />
                     </StackPanel>
                 </cc:DropdownMenuControl>
+
+                <TextBox
+                    x:Name="ModsFilter"
+                    Grid.Column="1"
+                    VerticalAlignment="Bottom"
+                    AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                    Style="{DynamicResource TextboxWithPlaceholder}"
+                    Tag="{DynamicResource ModManagerSearchMods}"
+                    TextChanged="ModsFilter_TextChanged" />
+
+                <cc:DropdownMenuControl
+                    Grid.Column="2"
+                    Margin="8,0,0,0"
+                    Header="Mods">
+                    <cc:DropdownMenuControl.Icon>
+                        <fa:IconBlock Margin="8,0" Icon="Cubes" />
+                    </cc:DropdownMenuControl.Icon>
+                    <ContentControl Content="{Binding ModsControlPanelVm}" />
+                </cc:DropdownMenuControl>
             </Grid>
 
-            <mods:ModsList
-                Grid.Row="1"
-                IsCompact="{Binding IsCompact}"
-                ModsSource="{Binding Source={StaticResource FilteredMods}}"
-                PreviewKeyDown="KeyboardControls_KeyDown"
-                SelectedMod="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
-                <mods:ModsList.Style>
-                    <Style TargetType="{x:Type mods:ModsList}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsHorizontal}" Value="True">
-                                <Setter Property="Orientation" Value="Horizontal" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </mods:ModsList.Style>
-            </mods:ModsList>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
+                </Grid.ColumnDefinitions>
+
+                <mods:ModsList
+                    IsCompact="{Binding IsCompact}"
+                    ModsSource="{Binding Source={StaticResource FilteredMods}}"
+                    PreviewKeyDown="KeyboardControls_KeyDown"
+                    SelectedMod="{Binding SelectedMod, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                    <mods:ModsList.Style>
+                        <Style TargetType="{x:Type mods:ModsList}">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsHorizontal}" Value="True">
+                                    <Setter Property="Orientation" Value="Horizontal" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </mods:ModsList.Style>
+                </mods:ModsList>
+
+                <StackPanel Grid.Column="2">
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowShortcuts}" Value="True">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <StackPanel.Resources>
+                        <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}">
+                            <Setter Property="Margin" Value="8,8,0,8" />
+                            <Setter Property="Height" Value="32" />
+                            <Setter Property="Width" Value="32" />
+                            <Setter Property="Padding" Value="0" />
+                            <Setter Property="FontFamily" Value="{DynamicResource FontBold}" />
+                        </Style>
+                    </StackPanel.Resources>
+
+                    <ItemsControl ItemsSource="{Binding Shortcuts}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button
+                                    Command="{Binding ApplyPresetCommand}"
+                                    Content="{Binding Id}"
+                                    ToolTip="{Binding Preset.Name}"
+                                    ToolTipService.InitialShowDelay="0" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <mods:ModPanel />

@@ -41,7 +41,7 @@ public partial class AppSummaryPage : ApplicationSubPage, IDisposable
 
         _disposed = true;
         ControllerSupport.UnsubscribeCustomInputs(OnProcessCustomInputs);
-        ViewModel?.Dispose();
+        //ViewModel?.Dispose();
         GC.SuppressFinalize(this);
     }
 

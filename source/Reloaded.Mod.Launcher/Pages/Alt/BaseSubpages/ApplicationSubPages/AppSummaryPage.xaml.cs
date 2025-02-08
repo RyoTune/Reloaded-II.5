@@ -1,3 +1,6 @@
+using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+using System.Reactive.Disposables;
 using ApplicationSubPage = Reloaded.Mod.Launcher.Pages.BaseSubpages.ApplicationSubPages.ApplicationSubPage;
 using Button = Sewer56.UI.Controller.Core.Enums.Button;
 
@@ -6,9 +9,9 @@ namespace Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.ApplicationSubPages;
 /// <summary>
 /// Interaction logic for ApplicationSummaryPage.xaml
 /// </summary>
-public partial class AppSummaryPage : ApplicationSubPage, IDisposable
+[IViewFor<ConfigureModsViewModel>]
+public partial class AppSummaryPage : ApplicationSubPage
 {
-    public ConfigureModsViewModel ViewModel { get; set; }
     private readonly DictionaryResourceManipulator _manipulator;
     private readonly CollectionViewSource _modsViewSource;
     private bool _disposed;
@@ -16,33 +19,30 @@ public partial class AppSummaryPage : ApplicationSubPage, IDisposable
     public AppSummaryPage(ApplicationViewModel appViewModel)
     {
         InitializeComponent();
-        ViewModel = new ConfigureModsViewModel(appViewModel, Lib.IoC.Get<ModUserConfigService>(), Lib.IoC.Get<LoaderConfig>());
-        
-        ControllerSupport.SubscribeCustomInputs(OnProcessCustomInputs);
-        _manipulator    = new DictionaryResourceManipulator(this.Contents.Resources);
+
+        _manipulator = new DictionaryResourceManipulator(this.Contents.Resources);
         _modsViewSource = _manipulator.Get<CollectionViewSource>("FilteredMods");
-        _modsViewSource.Filter += ModsViewSourceOnFilter;
-        ViewModel.PropertyChanged += OnFilterChanged;
-        SwappedOut += Dispose;
+
+        this.WhenActivated((CompositeDisposable disp) =>
+        {
+            ViewModel = new ConfigureModsViewModel(appViewModel, Lib.IoC.Get<ModUserConfigService>(), Lib.IoC.Get<LoaderConfig>());
+
+            ControllerSupport.SubscribeCustomInputs(OnProcessCustomInputs);
+            _modsViewSource.Filter += ModsViewSourceOnFilter;
+            ViewModel.PropertyChanged += OnFilterChanged;
+
+            Disposable.Create(() =>
+            {
+                ControllerSupport.UnsubscribeCustomInputs(OnProcessCustomInputs);
+            })
+            .DisposeWith(disp);
+        });
     }
 
     private void OnFilterChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(ViewModel.SelectedTag))
             _modsViewSource.View.Refresh();
-    }
-
-    ~AppSummaryPage() => Dispose();
-
-    public void Dispose()
-    {
-        if (_disposed)
-            return;
-
-        _disposed = true;
-        ControllerSupport.UnsubscribeCustomInputs(OnProcessCustomInputs);
-        ViewModel?.Dispose();
-        GC.SuppressFinalize(this);
     }
 
     private void ModsViewSourceOnFilter(object sender, FilterEventArgs e)
