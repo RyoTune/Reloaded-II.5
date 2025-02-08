@@ -1,4 +1,4 @@
-using Reloaded.Mod.Loader.IO.Config.Contexts;
+using Reloaded.Mod.Loader.IO.Remix.Mods;
 
 namespace Reloaded.Mod.Loader.IO.Config;
 
@@ -34,6 +34,9 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     public bool PreserveDisabledModOrder { get; set; } = true; // <= default to 'true' for new configs, and 'false' for configs on older versions.
     public bool DontInject { get; set; } = false; // don't inject loader, start game via regular process launch.
     public bool IsMsStore { get; set; } = false; // attempts to unprotect this binary on every launch.
+
+    // Remix
+    public ObservableCollection<ModsPreset> Presets { get; set; } = [];
 
     /*
        --------------
