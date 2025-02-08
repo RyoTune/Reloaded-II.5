@@ -117,7 +117,7 @@
                     FontSize="14"
                     ItemsSource="{Binding Presets}"
                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                    SelectedIndex="{Binding SelectedPreset}"
+                    SelectedItem="{Binding SelectedPreset}"
                     SelectionMode="Single">
                     <ListView.ItemTemplate>
                         <DataTemplate>
