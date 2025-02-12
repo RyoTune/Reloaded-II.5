@@ -87,6 +87,10 @@ public partial class MainWindow : ReloadedWindow
                 return;
             }
         }
+        else
+        {
+            this.Border_DragDropCapturer.IsHitTestVisible = false;
+        }
 
         e.Handled = true;
     }
