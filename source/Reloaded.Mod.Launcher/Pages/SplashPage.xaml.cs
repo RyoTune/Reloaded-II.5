@@ -1,3 +1,4 @@
+using DynamicData.Binding;
 using MessageBox = Reloaded.Mod.Launcher.Pages.Dialogs.MessageBox;
 using Paths = Reloaded.Mod.Loader.IO.Paths;
 using Window = System.Windows.Window;
@@ -35,6 +36,28 @@ public partial class SplashPage : ReloadedIIPage
             await _setupApplicationTask;
             ChangeToMainPage();
             _backgroundTasks.Add(Task.Run(ControllerSupport.Init));
+
+            var mainPage = Lib.IoC.GetConstant<MainPageViewModel>();
+            mainPage.WhenPropertyChanged(x => x.SelectedApplication)
+                .Subscribe(x =>
+                {
+                    var appColor = ApplicationIcon.GetColor(x.Value!);
+                    var appColorHsl = appColor.ToHslColor();
+
+                    var appColorLighter = new HslColor(appColorHsl.Hue, appColorHsl.Saturation * 0.95, appColorHsl.Light * 1.075, byte.MaxValue).ToColor();
+                    var appColorDarker = new HslColor(appColorHsl.Hue, appColorHsl.Saturation, appColorHsl.Light * 0.9, byte.MaxValue).ToColor();
+
+                    Application.Current.Resources["ThemeColor"] = appColor;
+                    Application.Current.Resources["ThemeColorLighter"] = appColorLighter;
+                    Application.Current.Resources["ThemeColorDarker"] = appColorDarker;
+
+                    Application.Current.Resources["ThemeBrush"] = new SolidColorBrush(appColor);
+                    Application.Current.Resources["ThemeBrushLighter"] = new SolidColorBrush(appColorLighter);
+                    Application.Current.Resources["ThemeBrushDarker"] = new SolidColorBrush(appColorDarker);
+
+                    Application.Current.Resources["AccentColorBrush"] = Application.Current.Resources["ThemeBrush"];
+                    Application.Current.Resources["AccentColorLighter"] = Application.Current.Resources["ThemeBrushLighter"];
+                });
 
             // Post init cleanup.
             _ = Task.WhenAll(_backgroundTasks).ContinueWith(task =>

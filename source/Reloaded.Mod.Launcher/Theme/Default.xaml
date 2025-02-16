@@ -13,6 +13,7 @@
                 -->
                 <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Default/R-II/Root.xaml" />
                 <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Remix/Resources.xaml" />
+                <controls:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Remix/Colors.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>

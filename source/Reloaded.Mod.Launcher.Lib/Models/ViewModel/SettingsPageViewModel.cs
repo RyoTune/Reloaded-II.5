@@ -1,3 +1,6 @@
+using CommunityToolkit.Mvvm.Input;
+using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Version = Reloaded.Mod.Launcher.Lib.Utility.Version;
 
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
@@ -5,8 +8,11 @@ namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
 /// <summary>
 /// ViewModel for the Settings Page.
 /// </summary>
-public class SettingsPageViewModel : ObservableObject
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewModel
 {
+    private readonly MainPageViewModel _mainPage;
+
     /// <summary>
     /// Provides access to all available applications.
     /// </summary>
@@ -47,9 +53,13 @@ public class SettingsPageViewModel : ObservableObject
     /// </summary>
     public IResourceFileSelector? ThemeSelector => Lib.ThemeSelector;
 
+    public ViewModelActivator Activator { get; } = new();
+
     /// <summary/>
-    public SettingsPageViewModel(ApplicationConfigService appConfigService, ModConfigService modConfigService, LoaderConfig loaderConfig)
+    public SettingsPageViewModel(ApplicationConfigService appConfigService, ModConfigService modConfigService, LoaderConfig loaderConfig, MainPageViewModel mainPage)
     {
+        _mainPage = mainPage;
+
         AppConfigService = appConfigService;
         ModConfigService = modConfigService;
         LoaderConfig = loaderConfig;
@@ -71,6 +81,12 @@ public class SettingsPageViewModel : ObservableObject
         copyRightStr = Regex.Replace(copyRightStr, @"\|.*", $"| {Version.GetReleaseVersion()!.ToNormalizedString()}");
         copyRightStr += $" | {RuntimeInformation.FrameworkDescription}";
         Copyright = copyRightStr;
+    }
+
+    [RelayCommand]
+    private void OpenApp(PathTuple<ApplicationConfig> tuple)
+    {
+        _mainPage.SwitchToApplication(tuple);
     }
 
     /// <summary>

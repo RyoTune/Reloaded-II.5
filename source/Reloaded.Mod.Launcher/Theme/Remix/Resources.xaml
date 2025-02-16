@@ -6,8 +6,35 @@
     xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:re="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
+    xmlns:recontrol="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
     xmlns:rxui="http://reactiveui.net"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <recontrol:SharedResourceDictionary Source="pack://siteoforigin:,,,/Theme/Remix/Colors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Thickness x:Key="PageMargin">20,12</Thickness>
+
+    <!--  Styless Button  -->
+    <Style x:Key="StylessButton" TargetType="{x:Type Button}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <ContentPresenter />
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Cursor" Value="Hand" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
 
     <Style x:Key="FormTextBlockHeader" TargetType="{x:Type TextBlock}">
         <Setter Property="Margin" Value="0,0,0,4" />
@@ -49,13 +76,6 @@
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
 
-    <Style
-        x:Key="ReloadedWindow"
-        BasedOn="{StaticResource ReloadedWindow}"
-        TargetType="{x:Type re:ReloadedWindow}">
-        <Setter Property="Foreground" Value="{DynamicResource TextColorBrush}" />
-    </Style>
-
     <sys:Double x:Key="TooltipBackgroundOpacity">1</sys:Double>
 
     <!--  *********************************************************  -->
@@ -75,24 +95,6 @@
 
     <!--  Reloaded doesn't have the colors for "regions"; always use background color.  -->
     <SolidColorBrush x:Key="RegionBrush" Color="{DynamicResource BackgroundColor}" />
-
-    <!--  *********************************************************  -->
-    <!--  TextBox  -->
-    <Style
-        x:Key="TextBoxBaseStyle"
-        BasedOn="{StaticResource TextBoxBaseStyle}"
-        TargetType="{x:Type TextBox}">
-        <Setter Property="VerticalContentAlignment" Value="Top" />
-        <Setter Property="hc:BorderElement.CornerRadius" Value="0" />
-        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
-    </Style>
-
-    <Style
-        x:Key="DefaultTextBox"
-        BasedOn="{StaticResource TextBoxBaseStyle}"
-        TargetType="{x:Type TextBox}" />
-
-    <Style BasedOn="{StaticResource TextBoxBaseStyle}" TargetType="{x:Type TextBox}" />
 
     <!--  *********************************************************  -->
     <!--  ListView  -->
@@ -130,6 +132,43 @@
                 </Trigger.ExitActions>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <!--  Window Control Button  -->
+    <Style
+        x:Key="WindowControlButton"
+        BasedOn="{StaticResource BaseStyle}"
+        TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="Width" Value="{Binding Path=ActualHeight, RelativeSource={RelativeSource Self}}" />
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border Padding="{TemplateBinding Padding}" Background="{TemplateBinding Background}">
+                        <TextBlock
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Text="{TemplateBinding Content}" />
+                    </Border>
+
+                    <!--  Mouseover Color Switch  -->
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource ControlFillToHighlight}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource ControlHighlightToFill}" />
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="ReloadedReactiveWindow" TargetType="Window">
@@ -186,7 +225,7 @@
                                         </Grid.RowDefinitions>
 
                                         <!--  Title Bar  -->
-                                        <Grid Grid.Row="0" Background="{DynamicResource AccentColorLightBrush}">
+                                        <Grid Grid.Row="0">
 
                                             <!--  Title & Buttons  -->
                                             <Grid.ColumnDefinitions>
@@ -198,7 +237,11 @@
                                                 Grid.Column="0"
                                                 Grid.ColumnSpan="2"
                                                 Style="{DynamicResource HeaderAlignment}">
-                                                <TextBlock Style="{DynamicResource HeaderText}" Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=''}" />
+                                                <TextBlock
+                                                    FontFamily="{DynamicResource FontBold}"
+                                                    FontSize="8"
+                                                    Style="{DynamicResource HeaderText}"
+                                                    Text="{Binding Title, RelativeSource={RelativeSource AncestorType=Window}, FallbackValue=''}" />
                                             </Viewbox>
 
                                             <StackPanel Grid.Column="1" Orientation="Horizontal">
@@ -232,7 +275,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-
         <!--  WindowChrome for Window Dragging, Round Corners  -->
         <Setter Property="WindowChrome.WindowChrome">
             <Setter.Value>
@@ -245,8 +287,20 @@
 
         <!--  Window Properties  -->
         <Setter Property="Background" Value="{DynamicResource BackgroundColorBrush}" />
-        <!--<Setter Property="AllowsTransparency" Value="True" />
-        <Setter Property="WindowStyle" Value="None" />-->
+        <Setter Property="AllowsTransparency" Value="True" />
+        <Setter Property="WindowStyle" Value="None" />
+    </Style>
+
+    <Style
+        x:Key="ReloadedWindow"
+        BasedOn="{StaticResource ReloadedReactiveWindow}"
+        TargetType="{x:Type re:ReloadedWindow}">
+        <Setter Property="Foreground" Value="{DynamicResource TextColorBrush}" />
+    </Style>
+
+    <Style x:Key="HeaderAlignment" TargetType="{x:Type Viewbox}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>

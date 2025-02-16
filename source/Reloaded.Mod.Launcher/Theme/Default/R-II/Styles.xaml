@@ -16,9 +16,6 @@
         </ResourceDictionary>
     </ResourceDictionary.MergedDictionaries>
 
-    <!--  Custom  -->
-    <CornerRadius x:Key="CornerRadius">0</CornerRadius>
-
     <!--  xxxxxxxxxxxxxxxxxxxxxxxxxxxxx Animations xxxxxxxxxxxxxxxxxxxxxxxxxxxxx  -->
     <!--  xxxxxxxxxxxxxxxxxxxxxxxxxxxxx Default Styles xxxxxxxxxxxxxxxxxxxxxxxxxxxxx  -->
 

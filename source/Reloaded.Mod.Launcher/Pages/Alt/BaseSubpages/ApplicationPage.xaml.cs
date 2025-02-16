@@ -127,8 +127,7 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
 
     protected override void OnAnimateInFinished()
     {
-        if (!String.IsNullOrEmpty(this.Title))
-            Lib.IoC.Get<WindowViewModel>().WindowTitle = $"{this.Title}: {ViewModel.ApplicationTuple.Config.AppName}";
+        Lib.IoC.Get<WindowViewModel>().WindowTitle = $"Reloaded II.5 ReMIX ({ViewModel.ApplicationTuple.Config.AppName})";
     }
 
     // Switch to new page.

@@ -11,6 +11,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mods="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
     xmlns:re="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
+    Title="Edit Mod"
     Width="800"
     Height="480"
     MinWidth="760"

@@ -1,3 +1,5 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Page = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.Page;
 
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
@@ -5,8 +7,11 @@ namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
 /// <summary>
 /// A viewmodel for the 'main page', which consists of the sidebar and a secondary, child page on the right panel.
 /// </summary>
-public class MainPageViewModel : ObservableObject
+public partial class MainPageViewModel : ViewModelBase
 {
+    [ObservableProperty]
+    private PathTuple<ApplicationConfig>? _selectedApplication;
+
     /// <summary>
     /// Stores the page to be displayed to the user.
     /// </summary>
@@ -20,15 +25,10 @@ public class MainPageViewModel : ObservableObject
                 return;
 
             _launcherPage = value;
-            RaisePropertyChangedEvent(nameof(Page));
+            this.OnPropertyChanged(nameof(Page));
             SelectedApplication = null;
         }
     }
-
-    /// <summary>
-    /// Stores the currently selected application.
-    /// </summary>
-    public PathTuple<ApplicationConfig>? SelectedApplication { get; private set; }
     
     /// <summary>
     /// Allows us to add an application.
@@ -43,7 +43,7 @@ public class MainPageViewModel : ObservableObject
     // Note: Do not merge with property. Used below.
     private Page _launcherPage = Page.SettingsPage;
 
-    private AutoInjector _autoInjector;
+    private readonly AutoInjector _autoInjector;
 
     /// <inheritdoc />
     public MainPageViewModel(ApplicationConfigService service)
@@ -60,7 +60,7 @@ public class MainPageViewModel : ObservableObject
     {
         SelectedApplication = tuple;
         _launcherPage = Page.Application;
-        RaisePropertyChangedEvent(nameof(Page));
+        this.OnPropertyChanged(nameof(Page));
     }
 
     /// <summary>

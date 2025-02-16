@@ -54,12 +54,31 @@
 
             <Grid Margin="0,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="auto" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
+                <DockPanel>
+                    <fa:IconBlock
+                        Margin="8,0"
+                        DockPanel.Dock="Left"
+                        FontSize="16"
+                        Foreground="{DynamicResource TextColorBrush}"
+                        Icon="Search" />
+                    <TextBox
+                        x:Name="ModsFilter"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Bottom"
+                        AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                        DockPanel.Dock="Right"
+                        Tag="{DynamicResource ModManagerSearchMods}"
+                        TextChanged="ModsFilter_TextChanged" />
+                </DockPanel>
 
-                <cc:DropdownMenuControl Header="Display">
+                <cc:DropdownMenuControl
+                    Grid.Column="1"
+                    Margin="8,0,0,0"
+                    Header="Display">
                     <StackPanel>
                         <StackPanel.Resources>
                             <Style BasedOn="{StaticResource DefaultCheckBox}" TargetType="{x:Type CheckBox}">
@@ -76,15 +95,6 @@
                             ToolTip="Mods list will expand horizontally." />
                     </StackPanel>
                 </cc:DropdownMenuControl>
-
-                <TextBox
-                    x:Name="ModsFilter"
-                    Grid.Column="1"
-                    VerticalAlignment="Bottom"
-                    AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
-                    Style="{DynamicResource TextboxWithPlaceholder}"
-                    Tag="{DynamicResource ModManagerSearchMods}"
-                    TextChanged="ModsFilter_TextChanged" />
 
                 <cc:DropdownMenuControl
                     Grid.Column="2"

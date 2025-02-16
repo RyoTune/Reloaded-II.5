@@ -1,9 +1,12 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
 
 /// <summary>
 /// View Model for the main application window.
 /// </summary>
-public class WindowViewModel : ObservableObject
+public partial class WindowViewModel : ViewModelBase
 {
     /// <summary>
     /// The currently displayed page on this window.
@@ -14,12 +17,6 @@ public class WindowViewModel : ObservableObject
         set;
     } = PageBase.Splash;
 
-    /// <summary>
-    /// The title of the main window.
-    /// </summary>
-    public string WindowTitle
-    {
-        get;
-        set;
-    } = "Reloaded II";
+    [ObservableProperty]
+    private string _windowTitle = "Reloaded II.5 ReMIX";
 }

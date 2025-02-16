@@ -103,8 +103,8 @@
                 Grid.Row="2"
                 VerticalAlignment="Stretch"
                 Background="Transparent"
-                BorderBrush="{DynamicResource AccentColorLightBrush}"
-                BorderThickness="2">
+                BorderBrush="{DynamicResource ControlBorderBrush}"
+                BorderThickness="1">
                 <ListView
                     x:Name="ListView_Presets"
                     HorizontalAlignment="Stretch"

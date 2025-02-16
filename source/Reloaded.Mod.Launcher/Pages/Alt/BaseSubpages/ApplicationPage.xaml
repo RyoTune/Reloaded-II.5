@@ -11,7 +11,7 @@
     xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
     xmlns:reloadedWpfControls="clr-namespace:Reloaded.WPF.Controls;assembly=Reloaded.WPF"
     Title="{DynamicResource TitleApplication}"
-    Margin="20,12"
+    Margin="{DynamicResource PageMargin}"
     d:DesignHeight="360"
     d:DesignWidth="640"
     AllowDrop="True"

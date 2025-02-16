@@ -20,8 +20,8 @@ public class ReloadedIIPage : ReloadedPage, INotifyPropertyChanged
     protected virtual void OnAnimateInFinished()
     {
         // Change window title to current page title.
-        if (! String.IsNullOrEmpty(this.Title))
-            Lib.IoC.Get<WindowViewModel>().WindowTitle = this.Title;
+        //if (! String.IsNullOrEmpty(this.Title))
+        //    Lib.IoC.Get<WindowViewModel>().WindowTitle = this.Title;
     }
 
     // For automatic implementation via Fody.

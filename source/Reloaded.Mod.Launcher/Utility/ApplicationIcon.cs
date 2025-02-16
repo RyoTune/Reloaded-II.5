@@ -1,58 +1,81 @@
-namespace Reloaded.Mod.Launcher.Converters;
+﻿using ColorThiefDotNet;
+using Color = System.Windows.Media.Color;
 
-public class ApplicationPathTupleToImageConverter : IMultiValueConverter
+namespace Reloaded.Mod.Launcher.Utility;
+
+internal static class ApplicationIcon
 {
-    public static ApplicationPathTupleToImageConverter Instance = new ApplicationPathTupleToImageConverter();
-
     private readonly static Dictionary<string, IconFile[]> appIcons = [];
+    private static readonly ColorThief _colorThief = new();
 
-    /// <inheritdoc />
-    public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
+    public static Color GetColor(PathTuple<ApplicationConfig> appConfig)
     {
-        // value[0]: The path & config tuple.
-        // value[1]: The icon path property. (config.Config.AppIcon). This is so we can receive property changed events.
-        if (value[0] is PathTuple<ApplicationConfig> config)
-            return GetImageForAppConfig(config);
+        var bitmap = GetBitmap(appConfig);
+        var palette = _colorThief.GetPalette(bitmap);
 
-        return null!;
+        //var color = palette.OrderByDescending(x => x.Color.ToHsl().S).First(x => !x.IsDark);
+        var color = palette.OrderByDescending(x => x.Population).First().Color;
+
+        var rgbColor = new RgbColor() { Red = color.R, Green = color.G, Blue = color.B, Alpha = 255 };
+        var hslColor = rgbColor.ToHslColor();
+        var adjustedHsl = new HslColor(hslColor.Hue, 100, 85, byte.MaxValue);
+
+        return adjustedHsl.ToColor();
     }
 
-    /// <inheritdoc />
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    public static Bitmap GetBitmap(PathTuple<ApplicationConfig>? appConfig)
     {
-        throw new NotImplementedException();
+        var iconFile = GetAppIconFile(appConfig);
+        if (iconFile != null)
+        {
+            return new(iconFile);
+        }
+
+        var placeholderFile = Path.Join(Directory.GetCurrentDirectory(), WpfConstants.PlaceholderImagePath.LocalPath);
+        return new(placeholderFile);
     }
 
     /// <summary>
     /// Obtains an image to represent a given application.
     /// The image is either a custom one or the icon of the application.
     /// </summary>
-    private ImageSource GetImageForAppConfig(PathTuple<ApplicationConfig> appConfig)
+    public static ImageSource GetImageSource(PathTuple<ApplicationConfig>? appConfig)
     {
+        var iconFile = GetAppIconFile(appConfig);
+        if (iconFile != null)
+        {
+            return Imaging.BitmapFromUri(new(iconFile));
+        }
+
+        return Imaging.GetPlaceholderIcon();
+    }
+
+    private static string? GetAppIconFile(PathTuple<ApplicationConfig>? appConfig)
+    {
+        if (appConfig == null) return null;
+
         // Check if custom icon exists.
         if (!string.IsNullOrEmpty(appConfig.Config.AppIcon))
         {
             if (ApplicationConfig.TryGetApplicationIcon(appConfig.Path, appConfig.Config, out var applicationIcon))
-                return Misc.Imaging.BitmapFromUri(new Uri(applicationIcon, UriKind.Absolute));
+                return applicationIcon;
         }
-
+        
         // Otherwise extract new icon from executable.
         var appFile = ApplicationConfig.GetAbsoluteAppLocation(appConfig);
         if (File.Exists(appFile))
         {
-            var iconFile = GetAppIcon(appFile, appConfig);
+            var iconFile = GetAndDumpAppIcon(appFile, appConfig);
             if (iconFile != null)
             {
-                var source = new BitmapImage(new(iconFile));
-                source.Freeze();
-                return source;
+                return iconFile;
             }
         }
 
-        return Misc.Imaging.GetPlaceholderIcon();
+        return null;
     }
 
-    private static string? GetAppIcon(string appFile, PathTuple<ApplicationConfig> appConfig)
+    private static string? GetAndDumpAppIcon(string appFile, PathTuple<ApplicationConfig> appConfig)
     {
         if (appIcons.TryGetValue(appConfig.Config.AppId, out var icons))
         {
