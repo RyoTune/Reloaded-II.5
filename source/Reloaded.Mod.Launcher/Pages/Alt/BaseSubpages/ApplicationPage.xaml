@@ -78,40 +78,31 @@
 
             <Grid Grid.Column="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="1*" />
                     <ColumnDefinition Width="4" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="4" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="auto" />
                 </Grid.ColumnDefinitions>
 
-                <Grid.Resources>
-                    <Style BasedOn="{StaticResource DefaultButton}" TargetType="{x:Type Button}">
-                        <Setter Property="HorizontalContentAlignment" Value="Left" />
-                        <Setter Property="Padding" Value="8,4" />
-                        <Setter Property="HorizontalAlignment" Value="Stretch" />
-                    </Style>
-                </Grid.Resources>
-
-                <Button PreviewMouseLeftButtonDown="LaunchApplication_PreviewMouseDown">
+                <Button
+                    Padding="12,0"
+                    HorizontalContentAlignment="Left"
+                    PreviewMouseLeftButtonDown="LaunchApplication_PreviewMouseDown">
                     <StackPanel Orientation="Horizontal">
                         <fa:IconBlock VerticalAlignment="Center" Icon="Play" />
-                        <TextBlock Margin="8,0" Text="Play" />
+                        <TextBlock
+                            Margin="8,0"
+                            VerticalAlignment="Center"
+                            Text="Play" />
                     </StackPanel>
                 </Button>
 
-                <Button Grid.Column="2" PreviewMouseLeftButtonDown="Summary_PreviewMouseDown">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconBlock VerticalAlignment="Center" Icon="List" />
-                        <TextBlock Margin="8,0" Text="Mods" />
-                    </StackPanel>
-                </Button>
-
-                <Button Grid.Column="4" PreviewMouseLeftButtonDown="Edit_PreviewMouseDown">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:IconBlock VerticalAlignment="Center" Icon="Gears" />
-                        <TextBlock Margin="8,0" Text="Settings" />
-                    </StackPanel>
+                <Button
+                    Grid.Column="4"
+                    PreviewMouseLeftButtonDown="Button_OpenSettings"
+                    ToolTip="Open Settings">
+                    <fa:IconBlock Icon="Gears" />
                 </Button>
             </Grid>
         </Grid>
@@ -121,7 +112,7 @@
             Grid.ColumnSpan="3"
             Height="2"
             Margin="0,8"
-            Fill="{DynamicResource BorderColorBrush}" />
+            Fill="{DynamicResource ThemeBrushLighter}" />
 
         <!--  Content  -->
         <reloadedWpfControls:PageHost

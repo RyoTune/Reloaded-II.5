@@ -1,4 +1,6 @@
+using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 using ApplicationSubPage = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.ApplicationSubPage;
+using EditAppViewModel = Reloaded.Mod.Launcher.Lib.Remix.ViewModels.EditAppViewModel;
 using Environment = Reloaded.Mod.Shared.Environment;
 using WindowViewModel = Reloaded.Mod.Launcher.Lib.Models.ViewModel.WindowViewModel;
 
@@ -80,9 +82,14 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
         ViewModel.ChangeApplicationPage(ApplicationSubPage.ApplicationSummary);
     }
 
-    private void Edit_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    private void Button_OpenSettings(object sender, MouseButtonEventArgs e)
     {
-        ViewModel.ChangeApplicationPage(ApplicationSubPage.EditApplication);
+        var editAppDialog = new EditAppDialog()
+        {
+            ViewModel = new EditAppViewModel(this.ViewModel.ApplicationTuple),
+        };
+
+        editAppDialog.ShowDialog();
     }
 
     private async void LaunchApplication_PreviewMouseDown(object sender, MouseButtonEventArgs e)
