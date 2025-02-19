@@ -2,9 +2,11 @@
     x:Class="Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:commands="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.Commands;assembly=Reloaded.Mod.Launcher.Lib"
     xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
     xmlns:system="clr-namespace:System;assembly=System.Runtime"
@@ -12,6 +14,7 @@
     d:DesignHeight="600"
     d:DesignWidth="900"
     AllowDrop="True"
+    Foreground="{DynamicResource TextColorBrush}"
     mc:Ignorable="d">
     <pages:ReloadedIIPage.Resources>
         <Style x:Key="BorderContainer" TargetType="Border">
@@ -20,6 +23,15 @@
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="8" />
             <Setter Property="CornerRadius" Value="{DynamicResource ControlRadiusMedium}" />
+        </Style>
+        <Style
+            x:Key="SocialIcon"
+            BasedOn="{StaticResource HighQualityImage}"
+            TargetType="{x:Type Image}">
+            <Setter Property="Margin" Value="4,0" />
+            <Setter Property="ToolTipService.InitialShowDelay" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="FocusVisualStyle" Value="{DynamicResource ReloadedFocusVisual}" />
         </Style>
     </pages:ReloadedIIPage.Resources>
     <Grid Margin="{DynamicResource PageMargin}">
@@ -47,12 +59,55 @@
                         Color="Black" />
                 </Image.Effect>
             </Image>
+
+            <TextBlock
+                Margin="0,0,0,4"
+                HorizontalAlignment="Center"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="{Binding Copyright}" />
+
+            <!--  Docs / User Guide  -->
+            <StackPanel
+                Height="32"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+
+                <Image
+                    Focusable="True"
+                    PreviewMouseDown="Documents_PreviewMouseDown"
+                    Source="{DynamicResource IconInfo}"
+                    Style="{DynamicResource SocialIcon}"
+                    ToolTip="{DynamicResource FirstLaunchLineUserguide}" />
+
+                <Image
+                    Focusable="True"
+                    PreviewMouseDown="Discord_PreviewMouseDown"
+                    Source="{DynamicResource IconDiscord}"
+                    Style="{DynamicResource SocialIcon}"
+                    ToolTip="{DynamicResource LoaderSettingsDiscord}" />
+
+                <Image
+                    Focusable="True"
+                    PreviewMouseDown="Twitter_PreviewMouseDown"
+                    Source="{DynamicResource IconTwitter}"
+                    Style="{DynamicResource SocialIcon}"
+                    ToolTip="{DynamicResource LoaderSettingsTwitter}" />
+
+                <Image
+                    Focusable="True"
+                    PreviewMouseDown="Donate_PreviewMouseDown"
+                    Source="{DynamicResource IconSponsor}"
+                    Style="{DynamicResource SocialIcon}"
+                    ToolTip="{DynamicResource LoaderSettingsDonate}" />
+            </StackPanel>
+
             <Border Margin="0,8" Style="{DynamicResource BorderContainer}">
                 <TextBlock
                     Style="{DynamicResource DefaultTextBlock}"
                     Text="{DynamicResource LoaderSettingsWarning}"
                     TextWrapping="Wrap" />
             </Border>
+
             <TextBlock
                 Margin="0,8"
                 DockPanel.Dock="Top"
@@ -101,17 +156,6 @@
         </StackPanel>
         <Grid Grid.Column="2">
             <Grid.Resources>
-                <Style
-                    x:Key="SocialIcon"
-                    BasedOn="{StaticResource HighQualityImage}"
-                    TargetType="{x:Type Image}">
-                    <Setter Property="Height" Value="48" />
-                    <Setter Property="HorizontalAlignment" Value="Center" />
-                    <Setter Property="Margin" Value="{DynamicResource ListEntryItemMarginSmall}" />
-                    <Setter Property="ToolTipService.InitialShowDelay" Value="0" />
-                    <Setter Property="FocusVisualStyle" Value="{DynamicResource ReloadedFocusVisual}" />
-                </Style>
-
                 <!--  Sort the mod list  -->
                 <CollectionViewSource
                     x:Key="FilteredApps"
@@ -236,11 +280,33 @@
             Grid.Row="1"
             Grid.ColumnSpan="3"
             Margin="0,8,0,0"
+            HorizontalAlignment="Right"
             Background="Transparent">
-            <TextBlock
-                HorizontalAlignment="Right"
-                Style="{DynamicResource DefaultTextBlock}"
-                Text="{Binding Copyright}" />
+            <StackPanel Orientation="Horizontal">
+                <TextBlock
+                    Margin="8,0"
+                    d:Text="RyoTune ~ Reloaded II.5 ReMIX"
+                    Style="{DynamicResource DefaultTextBlock}"
+                    Text="{Binding RemixDetails}" />
+                <Button
+                    Command="{Binding Source={x:Static commands:OpenPathWithShellCommand.Instance}}"
+                    CommandParameter="https://github.com/RyoTune/Reloaded-II.5"
+                    FontSize="18"
+                    ToolTip="View on GitHub">
+                    <Button.Style>
+                        <Style BasedOn="{StaticResource StylessButton}" TargetType="Button">
+                            <Setter Property="Foreground" Value="{DynamicResource ThemeBrush}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="{DynamicResource ThemeBrushLighter}" />
+                                    <Setter Property="Cursor" Value="Hand" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <fa:IconBlock Icon="GithubSquare" />
+                </Button>
+            </StackPanel>
         </Border>
     </Grid>
 </pages:ReloadedIIPage>

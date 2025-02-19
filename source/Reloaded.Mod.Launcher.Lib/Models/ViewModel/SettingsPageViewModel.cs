@@ -12,6 +12,8 @@ namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewModel
 {
+    private static readonly NuGetVersion ReloadedVersion = new("1.28.7");
+
     private readonly MainPageViewModel _mainPage;
 
     /// <summary>
@@ -38,6 +40,7 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
     /// Copyright string to display on the Settings Panel.
     /// </summary>
     public string Copyright { get; set; }
+    public string RemixDetails { get; private set; }
 
     /// <summary>
     /// Configuration for the mod loader.
@@ -70,18 +73,8 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
         AppConfigService.Items.CollectionChanged += MainPageViewModelOnApplicationsChanged;
         ModConfigService.Items.CollectionChanged += ManageModsViewModelOnModsChanged;
 
-        string copyRightStr = "Sewer56 ~ Unknown Date | Unknown Version";
-        try
-        {
-            var version = FileVersionInfo.GetVersionInfo(Process.GetCurrentProcess().MainModule!.FileName!);
-            if (!string.IsNullOrEmpty(version.LegalCopyright))
-                copyRightStr = version.LegalCopyright;
-        }
-        catch (Exception) { /* Non-critical, could happen on CIFS file share, we can ignore. */ }
-        
-        copyRightStr = Regex.Replace(copyRightStr, @"\|.*", $"| {Version.GetReleaseVersion()!.ToNormalizedString()}");
-        copyRightStr += $" | {RuntimeInformation.FrameworkDescription}";
-        Copyright = copyRightStr;
+        Copyright = $"Sewer56 ~ Reloaded II | {ReloadedVersion.ToNormalizedString()}";
+        RemixDetails = $"RyoTune ~ Reloaded II.5 ReMIX | {RuntimeInformation.FrameworkDescription} | {Version.GetReleaseVersion()!.ToNormalizedString()}";
     }
 
     [RelayCommand]
