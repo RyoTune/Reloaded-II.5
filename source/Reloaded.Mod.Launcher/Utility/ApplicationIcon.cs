@@ -13,7 +13,6 @@ internal static class ApplicationIcon
         var bitmap = GetBitmap(appConfig);
         var palette = _colorThief.GetPalette(bitmap);
 
-        //var color = palette.OrderByDescending(x => x.Color.ToHsl().S).First(x => !x.IsDark);
         var color = palette.OrderByDescending(x => x.Population).First().Color;
 
         var rgbColor = new RgbColor() { Red = color.R, Green = color.G, Blue = color.B, Alpha = 255 };
@@ -117,8 +116,7 @@ internal static class ApplicationIcon
 
     private static string GetAppIconsDir(PathTuple<ApplicationConfig> appConfig)
     {
-        var appDir = Path.GetDirectoryName(appConfig.Path);
-        var iconDir = Path.Join(appDir, "icons");
+        var iconDir = Path.Join(Loader.IO.Paths.ConfigFolder, "Icons", appConfig.Config.AppId);
         Directory.CreateDirectory(iconDir);
         return iconDir;
     }
