@@ -56,6 +56,7 @@ public partial class SplashPage : ReloadedIIPage
                     Application.Current.Resources["ThemeBrushDarker"] = new SolidColorBrush(appColorDarker);
 
                     Application.Current.Resources["AccentColorBrush"] = Application.Current.Resources["ThemeBrush"];
+                    Application.Current.Resources["PrimaryBrush"] = Application.Current.Resources["ThemeBrush"];
                     Application.Current.Resources["AccentColorLighter"] = Application.Current.Resources["ThemeBrushLighter"];
                 });
 

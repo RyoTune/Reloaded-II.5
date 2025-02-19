@@ -6,7 +6,7 @@
 
     <sys:Double x:Key="TextSizeSmall">14</sys:Double>
     <sys:Double x:Key="TextSizeMedium">16</sys:Double>
-    <sys:Double x:Key="TextSizetLarge">20</sys:Double>
+    <sys:Double x:Key="TextSizeLarge">20</sys:Double>
 
     <sys:Double x:Key="ControlTextSize">14</sys:Double>
 
@@ -94,6 +94,8 @@
         <Setter Property="FontSize" Value="{DynamicResource ControlTextSize}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="8,0" />
         <Setter Property="Template">
             <Setter.Value>
@@ -102,13 +104,13 @@
                         MinWidth="32"
                         MinHeight="32"
                         Padding="{TemplateBinding Padding}"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Center"
+                        HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                        VerticalAlignment="{TemplateBinding VerticalAlignment}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource ControlRadiusSmall}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -147,6 +149,7 @@
         x:Key="DefaultCheckBox"
         BasedOn="{StaticResource DefaultCheckBoxBase}"
         TargetType="{x:Type CheckBox}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <Style.Triggers>
             <!--  Colour the checkbox.  -->
             <Trigger Property="IsChecked" Value="True">
@@ -310,4 +313,32 @@
         TargetType="{x:Type TextBox}" />
 
     <Style BasedOn="{StaticResource TextBoxBaseStyle}" TargetType="{x:Type TextBox}" />
+
+    <!--  TabControl  -->
+    <Style TargetType="TabControl">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+    </Style>
+
+    <Style BasedOn="{StaticResource TabItemStyle}" TargetType="TabItem">
+        <Setter Property="MinWidth" Value="128" />
+        <Setter Property="FontSize" Value="{DynamicResource ControlTextSize}" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+
+    <!--  Separator  -->
+    <Style TargetType="Separator">
+        <Setter Property="Foreground" Value="{DynamicResource ControlBorderBrush}" />
+    </Style>
+
+    <!--  ComboBox  -->
+    <SolidColorBrush x:Key="RegionBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="SecondaryRegionBrush" Color="Transparent" />
+
+    <Style x:Key="DefaultComboBox" TargetType="ComboBox" />
+
+    <Style x:Key="DefaultComboBoxItem" TargetType="ComboBoxItem" />
+
+    <Style BasedOn="{StaticResource DefaultComboBoxItem}" TargetType="ComboBoxItem" />
+    <Style BasedOn="{StaticResource DefaultComboBox}" TargetType="ComboBox" />
 </ResourceDictionary>
