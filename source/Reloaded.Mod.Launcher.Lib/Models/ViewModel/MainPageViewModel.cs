@@ -1,5 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using DynamicData;
+using DynamicData.Binding;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+using System.Reactive.Linq;
 using Page = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.Page;
 
 namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel;
@@ -51,6 +54,17 @@ public partial class MainPageViewModel : ViewModelBase
         ConfigService = service;
         AddApplicationCommand = new AddApplicationCommand(this, service);
         _autoInjector = new AutoInjector(service);
+
+        var appsChangeSet = this.ConfigService.Items.ToObservableChangeSet();
+        appsChangeSet.AutoRefresh().Subscribe(_ =>
+        {
+            if (this.SelectedApplication == null) return;
+
+            if (!this.ConfigService.Items.Any(x => x.Config.AppId == this.SelectedApplication.Config.AppId))
+            {
+                this.Page = Page.SettingsPage;
+            }
+        });
     }
 
     /// <summary>
@@ -58,6 +72,8 @@ public partial class MainPageViewModel : ViewModelBase
     /// </summary>
     public void SwitchToApplication(PathTuple<ApplicationConfig> tuple)
     {
+        if (this.SelectedApplication == tuple) return;
+
         SelectedApplication = tuple;
         _launcherPage = Page.Application;
         this.OnPropertyChanged(nameof(Page));
