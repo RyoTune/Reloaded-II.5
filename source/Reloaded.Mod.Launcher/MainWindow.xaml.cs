@@ -1,7 +1,8 @@
 using System.Text;
+using Ookii.Dialogs.Wpf;
 using ReactiveUI;
 using Reloaded.Mod.Launcher.Controls.Dialogs;
-using Reloaded.Mod.Launcher.Lib.Remix;
+using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Loader.Update.Providers.Web;
 using Sewer56.DeltaPatchGenerator.Lib.Utility;
@@ -40,7 +41,71 @@ public partial class MainWindow : ReloadedWindow
 #endif
 
         // Interactions.
-        Interactions.PromptTextInput.RegisterHandler(HandleTextInput);
+        CommonInteractions.PromptTextInput.RegisterHandler(HandleTextInput);
+        CommonInteractions.SelectFile.RegisterHandler(HandleSelectFile);
+        CommonInteractions.SelectFolder.RegisterHandler(HandleSelectFolder);
+        CommonInteractions.SaveFile.RegisterHandler(HandleSaveFile);
+    }
+
+    private void HandleSaveFile(IInteractionContext<SaveFileConfig, string?> context)
+    {
+        var config = context.Input;
+        var saveFile = new VistaSaveFileDialog()
+        {
+            Title = config.Title,
+            OverwritePrompt = config.OverwritePrompt,
+            Filter = config.Filter,
+            FileName = config.FileName,
+        };
+
+        if (saveFile.ShowDialog() == true)
+        {
+            context.SetOutput(saveFile.FileName);
+        }
+        else
+        {
+            context.SetOutput(null);
+        }
+    }
+
+    private void HandleSelectFolder(IInteractionContext<SelectFolderConfig, string[]?> context)
+    {
+        var config = context.Input;
+        var openFolder = new VistaFolderBrowserDialog()
+        {
+            Description = config.Title,
+            Multiselect = config.AllowMultiple,
+            UseDescriptionForTitle = true,
+        };
+
+        if (openFolder.ShowDialog() == true)
+        {
+            context.SetOutput(openFolder.SelectedPaths);
+        }
+        else
+        {
+            context.SetOutput(null);
+        }
+    }
+
+    private void HandleSelectFile(IInteractionContext<SelectFileConfig, string[]?> context)
+    {
+        var config = context.Input;
+        using var openFile = new System.Windows.Forms.OpenFileDialog()
+        {
+            Title = config.Title,
+            Filter = config.Filter,
+            Multiselect = config.AllowMultiple,
+        };
+
+        if (openFile.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+        {
+            context.SetOutput(openFile.FileNames);
+        }
+        else
+        {
+            context.SetOutput(null);
+        }
     }
 
     private void HandleTextInput(IInteractionContext<TextInputViewModel, string?> context)
