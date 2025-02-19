@@ -13,14 +13,94 @@
     d:DesignWidth="900"
     AllowDrop="True"
     mc:Ignorable="d">
-    <Grid>
+    <pages:ReloadedIIPage.Resources>
+        <Style x:Key="BorderContainer" TargetType="Border">
+            <Setter Property="Background" Value="{DynamicResource ControlOnBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ControlBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="8" />
+            <Setter Property="CornerRadius" Value="{DynamicResource ControlRadiusMedium}" />
+        </Style>
+    </pages:ReloadedIIPage.Resources>
+    <Grid Margin="{DynamicResource PageMargin}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="3*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="auto" />
         </Grid.RowDefinitions>
-        <Grid Margin="{DynamicResource PageMargin}">
+        <StackPanel>
+            <Image
+                x:Name="Banner"
+                Margin="4,0"
+                VerticalAlignment="Top"
+                Source="{DynamicResource ReloadedNoBrackets}"
+                Style="{DynamicResource HighQualityImage}">
+                <Image.Effect>
+                    <DropShadowEffect
+                        BlurRadius="8"
+                        Opacity="0.5"
+                        ShadowDepth="0"
+                        Color="Black" />
+                </Image.Effect>
+            </Image>
+            <Border Margin="0,8" Style="{DynamicResource BorderContainer}">
+                <TextBlock
+                    Style="{DynamicResource DefaultTextBlock}"
+                    Text="{DynamicResource LoaderSettingsWarning}"
+                    TextWrapping="Wrap" />
+            </Border>
+            <TextBlock
+                Margin="0,8"
+                DockPanel.Dock="Top"
+                FontFamily="{DynamicResource FontBold}"
+                FontSize="20"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="Settings" />
+
+            <Border Style="{DynamicResource BorderContainer}">
+                <StackPanel>
+
+                    <!--  Language  -->
+                    <ComboBox
+                        Margin="0,4"
+                        IsSynchronizedWithCurrentItem="True"
+                        ItemsSource="{Binding LanguageSelector.Files, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedItem="{Binding LanguageSelector.File, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                        SelectionChanged="LanguageChanged">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={x:Static converters:FilePathToFileConverter.Instance}}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <!--  Console  -->
+                    <CheckBox
+                        Margin="0,4"
+                        Content="{DynamicResource LoaderSettingsShowConsole}"
+                        DockPanel.Dock="Left"
+                        IsChecked="{Binding LoaderConfig.ShowConsole}"
+                        Style="{DynamicResource DefaultCheckBox}" />
+
+                    <!--  Open Log Files  -->
+                    <Button
+                        Margin="0,4"
+                        Content="{DynamicResource LoaderSettingsConfigLog}"
+                        PreviewMouseDown="LogFiles_PreviewMouseDown" />
+
+                    <Button
+                        Margin="0,4"
+                        Command="{Binding OpenAppFolderCommand}"
+                        Content="Open Reloaded Folder" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+        <Grid Grid.Column="2">
             <Grid.Resources>
-                <Thickness x:Key="BannerMargin">75,0,75,0</Thickness>
                 <Style
                     x:Key="SocialIcon"
                     BasedOn="{StaticResource HighQualityImage}"
@@ -45,51 +125,26 @@
             </Grid.Resources>
 
             <Grid.RowDefinitions>
-                <RowDefinition Height="32" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
-            <Image
-                x:Name="Banner"
-                HorizontalAlignment="Left"
-                Source="{DynamicResource ReloadedNoBrackets}"
-                Style="{DynamicResource HighQualityImage}">
-                <Image.Effect>
-                    <DropShadowEffect
-                        BlurRadius="1"
-                        Opacity="0.75"
-                        ShadowDepth="0"
-                        Color="White" />
-                </Image.Effect>
-            </Image>
 
-            <Rectangle
-                Grid.Row="1"
-                Height="2"
-                Margin="0,8"
-                Fill="{DynamicResource BorderColorBrush}" />
-
-            <DockPanel Grid.Row="2">
+            <DockPanel Grid.Row="1">
                 <TextBlock
                     Margin="0,8"
                     DockPanel.Dock="Top"
                     FontFamily="{DynamicResource FontBold}"
-                    FontSize="24"
+                    FontSize="20"
                     Style="{DynamicResource DefaultTextBlock}"
                     Text="Installed" />
-                <Border
-                    Padding="12"
-                    Background="{DynamicResource ControlOnBackgroundBrush}"
-                    BorderBrush="{DynamicResource ControlBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="{DynamicResource ControlRadiusMedium}">
+                <Border Style="{DynamicResource BorderContainer}">
                     <ScrollViewer VerticalScrollBarVisibility="Visible">
                         <ItemsControl DockPanel.Dock="Bottom" ItemsSource="{Binding Source={StaticResource FilteredApps}}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Button
-                                        Width="112"
+                                        Width="80"
                                         Height="{Binding Width, RelativeSource={RelativeSource self}}"
                                         Margin="0,0,8,0"
                                         Command="{Binding DataContext.OpenAppCommand, RelativeSource={RelativeSource AncestorType=Page}}"
@@ -142,48 +197,50 @@
                 </Border>
             </DockPanel>
             <DockPanel
-                Grid.Row="3"
+                Grid.Row="2"
                 Height="180"
                 Visibility="Collapsed">
                 <TextBlock
                     Margin="0,8"
                     DockPanel.Dock="Top"
                     FontFamily="{DynamicResource FontBold}"
-                    FontSize="24"
+                    FontSize="20"
                     Style="{DynamicResource DefaultTextBlock}"
                     Text="1-Click Install" />
-                <ScrollViewer DockPanel.Dock="Bottom">
-                    <ItemsControl ItemsSource="{Binding Source={StaticResource FilteredApps}}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button
-                                    Width="128"
-                                    Height="128"
-                                    Margin="0,0,4,0"
-                                    Style="{DynamicResource StylessButton}">
-                                    <Border ToolTip="{Binding Path=Config.AppName}">
-                                        <Image Opacity="0.25" Source="{Binding Converter={x:Static converters:ApplicationPathTupleToImageConverter.Instance}}" />
-                                    </Border>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </ScrollViewer>
+                <Border Style="{DynamicResource BorderContainer}">
+                    <ScrollViewer DockPanel.Dock="Bottom">
+                        <ItemsControl ItemsSource="{Binding Source={StaticResource FilteredApps}}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button
+                                        Width="80"
+                                        Margin="0,0,4,0"
+                                        Style="{DynamicResource StylessButton}">
+                                        <Border ToolTip="{Binding Path=Config.AppName}">
+                                            <Image Opacity="0.25" Source="{Binding Converter={x:Static converters:ApplicationPathTupleToImageConverter.Instance}}" />
+                                        </Border>
+                                    </Button>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
             </DockPanel>
         </Grid>
         <Border
             Grid.Row="1"
-            Height="24"
-            Padding="8,4"
+            Grid.ColumnSpan="3"
+            Margin="0,8,0,0"
             Background="Transparent">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock Style="{DynamicResource DefaultTextBlock}" Text="{Binding Copyright}" />
-            </StackPanel>
+            <TextBlock
+                HorizontalAlignment="Right"
+                Style="{DynamicResource DefaultTextBlock}"
+                Text="{Binding Copyright}" />
         </Border>
     </Grid>
 </pages:ReloadedIIPage>
