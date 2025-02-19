@@ -53,7 +53,7 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// The directory which houses all Reloaded Application information (e.g. Games etc.)
     /// </summary>
     [JsonInclude]
-    public string ApplicationConfigDirectory { internal get; set; } = Empty;
+    public string ApplicationConfigDirectory { get; set; } = Empty;
 
     /// <summary>
     /// Contains the directory which houses all Reloaded mod user configurations.

@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -118,7 +119,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
 
         if (SelectedPreset == NEW_PRESET_ENTRY)
         {
-            var name = await Interactions.PromptTextInput.Handle(new()
+            var name = await CommonInteractions.PromptTextInput.Handle(new()
             {
                 Title = "New Preset",
                 Description = "Enter a name for the preset.",

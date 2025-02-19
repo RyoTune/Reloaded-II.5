@@ -38,6 +38,9 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     // Remix
     public ObservableCollection<ModsPreset> Presets { get; set; } = [];
 
+    public ReloadedMode ReloadedMode { get; set; } = ReloadedMode.Default;
+
+
     /*
        --------------
        Create/Destroy
@@ -237,4 +240,12 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     }
 
     public override int GetHashCode() => (AppId != null ? AppId.GetHashCode() : 0);
+}
+
+public enum ReloadedMode
+{
+    Disabled,
+    Default,
+    External,
+    AutoInject,
 }
