@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.Input;
 using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.Commands;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Version = Reloaded.Mod.Launcher.Lib.Utility.Version;
 
@@ -89,6 +90,13 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
         _mainPage.SwitchToApplication(tuple);
     }
 
+    [RelayCommand]
+    private void OpenAppFolder()
+    {
+        var openAppDir = new OpenPathWithShellCommand(Path.GetDirectoryName(this.LoaderConfig.ApplicationConfigDirectory));
+        if (openAppDir.CanExecute(null)) openAppDir.Execute(null);
+    }
+
     /// <summary>
     /// Asynchronously saves the loader config.
     /// </summary>
@@ -133,8 +141,6 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
     /// Opens the main Reloaded configuration file.
     /// </summary>
     public void OpenConfigFile() => ProcessExtensions.OpenFileWithDefaultProgram(Paths.LoaderConfigPath);
-
-
 
     /* Functions */
     private void UpdateTotalApplicationsInstalled() => TotalApplicationsInstalled = AppConfigService.Items.Count;
