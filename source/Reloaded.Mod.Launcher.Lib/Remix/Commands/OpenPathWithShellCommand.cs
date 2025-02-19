@@ -4,6 +4,8 @@ namespace Reloaded.Mod.Launcher.Lib.Remix.Commands;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public class OpenPathWithShellCommand : ICommand
 {
+    public static readonly OpenPathWithShellCommand Instance = new();
+
     private readonly string? _path;
 
     public event EventHandler? CanExecuteChanged;
@@ -19,14 +21,14 @@ public class OpenPathWithShellCommand : ICommand
 
     public bool CanExecute(object? parameter)
     {
-        if (Directory.Exists(_path) || File.Exists(_path))
+        if (_path != null && (Directory.Exists(_path) || File.Exists(_path) || IsWebPath(_path)))
         {
             return true;
         }
 
         if (parameter is string paramPath)
         {
-            if (Directory.Exists(paramPath) || File.Exists(paramPath))
+            if (Directory.Exists(paramPath) || File.Exists(paramPath) || IsWebPath(paramPath))
             {
                 return true;
             }
@@ -47,4 +49,6 @@ public class OpenPathWithShellCommand : ICommand
             Process.Start(new ProcessStartInfo() { FileName = paramPath, UseShellExecute = true });
         }
     }
+
+    private static bool IsWebPath(string path) => path.StartsWith("https://") || path.StartsWith("http://");
 }
