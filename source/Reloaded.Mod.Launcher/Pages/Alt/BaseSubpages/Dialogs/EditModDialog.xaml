@@ -63,9 +63,9 @@
         </StackPanel>
         <TabControl
             Grid.Row="1"
-            Margin="0,8"
+            BorderThickness="2,0,0,0"
             TabStripPlacement="Left">
-            <TabItem Header="Details" Style="{DynamicResource TabItemStyle}">
+            <TabItem Header="Details">
                 <TabItem.Resources>
                     <Style BasedOn="{StaticResource TextBoxBaseStyle}" TargetType="{x:Type TextBox}">
                         <Setter Property="Margin" Value="0,0,0,8" />
@@ -224,7 +224,7 @@
             </TabItem>
 
             <TabItem Header="Updates">
-                <TabControl ItemsSource="{Binding Updates}">
+                <TabControl BorderThickness="0,2,0,0" ItemsSource="{Binding Updates}">
                     <TabControl.ItemTemplate>
                         <DataTemplate>
                             <TextBlock Text="{Binding Factory.FriendlyName}" />
