@@ -2,6 +2,9 @@ namespace Reloaded.Mod.Loader.Logging;
 
 public class Logger : ILogger
 {
+    private static readonly string USER_DIR = System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
+    private const string REMOVED_STR = "***";
+
     /// <inheritdoc />
     public event EventHandler<string> OnPrintMessage;
         
@@ -17,8 +20,16 @@ public class Logger : ILogger
     private Thread _loggingThread;
     private CancellationTokenSource _cancellationToken = new CancellationTokenSource();
 
+    private readonly bool _isPrivate;
+
     public Logger()
+        : this(false)
     {
+    }
+
+    public Logger(bool isPrivate)
+    {
+        _isPrivate = isPrivate;
         _loggingThread = new Thread(ProcessQueue) { IsBackground = true };
         _loggingThread.Start();
     }
@@ -40,12 +51,22 @@ public class Logger : ILogger
     public void Write(string message)                       => Write(message, TextColor);
     public void WriteLine(string message, Color color)
     {
+        if (_isPrivate)
+        {
+            message = message.Replace(USER_DIR, REMOVED_STR);
+        }
+
         OnPrintMessage?.Invoke(this, message);
         OnWriteLine?.Invoke(this, (message, color));
     }
 
     public void Write(string message, Color color)
     {
+        if (_isPrivate)
+        {
+            message = message.Replace(USER_DIR, REMOVED_STR);
+        }
+
         OnPrintMessage?.Invoke(this, message);
         OnWrite?.Invoke(this, (message, color));
     }
@@ -54,12 +75,22 @@ public class Logger : ILogger
     public void WriteLineAsync(string message) => WriteLineAsync(message, TextColor);
     public void WriteLineAsync(string message, Color color)
     {
+        if (_isPrivate)
+        {
+            message = message.Replace(USER_DIR, REMOVED_STR);
+        }
+
         if (!_cancellationToken.IsCancellationRequested)
             _messages.Add(new LogMessage(LogMessageType.WriteLine, message, color));
     }
 
     public void WriteAsync(string message, Color color)
     {
+        if (_isPrivate)
+        {
+            message = message.Replace(USER_DIR, REMOVED_STR);
+        }
+
         if (!_cancellationToken.IsCancellationRequested)
             _messages.Add(new LogMessage(LogMessageType.Write, message, color));
     }

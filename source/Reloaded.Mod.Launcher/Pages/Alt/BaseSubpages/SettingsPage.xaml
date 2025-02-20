@@ -137,9 +137,14 @@
                     <CheckBox
                         Margin="0,4"
                         Content="{DynamicResource LoaderSettingsShowConsole}"
-                        DockPanel.Dock="Left"
-                        IsChecked="{Binding LoaderConfig.ShowConsole}"
-                        Style="{DynamicResource DefaultCheckBox}" />
+                        IsChecked="{Binding LoaderConfig.ShowConsole}" />
+
+                    <!--  Logging  -->
+                    <CheckBox
+                        Margin="0,4"
+                        Content="Enable Log Privacy"
+                        IsChecked="{Binding LoaderConfig.EnableLogPrivacy}"
+                        ToolTip="Removes user info from logs.&#10;NOTE: This info might be needed for mod developers to fix issues, such as usernames with special symbols." />
 
                     <!--  Open Log Files  -->
                     <Button

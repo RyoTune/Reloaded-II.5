@@ -190,6 +190,11 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
         set => this.SetProperty(ref _presetShortcutsEnabled, value);
     }
 
+    /// <summary>
+    /// Removes user info from logs.
+    /// </summary>
+    public bool EnableLogPrivacy { get; set; } = true;
+
     private string _launcherFolder;
     private bool _presetShortcutsEnabled = true;
 

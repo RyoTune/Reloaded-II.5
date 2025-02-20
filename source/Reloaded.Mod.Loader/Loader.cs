@@ -25,7 +25,7 @@ public class Loader : IDisposable
     {
         IsTesting = isTesting;
         LoaderConfig = IConfig<LoaderConfig>.FromPathOrDefault(Paths.LoaderConfigPath);
-        Logger  = new Logger();
+        Logger  = new Logger(LoaderConfig.EnableLogPrivacy);
         Console = new Console(LoaderConfig.ShowConsole, Logger, Environment.IsWine ? (IConsoleProxy) new SystemConsoleProxy() : new ColorfulConsoleProxy());
 
         if (isTesting)
