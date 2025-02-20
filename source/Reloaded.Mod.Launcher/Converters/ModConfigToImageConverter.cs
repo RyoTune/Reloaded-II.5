@@ -7,6 +7,11 @@ public class ModConfigToImageConverter : IMultiValueConverter
     /// <inheritdoc />
     public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
     {
+        if (VeryImportantMemeUtils.TryRinFile(out var rinFile))
+        {
+            return Imaging.BitmapFromUri(new Uri(rinFile));
+        }
+
         // value[0]: The path & config tuple.
         // value[1]: The icon path property. (config.Config.ModIcon). This is so we can receive property changed events.
         if (value[0] is PathTuple<ModConfig> config)

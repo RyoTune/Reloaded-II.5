@@ -6,6 +6,7 @@
     xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
     xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -169,12 +170,21 @@
 
                     <StackPanel Grid.ColumnSpan="3">
                         <Label Content="{DynamicResource EditModDependenciesDescription}" />
-                        <TextBox
-                            Margin="{DynamicResource CommonItemVerticalMarginSmall}"
-                            Style="{DynamicResource TextboxWithPlaceholder}"
-                            Tag="{DynamicResource ModManagerSearchMods}"
-                            Text="{Binding ModsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            TextChanged="ModsFilter_TextChanged" />
+                        <DockPanel>
+                            <fa:IconBlock
+                                Margin="8,0"
+                                DockPanel.Dock="Left"
+                                FontSize="16"
+                                Foreground="{DynamicResource TextColorBrush}"
+                                Icon="Search" />
+                            <TextBox
+                                Margin="0,8"
+                                AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                                DockPanel.Dock="Right"
+                                Tag="{DynamicResource ModManagerSearchMods}"
+                                Text="{Binding ModsFilter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                TextChanged="ModsFilter_TextChanged" />
+                        </DockPanel>
                     </StackPanel>
 
                     <TextBlock
@@ -206,7 +216,7 @@
                     <Border
                         Grid.Row="2"
                         Grid.Column="3"
-                        BorderBrush="{DynamicResource AccentColorLighterBrush}">
+                        BorderBrush="{DynamicResource ThemeBrushDarker}">
                         <ScrollViewer>
                             <ItemsControl ItemsSource="{Binding EnabledDependencies}">
                                 <ItemsControl.ItemTemplate>

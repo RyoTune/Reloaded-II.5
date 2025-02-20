@@ -10,6 +10,11 @@ public class ApplicationPathTupleToImageConverter : IValueConverter, IMultiValue
 
     public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
     {
+        if (VeryImportantMemeUtils.TryRinFile(out var rinFile))
+        {
+            return Imaging.BitmapFromUri(new Uri(rinFile));
+        }
+
         foreach (var value in values)
         {
             if (value is PathTuple<ApplicationConfig> config)
