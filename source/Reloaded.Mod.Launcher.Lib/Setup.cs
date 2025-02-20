@@ -317,7 +317,7 @@ public static class Setup
         if (Update.CheckMissingDependencies().AllAvailable)
             await DependencyMetadataWriterFactory.ExecuteAllAsync(IoC.Get<ModConfigService>());
 
-        //await Update.CheckForLoaderUpdatesAsync(); // Disable Reloaded updates.
+        await Update.CheckForLoaderUpdatesAsync(); // Disable Reloaded updates.
         //await Task.Run(Update.CheckForModUpdatesAsync); // Disable normal mod updates.
         await Task.Run(UpdateService.CheckForUpdates);
 
