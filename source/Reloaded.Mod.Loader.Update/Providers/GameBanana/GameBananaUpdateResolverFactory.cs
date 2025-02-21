@@ -68,7 +68,7 @@ public class GameBananaUpdateResolverFactory : IUpdateResolverFactory
     /// Stores a configuration describing how to update mod using GameBanana.
     /// </summary>
     [Equals(DoNotAddEqualityOperators = true)]
-    public class GameBananaConfig : IConfig<GameBananaConfig>
+    public class GameBananaConfig : ObservableObject, IConfig<GameBananaConfig>
     {
         private const string DefaultCategory = "GameBanana Settings";
 

@@ -130,7 +130,7 @@ public class NuGetUpdateResolverFactory : IUpdateResolverFactory
     /// <summary>
     /// Stores a configuration describing how to update mod using NuGet.
     /// </summary>
-    public class NuGetConfig : IConfig<NuGetConfig>
+    public class NuGetConfig : ObservableObject, IConfig<NuGetConfig>
     {
         private const string DefaultCategory = "NuGet Settings";
 
