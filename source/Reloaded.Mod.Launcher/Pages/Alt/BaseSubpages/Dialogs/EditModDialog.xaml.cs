@@ -1,50 +1,41 @@
-﻿namespace Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
+﻿using DynamicData.Binding;
+using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+using System.Reactive.Disposables;
+
+namespace Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 
 /// <summary>
 /// Interaction logic for EditModDialog.xaml
 /// </summary>
-public partial class EditModDialog : ReloadedWindow
+public partial class EditModDialog : ReactiveWindow<EditModViewModel>
 {
-    public EditModDialogViewModel RealViewModel { get; set; }
-
-    private readonly CollectionViewSource _dependenciesViewSource;
-
     private readonly CollectionViewSource _appsViewSource;
+    private readonly CollectionViewSource _modsViewSource;
 
-    public EditModDialog(EditModDialogViewModel vm)
+    public EditModDialog(EditModViewModel vm)
     {
         InitializeComponent();
 
-        RealViewModel = vm;
-        RealViewModel.Init(this.Close);
+        this.DataContext = vm;
+        this.ViewModel = vm;
 
-        _dependenciesViewSource = new DictionaryResourceManipulator(this.Grid.Resources).Get<CollectionViewSource>("SortedDependencies");
-        _dependenciesViewSource.Filter += DependenciesViewSourceOnFilter;
+        _appsViewSource = new DictionaryResourceManipulator(this.Resources).Get<CollectionViewSource>("SortedApplications");
+        _appsViewSource.Filter += AppsFilter;
 
-        _appsViewSource = new DictionaryResourceManipulator(this.Grid.Resources).Get<CollectionViewSource>("SortedApplications");
-        _appsViewSource.Filter += AppsViewSourceOnFilter;
+        _modsViewSource = new DictionaryResourceManipulator(this.Resources).Get<CollectionViewSource>("SortedMods");
+        _modsViewSource.Filter += ModsFilter;
 
-        this.Closing += OnClosing;
+        this.WhenActivated((CompositeDisposable disp) =>
+        {
+            this.ViewModel.ConfirmModCommand?.Subscribe(_ => this.Close()).DisposeWith(disp);
+            this.ViewModel.WhenPropertyChanged(vm => vm.AppsFilter).Subscribe(_ => _appsViewSource.View.Refresh()).DisposeWith(disp);
+            this.ViewModel.WhenPropertyChanged(vm => vm.ModsFilter).Subscribe(_ => _modsViewSource.View.Refresh()).DisposeWith(disp);
+        });
     }
 
-    private void ModIcon_PreviewMouseDown(object sender, MouseButtonEventArgs e)
-    {
-        RealViewModel.SetNewImage();
-    }
+    private void AppsFilter(object sender, FilterEventArgs e) => e.Accepted = ViewModel!.FilterApp((BooleanGenericTuple<IApplicationConfig>)e.Item);
 
-    private void OnClosing(object? sender, CancelEventArgs e)
-    {
-        RealViewModel.Save();
-        RealViewModel.Dispose(); // Unbind Constant.
-    }
-
-    private void ModsFilter_TextChanged(object sender, TextChangedEventArgs e) => _dependenciesViewSource.View.Refresh();
-
-    private void DependenciesViewSourceOnFilter(object sender, FilterEventArgs e) => e.Accepted = RealViewModel.FilterMod((BooleanGenericTuple<IModConfig>)e.Item);
-
-    private void AppsFilter_TextChanged(object sender, TextChangedEventArgs e) => _appsViewSource.View.Refresh();
-
-    private void AppsViewSourceOnFilter(object sender, FilterEventArgs e) => e.Accepted = RealViewModel.FilterApp((BooleanGenericTuple<IApplicationConfig>)e.Item);
-
-    private void Button_Click(object sender, RoutedEventArgs e) => this.Close();
+    private void ModsFilter(object sender, FilterEventArgs e) => e.Accepted = ViewModel!.FilterMod((BooleanGenericTuple<IModConfig>)e.Item);
 }
+

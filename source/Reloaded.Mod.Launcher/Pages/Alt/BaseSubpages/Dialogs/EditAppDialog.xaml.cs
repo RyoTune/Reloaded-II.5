@@ -9,15 +9,16 @@ namespace Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 /// </summary>
 public partial class EditAppDialog : ReactiveWindow<EditAppViewModel>
 {
-    public EditAppDialog()
+    public EditAppDialog(EditAppViewModel vm)
     {
         InitializeComponent();
 
+        this.DataContext = vm;
+        this.ViewModel = vm;
+
         this.WhenActivated((CompositeDisposable disp) =>
         {
-            this.DataContext = this.ViewModel;
-
-            this.ViewModel!.DeleteAppCommand
+            this.ViewModel.DeleteAppCommand
             .Subscribe(_ => this.Close())
             .DisposeWith(disp);
         });
