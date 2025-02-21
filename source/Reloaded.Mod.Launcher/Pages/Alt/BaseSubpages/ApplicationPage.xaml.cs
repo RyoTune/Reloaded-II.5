@@ -1,6 +1,8 @@
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 using ApplicationSubPage = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.ApplicationSubPage;
 using EditAppViewModel = Reloaded.Mod.Launcher.Lib.Remix.ViewModels.EditAppViewModel;
+using EditModDialog = Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs.EditModDialog;
 using Environment = Reloaded.Mod.Shared.Environment;
 using WindowViewModel = Reloaded.Mod.Launcher.Lib.Models.ViewModel.WindowViewModel;
 
@@ -84,11 +86,7 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
 
     private void Button_OpenSettings(object sender, MouseButtonEventArgs e)
     {
-        var editAppDialog = new EditAppDialog()
-        {
-            ViewModel = new EditAppViewModel(this.ViewModel.ApplicationTuple),
-        };
-
+        var editAppDialog = new EditAppDialog(new EditAppViewModel(this.ViewModel.ApplicationTuple));
         editAppDialog.ShowDialog();
     }
 
@@ -149,5 +147,17 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
             ApplicationSubPage.EditApplication => new EditAppPage(ViewModel),
             _ => throw new ArgumentOutOfRangeException(nameof(page), page, null)
         };
+    }
+
+    private void Create_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var presetConfig = new ModConfig()
+        {
+            SupportedAppId = [this.ViewModel.ApplicationTuple.Config.AppId],
+        };
+
+        var createModVm = new EditModViewModel(Lib.IoC.Get<ApplicationConfigService>(), Lib.IoC.Get<ModConfigService>(), presetConfig);
+        var createMod = new EditModDialog(createModVm);
+        createMod.ShowDialog();
     }
 }
