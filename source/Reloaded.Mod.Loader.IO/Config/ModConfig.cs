@@ -6,34 +6,34 @@ namespace Reloaded.Mod.Loader.IO.Config;
 public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
 {
     /* Constants */
-    public const string ConfigFileName  = "ModConfig.json";
-    public const string IconFileName    = "Preview.png";
+    public const string ConfigFileName = "ModConfig.json";
+    public const string IconFileName = "Preview.png";
 
     /* Static defaults to prevent allocating new strings on object creation. */
     private const string DefaultId = "reloaded.template.modconfig";
-    private const string DefaultName = "Reloaded Mod Config Template";
-    private const string DefaultAuthor = "Someone";
+    private const string DefaultName = "My Mod";
+    private const string DefaultAuthor = "Unknown";
     private const string DefaultVersion = "1.0.0";
     private const string DefaultDescription = "Template for a Reloaded Mod Configuration";
 
     /* Class members. */
-    public string ModId             { get; set; } = DefaultId;
-    public string ModName           { get; set; } = DefaultName;
-    public string ModAuthor         { get; set; } = DefaultAuthor;
-    public string ModVersion        { get; set; } = DefaultVersion;
-    public string ModDescription    { get; set; } = DefaultDescription;
-    public string ModDll            { get; set; } = String.Empty;
-    
+    public string ModId { get; set; } = DefaultId;
+    public string ModName { get; set; } = DefaultName;
+    public string ModAuthor { get; set; } = DefaultAuthor;
+    public string ModVersion { get; set; } = DefaultVersion;
+    public string ModDescription { get; set; } = string.Empty;
+    public string ModDll { get; set; } = string.Empty;
+
     [DoNotCheckEquality]
-    public string ModIcon           { get; set; } = String.Empty;
-    public string ModR2RManagedDll32 { get; set; } = String.Empty;
-    public string ModR2RManagedDll64 { get; set; } = String.Empty;
-    public string ModNativeDll32    { get; set; } = String.Empty;
-    public string ModNativeDll64    { get; set; } = String.Empty;
-    public string[] Tags            { get; set; } = Array.Empty<string>();
-    public bool?  CanUnload         { get; set; } = null;
-    public bool?  HasExports        { get; set; } = null;
-    public bool   IsLibrary         { get; set; } = false;
+    public string ModIcon { get; set; } = IconFileName;
+    public string ModR2RManagedDll32 { get; set; } = string.Empty;
+    public string ModR2RManagedDll64 { get; set; } = string.Empty;
+    public string ModNativeDll32 { get; set; } = string.Empty;
+    public string ModNativeDll64 { get; set; } = string.Empty;
+    public string[] Tags { get; set; } = [];
+    public bool? CanUnload { get; set; } = null;
+    public bool? HasExports { get; set; } = null;
+    public bool IsLibrary { get; set; } = false;
     public string ReleaseMetadataFileName { get; set; } = "Sewer56.Update.ReleaseMetadata.json";
 
     [JsonIgnore]
@@ -49,11 +49,11 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
 
     public bool IsUniversalMod { get; set; } = false;
 
-    public string[] ModDependencies         { get; set; } = Array.Empty<string>();
-    public string[] OptionalDependencies    { get; set; } = Array.Empty<string>();
-    public string[] SupportedAppId          { get; set; } = Array.Empty<string>();
-    public string ProjectUrl { get; set; } = String.Empty;
-    public string CreatorUrl { get; set; } = String.Empty;
+    public string[] ModDependencies { get; set; } = Array.Empty<string>();
+    public string[] OptionalDependencies { get; set; } = Array.Empty<string>();
+    public string[] SupportedAppId { get; set; } = Array.Empty<string>();
+    public string ProjectUrl { get; set; } = string.Empty;
+    public string CreatorUrl { get; set; } = string.Empty;
 
     /*
        ---------------
@@ -136,14 +136,14 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
             {
                 var chars = new Span<char>(ptr, relativePath.Length);
                 chars.Replace('\\', '/', chars);
-                
+
                 // Find the index for the start of the second-to-last directory to be removed
                 var lastSlashIndex = chars.LastIndexOf('/');
                 if (lastSlashIndex > 0)
-                    lastSlashIndex  = chars.SliceFast(0, lastSlashIndex - 1).LastIndexOf('/');
+                    lastSlashIndex = chars.SliceFast(0, lastSlashIndex - 1).LastIndexOf('/');
 
-                ModSubDirs = lastSlashIndex > 0 
-                    ? chars.SliceFast(0, lastSlashIndex).ToString() 
+                ModSubDirs = lastSlashIndex > 0
+                    ? chars.SliceFast(0, lastSlashIndex).ToString()
                     : ""; // no folder prefix
             }
         }
@@ -164,7 +164,7 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     {
         if (IsR2R(configPath, modConfig))
             return Environment.Is64BitProcess ? GetR2RManagedDllPath64(configPath, modConfig) : GetR2RManagedDllPath32(configPath, modConfig);
-            
+
         string configDirectory = Path.GetDirectoryName(configPath);
         return Path.Combine(configDirectory, modConfig.ModDll);
     }
@@ -198,7 +198,7 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     /// <param name="modConfig">The individual mod configuration.</param>
     public static bool IsNativeMod(string configPath, ModConfig modConfig)
     {
-        return !String.IsNullOrEmpty(modConfig.ModNativeDll64) || !String.IsNullOrEmpty(modConfig.ModNativeDll32);
+        return !string.IsNullOrEmpty(modConfig.ModNativeDll64) || !string.IsNullOrEmpty(modConfig.ModNativeDll32);
     }
 
     /// <summary>
@@ -208,8 +208,8 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     /// <param name="modConfig">The mod configuration in question.</param>
     public static bool IsR2R(string configPath, ModConfig modConfig)
     {
-        return (!String.IsNullOrEmpty(modConfig.ModR2RManagedDll32) && File.Exists(GetR2RManagedDllPath32(configPath, modConfig))) ||
-               (!String.IsNullOrEmpty(modConfig.ModR2RManagedDll64) && File.Exists(GetR2RManagedDllPath64(configPath, modConfig)));
+        return (!string.IsNullOrEmpty(modConfig.ModR2RManagedDll32) && File.Exists(GetR2RManagedDllPath32(configPath, modConfig))) ||
+               (!string.IsNullOrEmpty(modConfig.ModR2RManagedDll64) && File.Exists(GetR2RManagedDllPath64(configPath, modConfig)));
     }
 
     /// <summary>
@@ -263,7 +263,7 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     /// <param name="iconPath">Full path to the icon.</param>
     public static bool TryGetIconPath(string configPath, ModConfig modConfig, out string iconPath)
     {
-        if (String.IsNullOrEmpty(configPath))
+        if (string.IsNullOrEmpty(configPath))
         {
             iconPath = null;
             return false;
@@ -295,7 +295,7 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
             if (!alreadyExists)
                 modConfigs.RemoveAt(x);
         }
-        
+
         foreach (var cfg in modConfigs)
         {
             cfg.Config.RefreshSubdirectoryPaths(modDirectory, cfg.Path);
@@ -314,12 +314,12 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
     public static ModDependencySet GetDependencies(IEnumerable<ModConfig> configurations, IEnumerable<ModConfig> allMods = null, string modDirectory = null)
     {
-        var allModsCollection   = allMods ?? GetAllMods(modDirectory).Select(x => x.Config);
-        var dependencySets      = new List<ModDependencySet>();
+        var allModsCollection = allMods ?? GetAllMods(modDirectory).Select(x => x.Config);
+        var dependencySets = new List<ModDependencySet>();
 
         foreach (var config in configurations)
             dependencySets.Add(GetDependencies(config, allModsCollection));
-            
+
         return new ModDependencySet(dependencySets);
     }
 
@@ -477,10 +477,10 @@ public class ModConfig : ObservableObject, IConfig<ModConfig>, IModConfig
     // Reflection-less JSON
     public static JsonTypeInfo<ModConfig> GetJsonTypeInfo(out bool supportsSerialize)
     {
-        supportsSerialize = false;   
+        supportsSerialize = false;
         return ModConfigContext.Default.ModConfig;
     }
-    
+
     public JsonTypeInfo<ModConfig> GetJsonTypeInfoNet5(out bool supportsSerialize) => GetJsonTypeInfo(out supportsSerialize);
 
     /*
