@@ -1,3 +1,4 @@
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Actions = Reloaded.Mod.Launcher.Lib.Static.Actions;
 
 namespace Reloaded.Mod.Launcher.Lib.Commands.Mod;
@@ -23,5 +24,5 @@ public class EditModCommand : WithCanExecuteChanged, ICommand
     public bool CanExecute(object? parameter) => _modTuple != null;
 
     /// <inheritdoc />
-    public void Execute(object? parameter) => Actions.EditModDialog(new EditModDialogViewModel(_modTuple!, IoC.Get<ApplicationConfigService>(), IoC.Get<ModConfigService>()), _parent);
+    public void Execute(object? parameter) => Actions.EditModDialog(new EditModViewModel(IoC.Get<ApplicationConfigService>(), IoC.Get<ModConfigService>(), _modTuple!), _parent);
 }

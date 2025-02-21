@@ -1,5 +1,7 @@
 #pragma warning disable CS1591
 
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+
 namespace Reloaded.Mod.Launcher.Lib.Static;
 
 /// <summary>
@@ -222,7 +224,7 @@ public static class Actions
     /// </summary>
     /// <param name="viewModel">The view model for the edit mod menu.</param>
     /// <param name="ownerWindow">The window/dialog which is the parent of the dialog to be shown.</param>
-    public delegate bool EditModDialogDelegate(EditModDialogViewModel viewModel, object? ownerWindow);
+    public delegate bool EditModDialogDelegate(EditModViewModel viewModel, object? ownerWindow);
 
     /// <summary>
     /// Creates a resource file selector.

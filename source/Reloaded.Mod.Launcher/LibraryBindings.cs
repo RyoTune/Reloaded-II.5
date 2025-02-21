@@ -1,3 +1,4 @@
+using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
 using IconConverter = Reloaded.Mod.Launcher.Interop.IconConverter;
 using Window = System.Windows.Window;
@@ -90,7 +91,7 @@ public static class LibraryBindings
         return ShowDialogAndGetResult(loadModSelectDialog);
     }
 
-    private static bool EditModDialog(EditModDialogViewModel viewmodel, object? owner)
+    private static bool EditModDialog(EditModViewModel viewmodel, object? owner)
     {
         var createModDialog = new Pages.Alt.BaseSubpages.Dialogs.EditModDialog(viewmodel);
         if (owner != null)

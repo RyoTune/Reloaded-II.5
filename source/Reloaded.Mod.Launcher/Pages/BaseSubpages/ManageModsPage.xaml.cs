@@ -62,7 +62,7 @@ public partial class ManageModsPage : ReloadedIIPage, IDisposable
 
     private void New_Click(object sender, RoutedEventArgs e)
     {
-        var createModDialog = new CreateModDialog(ViewModel.ModConfigService);
+        var createModDialog = new Alt.BaseSubpages.Dialogs.EditModDialog(new(Lib.IoC.Get<ApplicationConfigService>(), Lib.IoC.Get<ModConfigService>()));
         createModDialog.Owner = Window.GetWindow(this);
         createModDialog.ShowDialog();
     }
