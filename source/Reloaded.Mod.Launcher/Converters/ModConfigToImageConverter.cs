@@ -1,8 +1,8 @@
 namespace Reloaded.Mod.Launcher.Converters;
 
-public class ModConfigToImageConverter : IMultiValueConverter
+public class ModConfigToImageConverter : IMultiValueConverter, IValueConverter
 {
-    public static ModConfigToImageConverter Instance = new ModConfigToImageConverter();
+    public static readonly ModConfigToImageConverter Instance = new();
 
     /// <inheritdoc />
     public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
@@ -20,8 +20,26 @@ public class ModConfigToImageConverter : IMultiValueConverter
         return null!;
     }
 
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        if (value is string path)
+        {
+            if (File.Exists(path))
+            {
+                return Imaging.BitmapFromUri(new Uri(path, UriKind.RelativeOrAbsolute));
+            }
+        }
+
+        return Imaging.BitmapFromUri(WpfConstants.PlaceholderImagePath);
+    }
+
     /// <inheritdoc />
     public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    {
+        throw new NotImplementedException();
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
         throw new NotImplementedException();
     }
