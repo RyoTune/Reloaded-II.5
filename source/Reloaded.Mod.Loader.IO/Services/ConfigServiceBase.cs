@@ -210,7 +210,7 @@ public abstract class ConfigServiceBase<TConfigType> : ObservableObject where TC
 
     private void OnDeleteFile(object sender, FileSystemEventArgs e)
     {
-        // Sanity check.
+        // Sanity check, which causes exception in AddItem... somehow...............
         if (File.Exists(e.FullPath)) return;
 
         if (ItemsByPath.TryGetValue(e.FullPath, out var mod))
@@ -252,8 +252,18 @@ public abstract class ConfigServiceBase<TConfigType> : ObservableObject where TC
         {
             // Sometimes you might get directory, then file notification, so we might get a duplicate.
             // We hackily filter out this duplicate here.
+
+            // NOTICE: This breaks if OnDeleteFile includes the sanity check.
+            // I neither know, nor want to know, how this labyrinth of events work.
             var index = Items.IndexOf(existing);
-            Items[index] = itemTuple;
+            if (index < 0 && Items.Contains(itemTuple))
+            {
+                Trace.WriteLine("Adding item is already in list, somehow...");
+            }
+            else
+            {
+                Items[index] = itemTuple;
+            }
         }
         else
         {
