@@ -140,6 +140,20 @@ public class LoaderAPI : IModLoader
         return null;
     }
 
+    public WeakReference GetController(string fullName)
+    {
+        foreach (var key in _controllerModMapping.Keys)
+        {
+            if (key.FullName == fullName)
+            {
+                return new WeakReference(_controllerModMapping[key].Generic);
+            }
+        }
+
+        _loader.Logger.LogWriteLine($"[LoaderAPI] Warning: GetController for \"{fullName}\" returned null.", _loader.Logger.ColorWarning);
+        return null;
+    }
+
     /* IModLoader V2 */
     public string GetDirectoryForModId(string modId)
     {
