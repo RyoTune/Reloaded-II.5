@@ -1,3 +1,5 @@
+using Reloaded.Mod.Loader.IO.Remix.Configs;
+using SmartFormat;
 using Type = System.Type;
 
 namespace Reloaded.Mod.Loader.Mods;
@@ -225,7 +227,7 @@ public class PluginManager : IDisposable
             var assemblyToTypes = new Dictionary<Assembly, Type[]>();
             foreach (var asm in assemblies)
             {
-                if (!assemblyToTypes.ContainsKey(asm)) 
+                if (!assemblyToTypes.ContainsKey(asm))
                     assemblyToTypes[asm] = asm.GetTypes();
             }
 
@@ -327,7 +329,15 @@ public class PluginManager : IDisposable
         try
         {
             LoaderApi.ModLoading(instance.Mod, instance.ModConfig);
+
             instance.Start(LoaderApi);
+            /*
+             * Applying dynamic mod config here is
+             * simpler than adding LoadContext to non-DLL mods
+             * and editing mod interfaces.
+             */
+            ApplyDynamicConfig(instance);
+
             _modifications[instance.ModConfig.ModId] = instance;
             LoaderApi.ModLoaded(instance.Mod, instance.ModConfig);
         }
@@ -336,6 +346,80 @@ public class PluginManager : IDisposable
             Logger.WriteLine($"Error while starting mod: {instance.ModConfig.ModId}", Logger.ColorRed);
             throw;
         }
+    }
+
+    private static readonly Dictionary<string, MethodInfo> KnownMethods = [];
+
+    private void ApplyDynamicConfig(ModInstance instance)
+    {
+        var modDir = LoaderApi.GetDirectoryForModId(instance.ModConfig.ModId);
+        if (!File.Exists(DynamicConfigurator.GetModSchemaFile(modDir)))
+        {
+            return;
+        }
+
+        var configDir = LoaderApi.GetModConfigDirectory(instance.ModConfig.ModId);
+        var configurator = DynamicConfigurator.Create(modDir, configDir);
+        configurator.SetModDirectory(modDir);
+
+        var config = configurator.GetConfig();
+
+        /* Build config variables dictionary. */
+        var configVars = config.Constants.ToDictionary(x => x.Key, x => (object?)x.Value);
+        foreach (var item in config.PropertyDescriptors)
+        {
+            configVars[item.Name] = item.GetValue(configVars);
+        }
+
+        configVars["ModDir"] = modDir;
+
+        // Execute actions.
+        foreach (var action in config.Actions)
+        {
+            if (!string.IsNullOrEmpty(action.If) && (bool)config.GetMember(action.If) == false)
+            {
+                continue;
+            }
+
+            var actionUsing = Smart.Format(action.Using, configVars);
+            var controller = LoaderApi.GetController(actionUsing) ?? throw new Exception($"Failed to find 'using': {actionUsing}");
+
+            var typeInstance = controller.Target!;
+            var actionRun = Smart.Format(action.Run, configVars);
+
+            var methodKey = $"{actionUsing}.{actionRun}";
+            if (KnownMethods.TryGetValue(methodKey, out var method))
+            {
+                method.Invoke(typeInstance, ResolveParameters(action.With, configVars));
+                return;
+            }
+
+            var type = typeInstance.GetType();
+            method = type.GetMethod(actionRun) ?? throw new Exception($"Failed to find 'run': {actionRun}");
+
+            KnownMethods[methodKey] = method;
+            method.Invoke(typeInstance, ResolveParameters(action.With, configVars));
+        }
+    }
+
+    private static object?[]? ResolveParameters(string[] paramList, Dictionary<string, object?> configVars)
+    {
+        if (paramList.Length == 0) return null;
+
+        return paramList.Select(param =>
+        {
+            // Null arg value.
+            if (param == null || param == "null") return null;
+
+            // Arg is the raw value of a property.
+            if (configVars.TryGetValue(param, out var value))
+            {
+                return value;
+            }
+
+            // Arg is a string, possibly with config variable placeholders.
+            return Smart.Format(param, configVars);
+        }).ToArray();
     }
 
     /* Setup for mod loading */
