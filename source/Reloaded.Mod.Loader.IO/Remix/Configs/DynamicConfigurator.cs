@@ -1,4 +1,6 @@
-﻿namespace Reloaded.Mod.Loader.IO.Remix.Configs;
+﻿using Reloaded.Mod.Loader.IO.Remix.Configs.Models;
+
+namespace Reloaded.Mod.Loader.IO.Remix.Configs;
 
 public class DynamicConfigurator : IConfiguratorV1
 {
@@ -22,4 +24,15 @@ public class DynamicConfigurator : IConfiguratorV1
     public void SetModDirectory(string modDirectory) => _modDir = modDirectory;
 
     public bool TryRunCustomConfiguration() => false;
+
+    /// <summary>
+    /// Creates configurator with config for a mod.
+    /// </summary>
+    /// <param name="modDir">Mod directory.</param>
+    /// <param name="configDir">Config directory.</param>
+    /// <returns></returns>
+    public static DynamicConfigurator Create(string modDir, string configDir)
+        => new DynamicConfigurator(GetModSchemaFile(modDir), Path.Join(configDir, "config.yaml"));
+
+    public static string GetModSchemaFile(string modDir) => Path.Join(modDir, "remix", "config", DynamicConfigSchema.SchemaFileName);
 }
