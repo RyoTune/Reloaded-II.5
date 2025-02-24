@@ -372,6 +372,7 @@ public class PluginManager : IDisposable
         }
 
         configVars["ModDir"] = modDir;
+        configVars["ModFolder"] = modDir;
 
         // Execute actions.
         foreach (var action in config.Actions)
@@ -390,7 +391,7 @@ public class PluginManager : IDisposable
             var methodKey = $"{actionUsing}.{actionRun}";
             if (KnownMethods.TryGetValue(methodKey, out var method))
             {
-                method.Invoke(typeInstance, ResolveParameters(action.With, configVars));
+                method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
                 return;
             }
 
@@ -398,28 +399,44 @@ public class PluginManager : IDisposable
             method = type.GetMethod(actionRun) ?? throw new Exception($"Failed to find 'run': {actionRun}");
 
             KnownMethods[methodKey] = method;
-            method.Invoke(typeInstance, ResolveParameters(action.With, configVars));
+            method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
         }
     }
 
-    private static object?[]? ResolveParameters(string[] paramList, Dictionary<string, object?> configVars)
+    private static object?[]? ResolveParameters(string[] actionArgs, ParameterInfo[] methodParams, Dictionary<string, object?> configVars)
     {
-        if (paramList.Length == 0) return null;
+        if (actionArgs.Length == 0) return null;
 
-        return paramList.Select(param =>
+        var resolved = new List<object?>();
+        for (int i = 0; i < actionArgs.Length; i++)
         {
-            // Null arg value.
-            if (param == null || param == "null") return null;
+            var argText = actionArgs[i];
 
-            // Arg is the raw value of a property.
-            if (configVars.TryGetValue(param, out var value))
+            // Null arg value.
+            if (argText == null || argText == "null") return null;
+
+            var targetParam = methodParams[i];
+
+            // Arg is the raw value of a setting/constant.
+            if (configVars.TryGetValue(argText, out var configArg))
             {
-                return value;
+                // Convert variable to param type.
+                resolved.Add(Convert.ChangeType(configArg, targetParam.ParameterType));
+                continue;
             }
 
-            // Arg is a string, possibly with config variable placeholders.
-            return Smart.Format(param, configVars);
-        }).ToArray();
+            // Parameter is string, format and use arg text.
+            if (targetParam.ParameterType == typeof(string))
+            {
+                resolved.Add(Smart.Format(argText, configVars));
+                continue;
+            }
+
+            // Convert arg text to parameter type.
+            resolved.Add(Convert.ChangeType(argText, targetParam.ParameterType));
+        }
+
+        return resolved.ToArray();
     }
 
     /* Setup for mod loading */
