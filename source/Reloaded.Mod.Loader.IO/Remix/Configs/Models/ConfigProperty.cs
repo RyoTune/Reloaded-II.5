@@ -22,14 +22,27 @@ public class ConfigProperty
         {
             "bool" or "toggle" => typeof(bool),
             "string" or "text" => typeof(string),
+
             "int" or "number" => typeof(int),
+            "byte" => typeof(byte),
+            "short" => typeof(short),
+            "float" => typeof(float),
             "double" => typeof(double),
             _ => throw new NotImplementedException($"Unknown type: {Type}"),
         };
 
     public object GetDefaultValue()
     {
-        if (Default == null) return null;
-        return Convert.ChangeType(Default, GetPropertyType());
+        var type = GetPropertyType();
+
+        // No default value set, use default value of prop type.
+        if (Default == null)
+        {
+            if (type.IsValueType) return Activator.CreateInstance(type);
+
+            return null;
+        }
+
+        return Convert.ChangeType(Default, type);
     }
 }

@@ -32,7 +32,7 @@ public class DynamicConfigurator : IConfiguratorV1
     /// <param name="configDir">Config directory.</param>
     /// <returns></returns>
     public static DynamicConfigurator Create(string modDir, string configDir)
-        => new DynamicConfigurator(GetModSchemaFile(modDir), Path.Join(configDir, "config.yaml"));
+        => new(GetModSchemaFile(modDir), Path.Join(configDir, "config.yaml"));
 
     public static string GetModSchemaFile(string modDir) => Path.Join(modDir, "remix", "config", DynamicConfigSchema.SchemaFileName);
 }

@@ -88,7 +88,8 @@ public class DynamicConfig : DynamicObject, IConfigurable
     {
         var attributes = new List<Attribute>()
         {
-            new DisplayAttribute() { Order = -1 }
+            new DisplayAttribute() { Order = -1 },
+            new DefaultValueAttribute(property.GetDefaultValue()), // Config reset won't work without a default value attribute, surprisingly.
         };
 
         if (!string.IsNullOrEmpty(property.Name))
@@ -99,11 +100,6 @@ public class DynamicConfig : DynamicObject, IConfigurable
         if (!string.IsNullOrEmpty(property.Description))
         {
             attributes.Add(new DescriptionAttribute(property.Description));
-        }
-
-        if (!string.IsNullOrEmpty(property.Default))
-        {
-            attributes.Add(new DefaultValueAttribute(property.GetDefaultValue()));
         }
 
         if (!string.IsNullOrEmpty(property.Category))
