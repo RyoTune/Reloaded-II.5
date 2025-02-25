@@ -330,13 +330,13 @@ public class PluginManager : IDisposable
         {
             LoaderApi.ModLoading(instance.Mod, instance.ModConfig);
 
-            instance.Start(LoaderApi);
             /*
              * Applying dynamic mod config here is
              * simpler than adding LoadContext to non-DLL mods
              * and editing mod interfaces.
              */
             ApplyDynamicConfig(instance);
+            instance.Start(LoaderApi);
 
             _modifications[instance.ModConfig.ModId] = instance;
             LoaderApi.ModLoaded(instance.Mod, instance.ModConfig);
@@ -371,13 +371,19 @@ public class PluginManager : IDisposable
             configVars[item.Name] = item.GetValue(configVars);
         }
 
+        foreach (var list in config.Lists)
+        {
+            configVars[list.Key] = list.Value;
+        }
+
         configVars["ModDir"] = modDir;
         configVars["ModFolder"] = modDir;
+        configVars["ModId"] = instance.ModConfig.ModId;
 
         // Execute actions.
         foreach (var action in config.Actions)
         {
-            if (!string.IsNullOrEmpty(action.If) && (bool)config.GetMember(action.If) == false)
+            if (!string.IsNullOrEmpty(action.If) && (bool)config.GetSettingValue(action.If) == false)
             {
                 continue;
             }
@@ -389,17 +395,20 @@ public class PluginManager : IDisposable
             var actionRun = Smart.Format(action.Run, configVars);
 
             var methodKey = $"{actionUsing}.{actionRun}";
-            if (KnownMethods.TryGetValue(methodKey, out var method))
+
+            // Retrieve method from cached methods or with relfection.
+            if (!KnownMethods.TryGetValue(methodKey, out var method))
             {
-                method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
-                return;
+                var type = typeInstance.GetType();
+                method = type.GetMethod(actionRun) ?? throw new Exception($"Failed to find 'run': {actionRun}");
+                KnownMethods[methodKey] = method;
             }
 
-            var type = typeInstance.GetType();
-            method = type.GetMethod(actionRun) ?? throw new Exception($"Failed to find 'run': {actionRun}");
-
-            KnownMethods[methodKey] = method;
-            method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
+            var methodRet = method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
+            if (!string.IsNullOrEmpty(action.Output))
+            {
+                configVars[action.Output] = methodRet;
+            }
         }
     }
 

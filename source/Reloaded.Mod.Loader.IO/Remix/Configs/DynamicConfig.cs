@@ -8,6 +8,8 @@ namespace Reloaded.Mod.Loader.IO.Remix.Configs;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public class DynamicConfig : DynamicObject, IConfigurable
 {
+    private readonly DynamicConfigSchema _schema;
+    private readonly Dictionary<string, ConfigSetting> _settings;
     private readonly Dictionary<string, DynamicProperty> _properties;
 
     /// <summary>
@@ -17,11 +19,9 @@ public class DynamicConfig : DynamicObject, IConfigurable
     /// <param name="configFile">Config file to save and load settings from.</param>
     public DynamicConfig(string schemaFile, string configFile)
     {
-        var schema = YamlSerializer.DeserializeFile<DynamicConfigSchema>(schemaFile);
-        Actions = schema.Actions;
-        Constants = schema.Constants;
-
-        _properties = schema.Settings.Select(x => new DynamicProperty(x.Id, x.GetPropertyType(), GetAttributes(x), x.GetDefaultValue())).ToDictionary(x => x.Name, x => x);
+        _schema = YamlSerializer.DeserializeFile<DynamicConfigSchema>(schemaFile);
+        _settings = _schema.Settings.ToDictionary(x => x.Id);
+        _properties = _schema.Settings.Select(x => new DynamicProperty(x.Id, x.GetPropertyType(), ResolveAttributes(x), x.GetDefaultValue())).ToDictionary(x => x.Name);
         PropertyDescriptors = _properties.Values.ToArray();
 
         // Load current settings.
@@ -46,11 +46,30 @@ public class DynamicConfig : DynamicObject, IConfigurable
 
     public Action Save { get; }
 
-    public object GetMember(string name) => _properties[name].GetValue(this);
+    public object GetSettingValue(string name)
+    {
+        if (_settings[name].ValueOn != null || _settings[name].ValueOff != null)
+        {
+            var settingBool = (bool)_properties[name].GetValue(this);
+            if (settingBool)
+            {
+                return _settings[name].ValueOn;
+            }
+            else
+            {
+                return _settings[name].ValueOff;
+            }
+        }
 
-    public ConfigAction[] Actions { get; }
+        return _properties[name].GetValue(this);
+    }
 
-    public Dictionary<string, string> Constants { get; }
+    public ConfigAction[] Actions => _schema.Actions;
+
+    public Dictionary<string, string> Constants => _schema.Constants;
+
+    public Dictionary<string, object[]> Lists
+        => _schema.Settings.Where(x => !string.IsNullOrEmpty(x.List)).GroupBy(x => x.List).ToDictionary(x => x.Key, x => x.Select(setting => GetSettingValue(setting.Id)).Where(x => x != null).ToArray());
 
     public override IEnumerable<string> GetDynamicMemberNames() => _properties.Keys;
 
@@ -84,7 +103,7 @@ public class DynamicConfig : DynamicObject, IConfigurable
         return base.TrySetMember(binder, value);
     }
 
-    private static Attribute[] GetAttributes(ConfigProperty property)
+    private static Attribute[] ResolveAttributes(ConfigSetting property)
     {
         var attributes = new List<Attribute>()
         {
