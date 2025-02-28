@@ -5,39 +5,53 @@ using Reloaded.Mod.Launcher.Lib.Remix.Commands;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.Utils;
 using System.Reactive;
+using ReactiveUI.SourceGenerators;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
+using Reloaded.Mod.Loader.IO.Remix.Apps;
 
 namespace Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
+public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 {
     public ViewModelActivator Activator { get; } = new();
+
+    [Reactive]
+    private AppVersion? _selectedVersion;
 
     private readonly ApplicationConfig _appConfig;
 
     public EditAppViewModel(PathTuple<ApplicationConfig> appTuple)
     {
-        this.AppTuple = appTuple;
         _appConfig = appTuple.Config;
 
-        this.MakeShortcutCommand = new(appTuple, Lib.IconConverter);
-        this.DeleteAppCommand = ReactiveCommand.Create(this.DeleteApp);
+        AppTuple = appTuple;
+        Versions = AppVersions.GetAvailableVersions(appTuple.Config);
+        SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions);
+
+        MakeShortcutCommand = new(appTuple, Lib.IconConverter);
+        DeleteAppCommand = ReactiveCommand.Create(DeleteApp);
 
         // Build Package Provider Configurations
         foreach (var provider in PackageProviderFactory.All)
         {
             var result = ProviderFactoryConfiguration.TryCreate(provider, appTuple);
             if (result != null)
-                this.PackageProviders.Add(result);
+                PackageProviders.Add(result);
         }
 
         this.WhenActivated((CompositeDisposable disp) =>
         {
+            this.WhenValueChanged(vm => vm.SelectedVersion)
+            .Select(x => x?.Version)
+            .Subscribe(version => _appConfig.TargetAppVersion = version?.ToString())
+            .DisposeWith(disp);
+
             this.WhenAnyPropertyChanged()
             .Throttle(TimeSpan.FromMilliseconds(250))
-            .Subscribe(_ => this.AppTuple.Save())
+            .Subscribe(_ => AppTuple.Save())
             .DisposeWith(disp);
 
             this.WhenAnyValue(vm => vm.ReloadedMode, vm => vm.AppPath)
@@ -50,7 +64,7 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                         {
                             _appConfig.DontInject = false;
                             _appConfig.AutoInject = false;
-                            if (!AsiLoader.TryRemoveAsi(this.AppPath, out var loaderPath, out var bootstrapperPath))
+                            if (!AsiLoader.TryRemoveAsi(AppPath, out var loaderPath, out var bootstrapperPath))
                             {
                                 // TODO: Notify failed to remove.
                             }
@@ -60,7 +74,7 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                         {
                             _appConfig.DontInject = true;
                             _appConfig.AutoInject = false;
-                            if (!AsiLoader.TryDeployAsi(this.AppPath, out var loaderPath, out var bootstrapperPath))
+                            if (!AsiLoader.TryDeployAsi(AppPath, out var loaderPath, out var bootstrapperPath))
                             {
                                 // TODO: Notify failed to deploy.
                             }
@@ -70,7 +84,7 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                         {
                             _appConfig.DontInject = true;
                             _appConfig.AutoInject = true;
-                            if (!AsiLoader.TryRemoveAsi(this.AppPath, out var loaderPath, out var bootstrapperPath))
+                            if (!AsiLoader.TryRemoveAsi(AppPath, out var loaderPath, out var bootstrapperPath))
                             {
                                 // TODO: Notify failed to remove.
                             }
@@ -81,7 +95,7 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                         {
                             _appConfig.DontInject = true;
                             _appConfig.AutoInject = false;
-                            if (!AsiLoader.TryRemoveAsi(this.AppPath, out var loaderPath, out var bootstrapperPath))
+                            if (!AsiLoader.TryRemoveAsi(AppPath, out var loaderPath, out var bootstrapperPath))
                             {
                                 // TODO: Notify failed to remove.
                             }
@@ -89,13 +103,13 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                         break;
                 }
 
-                this.AppTuple?.Save();
+                AppTuple?.Save();
             })
             .DisposeWith(disp);
 
             Disposable.Create(() =>
             {
-                if (this.AppTuple == null) return;
+                if (AppTuple == null) return;
 
                 try
                 {
@@ -103,12 +117,12 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
                     foreach (var provider in PackageProviders)
                     {
                         if (provider.IsEnabled)
-                            provider.Factory.SetConfiguration(this.AppTuple, provider.Configuration);
+                            provider.Factory.SetConfiguration(AppTuple, provider.Configuration);
                         else
-                            this.AppTuple.Config.PluginData.Remove(provider.Factory.ResolverId);
+                            AppTuple.Config.PluginData.Remove(provider.Factory.ResolverId);
                     }
 
-                    this.AppTuple.Save();
+                    AppTuple.Save();
                 }
                 catch (Exception) { Debug.WriteLine($"{nameof(EditAppViewModel)}: Failed to save current selected item."); }
             })
@@ -119,45 +133,36 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
     public string Name
     {
         get => _appConfig.AppName;
-        set => this.SetProperty(_appConfig.AppName, value, _appConfig, (m, v) => m.AppName = v);
+        set => this.RaiseAndSetIfChanged(_appConfig.AppName, value, _appConfig, (m, v) => m.AppName = v);
     }
 
     public string AppPath
     {
         get => _appConfig.AppLocation;
-        set => this.SetProperty(_appConfig.AppLocation, value, _appConfig, (m, v) =>
-        {
-            m.AppLocation = v;
-            this.RaisePropertyChanged(nameof(AppPath));
-        });
+        set => this.RaiseAndSetIfChanged(_appConfig.AppLocation, value, _appConfig, (m, v) => m.AppLocation = v);
     }
 
     public string AppArgs
     {
         get => _appConfig.AppArguments;
-        set => this.SetProperty(_appConfig.AppArguments, value, _appConfig, (m, v) => m.AppArguments = v);
+        set => this.RaiseAndSetIfChanged(_appConfig.AppArguments, value, _appConfig, (m, v) => m.AppArguments = v);
     }
 
     public string WorkingDir
     {
         get => _appConfig.WorkingDirectory;
-        set => this.SetProperty(_appConfig.WorkingDirectory, value, _appConfig, (m, v) => m.WorkingDirectory = v);
+        set => this.RaiseAndSetIfChanged(_appConfig.WorkingDirectory, value, _appConfig, (m, v) => m.WorkingDirectory = v);
     }
 
     public ReloadedMode ReloadedMode
     {
         get => _appConfig.ReloadedMode;
-        set
-        {
-            this.SetProperty(_appConfig.ReloadedMode, value, _appConfig, (m, v) =>
-            {
-                m.ReloadedMode = v;
-                this.RaisePropertyChanged(nameof(ReloadedMode));
-            });
-        }
+        set => this.RaiseAndSetIfChanged(_appConfig.ReloadedMode, value, _appConfig, (m, v) => m.ReloadedMode = v);
     }
 
     public ReloadedMode[] Modes { get; } = Enum.GetValues<ReloadedMode>();
+
+    public AppVersion[] Versions { get; } = [];
 
     public ObservableCollection<ProviderFactoryConfiguration> PackageProviders { get; } = [];
 
@@ -191,12 +196,12 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
         var fileInfo = new FileInfo(newAppPath);
         if (fileInfo.LinkTarget != null) { newAppPath = fileInfo.LinkTarget; }
 
-        this.AppPath = newAppPath;
-        this.WorkingDir = Path.GetDirectoryName(newAppPath)!;
+        AppPath = newAppPath;
+        WorkingDir = Path.GetDirectoryName(newAppPath)!;
 
         // Handle MsStore stuff
         var isMsStore = TryUnprotectGamePassGame.TryIt(newAppPath);
-        if (isMsStore) { this.ReloadedMode = ReloadedMode.External; }
+        if (isMsStore) { ReloadedMode = ReloadedMode.External; }
     }
 
     [RelayCommand]
@@ -205,23 +210,23 @@ public partial class EditAppViewModel : ViewModelBase, IActivatableViewModel
         var dirs = await CommonInteractions.SelectFolder.Handle(new() { Title = "Select Working Directory" });
         if (dirs?.Length > 0)
         {
-            this.WorkingDir = dirs[0];
+            WorkingDir = dirs[0];
         }
     }
 
     [RelayCommand]
     private void OpenAppFolder()
     {
-        var openAppDir = new OpenPathWithShellCommand(Path.GetDirectoryName(this.AppPath));
+        var openAppDir = new OpenPathWithShellCommand(Path.GetDirectoryName(AppPath));
         if (openAppDir.CanExecute(null)) openAppDir.Execute(null);
     }
 
     private void DeleteApp()
     {
-        var appDir = Path.GetDirectoryName(this.AppTuple!.Path);
+        var appDir = Path.GetDirectoryName(AppTuple!.Path);
         if (Directory.Exists(appDir))
         {
-            this.AppTuple = null;
+            AppTuple = null;
             Directory.Delete(appDir, true);
         }
     }
