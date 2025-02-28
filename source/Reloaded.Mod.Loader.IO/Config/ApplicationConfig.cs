@@ -1,3 +1,4 @@
+using Reloaded.Mod.Loader.IO.Remix.Apps;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
 
 namespace Reloaded.Mod.Loader.IO.Config;
@@ -40,6 +41,7 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
 
     public ReloadedMode ReloadedMode { get; set; } = ReloadedMode.Default;
 
+    public string TargetAppVersion { get; set; } = null;
 
     /*
        --------------
@@ -177,7 +179,7 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     /// <returns>The full path to the app location.</returns>
     public static string GetAbsoluteAppLocation(PathTuple<ApplicationConfig> config)
     {
-        var location = config.Config.AppLocation;
+        var location = GetTargetAppPath(config.Config);
         var basePath = Path.GetDirectoryName(config.Path)!;
         string finalPath;
 
@@ -197,6 +199,17 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
 
         // Resolves any internal "..\" to get the true full path.
         return Path.GetFullPath(finalPath);
+    }
+
+    private static string GetTargetAppPath(ApplicationConfig config)
+    {
+        if (string.IsNullOrEmpty(config.TargetAppVersion)) return config.AppLocation;
+
+        var versions = AppVersions.GetAvailableVersions(config);
+        var targetVersion = AppVersions.FindAppByVersion(config.TargetAppVersion, versions);
+        if (targetVersion != null) return targetVersion.AppPath;
+
+        return config.AppLocation;
     }
 
     /// <summary>
