@@ -334,7 +334,9 @@
     <SolidColorBrush x:Key="RegionBrush" Color="Transparent" />
     <SolidColorBrush x:Key="SecondaryRegionBrush" Color="Transparent" />
 
-    <Style x:Key="DefaultComboBox" TargetType="ComboBox" />
+    <Style x:Key="DefaultComboBox" TargetType="ComboBox">
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
 
     <Style x:Key="DefaultComboBoxItem" TargetType="ComboBoxItem" />
 
