@@ -9,7 +9,7 @@
 it also includes whatever features I need or think might be useful.
 
 
-# Orignal
+# Original
 <div align="center">
 	<h1>Reloaded II</h1>
 	<img src="./docs/Images/Reloaded/Reloaded Logo.png" width="150" align="center" />
