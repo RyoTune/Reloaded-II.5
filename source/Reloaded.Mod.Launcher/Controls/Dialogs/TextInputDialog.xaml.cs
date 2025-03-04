@@ -17,10 +17,10 @@ public partial class TextInputDialog : ReactiveWindow<TextInputViewModel>
         {
             this.DataContext = this.ViewModel;
 
-            RoutedEventHandler cancelHandler = (_, _) => { this.DialogResult = false; this.Close(); };
+            void cancelHandler(object _, RoutedEventArgs __) { this.DialogResult = false; this.Close(); }
             this.Button_Cancel.Click += cancelHandler;
 
-            RoutedEventHandler confirmHandler = (_, _) => { this.DialogResult = true; this.Close(); };
+            void confirmHandler(object _, RoutedEventArgs __) { this.DialogResult = true; this.Close(); }
             this.Button_Confirm.Click += confirmHandler;
 
             Disposable.Create(() =>
