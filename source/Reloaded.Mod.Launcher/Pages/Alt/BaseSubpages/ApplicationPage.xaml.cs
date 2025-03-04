@@ -1,9 +1,12 @@
+using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
+using System.Reactive.Linq;
 using ApplicationSubPage = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.ApplicationSubPage;
 using EditAppViewModel = Reloaded.Mod.Launcher.Lib.Remix.ViewModels.EditAppViewModel;
 using EditModDialog = Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs.EditModDialog;
 using Environment = Reloaded.Mod.Shared.Environment;
+using Window = System.Windows.Window;
 using WindowViewModel = Reloaded.Mod.Launcher.Lib.Models.ViewModel.WindowViewModel;
 
 namespace Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages;
@@ -149,15 +152,23 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
         };
     }
 
-    private void Create_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+    private async void Create_PreviewMouseDown(object sender, MouseButtonEventArgs e)
     {
+        var newModName = await CommonInteractions.PromptTextInput.Handle(new() { Title = "Create Mod", Description = "Enter a name for the new mod." });
+        if (string.IsNullOrEmpty(newModName))
+        {
+            return;
+        }
+
         var presetConfig = new ModConfig()
         {
+            ModName = newModName,
             SupportedAppId = [this.ViewModel.ApplicationTuple.Config.AppId],
         };
 
         var createModVm = new EditModViewModel(Lib.IoC.Get<ApplicationConfigService>(), Lib.IoC.Get<ModConfigService>(), presetConfig);
-        var createMod = new EditModDialog(createModVm);
-        createMod.ShowDialog();
+        var createModDialog = new EditModDialog(createModVm);
+        createModDialog.Owner = Window.GetWindow(this);
+        createModDialog.ShowDialog();
     }
 }
