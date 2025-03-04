@@ -13,9 +13,9 @@
     Width="400"
     x:TypeArguments="vm:TextInputViewModel"
     ResizeMode="NoResize"
+    WindowStartupLocation="CenterOwner"
     SizeToContent="Height"
     Style="{DynamicResource ReloadedReactiveWindow}"
-    WindowStartupLocation="CenterScreen"
     mc:Ignorable="d">
     <StackPanel Margin="4" FocusManager.FocusedElement="{Binding ElementName=Name_TextBox}">
         <TextBlock

@@ -111,6 +111,8 @@ public partial class MainWindow : ReloadedWindow
     private void HandleTextInput(IInteractionContext<TextInputViewModel, string?> context)
     {
         var textInputDialog = new TextInputDialog() { ViewModel = context.Input };
+        textInputDialog.Owner = this;
+
         if (textInputDialog.ShowDialog() == true && !string.IsNullOrEmpty(textInputDialog.ViewModel.Text))
         {
             context.SetOutput(textInputDialog.ViewModel.Text);
