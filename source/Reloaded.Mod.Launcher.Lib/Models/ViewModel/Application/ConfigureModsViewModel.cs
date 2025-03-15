@@ -134,7 +134,7 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
         _applicationViewModel.OnLoadModSet += BuildModList;
         BuildModList();
 
-        SelectedMod = AllMods.FirstOrDefault();
+        SelectedMod = AllMods.FirstOrDefault(x => x.IsHidden == false);
         PropertyChanged += OnSelectedModChanged;
         UpdateCommands();
 
