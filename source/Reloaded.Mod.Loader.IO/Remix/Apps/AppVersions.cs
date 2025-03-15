@@ -5,7 +5,8 @@ public class AppVersions
 {
     /// <summary>
     /// Gets list of application versions available for the given app config.
-    /// App versions should follow the pattern of: NAME_VERSION.exe. Ex: Metaphor_1.0.3.exe
+    /// For apps that don't set the file version in the file, you can set add the version in the file's name.
+    /// Example: <c>FILENAME_ver1.0.0.exe</c>, such as <c>Metaphor_ver1.0.3.exe</c>.
     /// </summary>
     /// <param name="appConfig">Application config to get versions for.</param>
     /// <returns></returns>
@@ -29,21 +30,27 @@ public class AppVersions
     private static AppVersion GetFileVersion(string file)
     {
         var fileName = Path.GetFileNameWithoutExtension(file);
-        var fileVer = FileVersionInfo.GetVersionInfo(file)?.FileVersion;
-        if (string.IsNullOrEmpty(fileVer) || fileVer == "0.0.0.0")
+        var verStrIdx = fileName.IndexOf("_ver");
+        if (verStrIdx != -1 && Version.TryParse(fileName[(verStrIdx + 2)..], out var nameVer))
         {
-            if (fileName.Length > fileName.Length + 1 && Version.TryParse(fileName[(fileName.Length + 1)..], out var version))
-            {
-                return new AppVersion(file, version);
-            }
+            return new AppVersion(file, nameVer);
+        }
 
-            return new AppVersion(file, new());
+        const string unsetVer = "0.0.0";
+
+        var fileVer = GetVersion(FileVersionInfo.GetVersionInfo(file));
+        if (string.IsNullOrEmpty(fileVer) || fileVer == unsetVer)
+        {
+            return new AppVersion(file, new(unsetVer));
         }
         else
         {
             return new AppVersion(file, new Version(fileVer));
         }
     }
+
+    private static string GetVersion(FileVersionInfo info)
+        => (info.FilePrivatePart == 0) ? $"{info.FileMajorPart}.{info.FileMinorPart}.{info.FileBuildPart}" : $"{info.FileMajorPart}.{info.FileMinorPart}.{info.FileBuildPart}.{info.FilePrivatePart}";
 
     private class AppVersionDistinctByVersion : IEqualityComparer<AppVersion>
     {

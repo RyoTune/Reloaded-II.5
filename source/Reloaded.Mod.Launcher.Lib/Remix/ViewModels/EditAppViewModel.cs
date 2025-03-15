@@ -29,7 +29,7 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
         AppTuple = appTuple;
         Versions = AppVersions.GetAvailableVersions(appTuple.Config);
-        SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions);
+        SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
 
         MakeShortcutCommand = new(appTuple, Lib.IconConverter);
         DeleteAppCommand = ReactiveCommand.Create(DeleteApp);
