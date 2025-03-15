@@ -11,6 +11,15 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <UserControl.Style>
+        <Style TargetType="UserControl">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                    <Setter Property="Opacity" Value="0.75" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Style>
     <UserControl.Resources>
         <converters:StringNullOrEmptyConverter x:Key="IsNullOrEmpty" />
     </UserControl.Resources>

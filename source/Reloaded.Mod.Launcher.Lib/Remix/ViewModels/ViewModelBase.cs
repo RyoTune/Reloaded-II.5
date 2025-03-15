@@ -16,3 +16,8 @@ public class ViewModelBase : ObservableObject, IReactiveObject
 
     public void RaisePropertyChanging(PropertyChangingEventArgs args) => this.OnPropertyChanging(args);
 }
+
+public class ReactiveViewModelBase : ReactiveObject, IActivatableViewModel
+{
+    public ViewModelActivator Activator { get; } = new();
+}

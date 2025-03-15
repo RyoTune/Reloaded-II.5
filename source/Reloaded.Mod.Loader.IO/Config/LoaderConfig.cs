@@ -174,7 +174,7 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// </summary>
     public bool DisableDInput { get; set; }
 
-    // Remix
+    /* REMIX */
 
     /// <summary>
     /// Enables support for controlling GUI via gamepad.
@@ -184,19 +184,24 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// <summary>
     /// Display shortcut buttons for presets.
     /// </summary>
-    public bool PresetShortcutsEnabled
-    {
-        get => _presetShortcutsEnabled;
-        set => this.SetProperty(ref _presetShortcutsEnabled, value);
-    }
+    public bool PresetShortcutsEnabled { get; set; } = true;
 
     /// <summary>
     /// Removes user info from logs.
     /// </summary>
     public bool EnableLogPrivacy { get; set; } = true;
 
+    /// <summary>
+    /// Whether to display mods that have been hidden.
+    /// </summary>
+    public bool ShowHiddenMods { get; set; } = false;
+
+    /// <summary>
+    /// List of mods that are hidden.
+    /// </summary>
+    public string[] HiddenModsIds { get; set; } = [];
+
     private string _launcherFolder;
-    private bool _presetShortcutsEnabled = true;
 
     /* Some mods are universal :wink: */
 

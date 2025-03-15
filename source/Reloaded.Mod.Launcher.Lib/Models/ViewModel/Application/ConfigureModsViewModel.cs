@@ -2,8 +2,10 @@ using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.Commands;
+using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
+using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -13,7 +15,7 @@ namespace Reloaded.Mod.Launcher.Lib.Models.ViewModel.Application;
 /// ViewModel allowing for the configuration of mods to be loaded for a certain game.
 /// </summary>
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
+public class ConfigureModsViewModel : ReactiveViewModelBase
 {
     /// <summary>
     /// Special tag that includes all items.
@@ -91,22 +93,21 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
     public bool IsCompact
     {
         get => _loaderConfig.ModsList_IsCompact;
-        set
-        {
-            SetProperty(_loaderConfig.ModsList_IsCompact, value, _loaderConfig, (m, newValue) => m.ModsList_IsCompact = newValue);
-            IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
-        }
+        set => this.RaiseAndSetIfChanged(_loaderConfig.ModsList_IsCompact, value, _loaderConfig, (m, newValue) => m.ModsList_IsCompact = newValue);
     }
 
     /// <summary/>
     public bool IsHorizontal
     {
         get => _loaderConfig.ModsList_IsHorizontal;
-        set
-        {
-            SetProperty(_loaderConfig.ModsList_IsHorizontal, value, _loaderConfig, (m, newValue) => m.ModsList_IsHorizontal = newValue);
-            IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
-        }
+        set => this.RaiseAndSetIfChanged(_loaderConfig.ModsList_IsHorizontal, value, _loaderConfig, (m, newValue) => m.ModsList_IsHorizontal = newValue);
+    }
+
+    /// <summary/>
+    public bool ShowHidden
+    {
+        get => _loaderConfig.ShowHiddenMods;
+        set => this.RaiseAndSetIfChanged(_loaderConfig.ShowHiddenMods, value, _loaderConfig, (m, newValue) => m.ShowHiddenMods = newValue);
     }
 
     /// <summary/>
@@ -139,7 +140,13 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
 
         ModsControlPanelVm = new(this, loaderConfig);
 
-        _showShortcuts = _loaderConfig.WhenPropertyChanged(x => x.PresetShortcutsEnabled).Select(x => x.Value).ToProperty(this, vm => vm.ShowShortcuts);
+        ToggleModHideCommand = ReactiveCommand.Create(() =>
+        {
+            if (SelectedMod == null) return;
+            SelectedMod.IsHidden = !SelectedMod.IsHidden;
+        });
+
+        _showShortcuts = _loaderConfig.WhenValueChanged(x => x.PresetShortcutsEnabled).ToProperty(this, vm => vm.ShowShortcuts);
         _shortcuts = ApplicationTuple.Config.Presets.ToObservableChangeSet().AutoRefresh()
             .Select(x =>
             {
@@ -158,6 +165,23 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
             _showShortcuts.DisposeWith(disp);
             _shortcuts.DisposeWith(disp);
 
+            // Save Loader config when its settings are changed.
+            this.WhenAnyValue(vm => vm.ShowHidden, vm => vm.IsHorizontal, vm => vm.IsCompact)
+            .Subscribe(_ => IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath))
+            .DisposeWith(disp);
+
+            // Save hidden mods settings.
+            this.ToggleModHideCommand.Subscribe(_ =>
+            {
+                _loaderConfig.HiddenModsIds = AllMods.Where(x => x.IsHidden).Select(x => x.Tuple.Config.ModId).ToArray();
+                IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
+            });
+
+            // Update number of mods hidden.
+            Observable.Merge(this.WhenPropertyChanged(vm => vm.AllMods), this.ToggleModHideCommand.Select(x => (object)x))
+            .Subscribe(_ => NumHiddenMods = AllMods?.Where(x => x.IsHidden).Count() ?? 0)
+            .DisposeWith(disp);
+
             Disposable.Create(() =>
             {
                 _applicationViewModel.OnLoadModSet -= BuildModList;
@@ -168,7 +192,6 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
             .DisposeWith(disp);
         });
     }
-    public ViewModelActivator Activator { get; } = new();
 
     // Remix
     private readonly ObservableAsPropertyHelper<bool> _showShortcuts;
@@ -178,6 +201,10 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
 
     private readonly ObservableAsPropertyHelper<PresetShortcut[]> _shortcuts;
     public PresetShortcut[] Shortcuts => _shortcuts.Value;
+
+    public ReactiveCommand<Unit, Unit> ToggleModHideCommand { get; }
+
+    public int NumHiddenMods { get; set; } = 0;
 
     /// <summary>
     /// Builds the list of mods displayed to the user.
@@ -290,7 +317,8 @@ public class ConfigureModsViewModel : ViewModelBase, IActivatableViewModel
     {
         // Make BooleanGenericTuple that saves application on Enabled change.
         var userConfig = _userConfigService.ItemsById.GetValueOrDefault(item.Config.ModId);
-        var tuple = new ModEntry(isEnabled, item, new(item, userConfig, ApplicationTuple));
+        var isHidden = _loaderConfig.HiddenModsIds.Contains(item.Config.ModId);
+        var tuple = new ModEntry(isEnabled, isHidden, item, new(item, userConfig, ApplicationTuple));
         return tuple;
     }
 

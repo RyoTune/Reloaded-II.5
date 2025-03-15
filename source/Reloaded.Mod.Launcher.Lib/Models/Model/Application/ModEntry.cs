@@ -36,10 +36,16 @@ public class ModEntry : ObservableObject, IEquatable<ModEntry>
     /// </summary>
     public ConfigureModCommand ConfigureModCommand { get; set; }
 
+    /// <summary>
+    /// Whether this mod entry appears in the mods list.
+    /// </summary>
+    public bool IsHidden { get; set; } = false;
+
     /// <inheritdoc />
-    public ModEntry(bool? enabled, PathTuple<ModConfig> tuple, ConfigureModCommand configCommand)
+    public ModEntry(bool? enabled, bool isHidden, PathTuple<ModConfig> tuple, ConfigureModCommand configCommand)
     {
         IsEditable = !tuple.Config.IsLibrary;
+        IsHidden = isHidden;
         Enabled = !IsEditable ? null : enabled;
         Tuple = tuple;
         ConfigureModCommand = configCommand;

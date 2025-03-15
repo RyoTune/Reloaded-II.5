@@ -71,14 +71,22 @@
                 <MenuItem Command="{Binding PublishModCommand}" Header="{DynamicResource ModManagerContextPublish}" />
                 <Separator Height="2" />
                 <MenuItem Command="{Binding DeleteModCommand}" Header="{DynamicResource AddAppDeleteButton}" />
+                <MenuItem Command="{Binding ToggleModHideCommand}">
+                    <MenuItem.Style>
+                        <Style BasedOn="{StaticResource {x:Type MenuItem}}" TargetType="MenuItem">
+                            <Setter Property="Header" Value="Hide" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding SelectedMod.IsHidden}" Value="True">
+                                    <Setter Property="Header" Value="Unhide" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </MenuItem.Style>
+                </MenuItem>
                 <MenuItem
                     Command="{Binding Source={x:Static commands:CopyToClipboardCommand.Instance}}"
                     CommandParameter="{Binding SelectedMod.Tuple.Config.ModId}"
                     Header="Copy ID" />
-                <!--<MenuItem Command="{Binding EditModUserConfigCommand}" Header="{DynamicResource ModManagerContextEditModUser}">
-                        <MenuItem Command="{Binding EditModUserConfigCommand}" Header="{DynamicResource ModManagerContextEdit}" />
-                        <MenuItem Command="{Binding OpenUserConfigFolderCommand}" Header="{DynamicResource ModManagerContextOpenFolder}" />
-                    </MenuItem>-->
             </ContextMenu>
         </ListView.ContextMenu>
         <ListView.ItemContainerStyle>

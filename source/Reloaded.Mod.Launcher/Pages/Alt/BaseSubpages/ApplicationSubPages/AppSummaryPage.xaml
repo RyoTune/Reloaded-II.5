@@ -93,6 +93,20 @@
                             Content="Horizontal List"
                             IsChecked="{Binding IsHorizontal}"
                             ToolTip="Mods list will expand horizontally." />
+                        <CheckBox IsChecked="{Binding ShowHidden}" ToolTip="Hidden mods will be shown.">
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style BasedOn="{StaticResource DefaultTextBlock}" TargetType="TextBlock">
+                                        <Setter Property="Text" Value="{Binding NumHiddenMods, StringFormat='Show Hidden ({0})'}" />
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding NumHiddenMods}" Value="0">
+                                                <Setter Property="Text" Value="Show Hidden" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </CheckBox>
                     </StackPanel>
                 </cc:DropdownMenuControl>
 

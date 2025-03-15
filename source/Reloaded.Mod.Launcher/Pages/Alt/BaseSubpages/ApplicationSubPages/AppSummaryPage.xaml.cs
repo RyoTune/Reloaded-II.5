@@ -25,11 +25,13 @@ public partial class AppSummaryPage : ApplicationSubPage
 
         this.WhenActivated((CompositeDisposable disp) =>
         {
-            ViewModel = new ConfigureModsViewModel(appViewModel, Lib.IoC.Get<ModUserConfigService>(), Lib.IoC.Get<LoaderConfig>());
+            this.ViewModel = new ConfigureModsViewModel(appViewModel, Lib.IoC.Get<ModUserConfigService>(), Lib.IoC.Get<LoaderConfig>());
 
             ControllerSupport.SubscribeCustomInputs(OnProcessCustomInputs);
+
             _modsViewSource.Filter += ModsViewSourceOnFilter;
-            ViewModel.PropertyChanged += OnFilterChanged;
+            this.ViewModel.PropertyChanged += OnFilterChanged;
+            this.ViewModel.ToggleModHideCommand.Subscribe(_ => _modsViewSource.View.Refresh()).DisposeWith(disp);
 
             Disposable.Create(() =>
             {
@@ -43,12 +45,21 @@ public partial class AppSummaryPage : ApplicationSubPage
     {
         if (e.PropertyName == nameof(ViewModel.SelectedTag))
             _modsViewSource.View.Refresh();
+
+        if (e.PropertyName == nameof(ViewModel.ShowHidden))
+            _modsViewSource.View.Refresh();
     }
 
     private void ModsViewSourceOnFilter(object sender, FilterEventArgs e)
     {;
         var tuple = (ModEntry)e.Item;
         e.Accepted = true;
+
+        if (tuple.IsHidden && this.ViewModel?.ShowHidden == false)
+        {
+            e.Accepted = false;
+            return;
+        }
 
         // Filter name
         var config = tuple.Tuple.Config;
