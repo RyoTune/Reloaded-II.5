@@ -231,6 +231,6 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     }
 
     private static BasicModEntry[] GetPresetModEntries(IEnumerable<ModEntry>? mods)
-        => mods?.Select(x => new BasicModEntry(x.Tuple.Config, x.Enabled == true))
+        => mods?.Select(x => new BasicModEntry(x.Tuple.Config) { Enabled = x.Enabled == true, IsSeparator = x.Tuple.Config.IsSeparator })
         .ToArray() ?? [];
 }

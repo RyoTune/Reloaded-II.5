@@ -6,11 +6,10 @@ public class BasicModEntry
     {
     }
 
-    public BasicModEntry(ModConfig mod, bool enabled)
+    public BasicModEntry(ModConfig mod)
     {
         Id = mod.ModId;
         Name = mod.ModName;
-        Enabled = enabled;
     }
 
     public string Id { get; set; }
@@ -18,4 +17,6 @@ public class BasicModEntry
     public string Name { get; set; }
 
     public bool Enabled { get; set; } = true;
+
+    public bool IsSeparator { get; set; }
 }
