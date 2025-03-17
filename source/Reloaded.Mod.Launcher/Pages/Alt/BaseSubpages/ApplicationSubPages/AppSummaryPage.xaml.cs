@@ -55,14 +55,14 @@ public partial class AppSummaryPage : ApplicationSubPage
         var tuple = (ModEntry)e.Item;
         e.Accepted = true;
 
-        if (string.IsNullOrEmpty(ModsFilter.Text))
-            return;
-
         if (tuple.IsHidden && this.ViewModel?.ShowHidden == false)
         {
             e.Accepted = false;
             return;
         }
+
+        if (string.IsNullOrEmpty(ModsFilter.Text))
+            return;
 
         if (tuple.Tuple.Config.IsSeparator)
         {
