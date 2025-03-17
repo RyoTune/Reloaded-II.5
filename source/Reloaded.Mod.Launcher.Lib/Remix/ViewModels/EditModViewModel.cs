@@ -22,7 +22,7 @@ public partial class EditModViewModel : ReactiveViewModelBase
 
     private bool _useAutoId;
     private IObservable<PropertyValue<BooleanGenericTuple<IApplicationConfig>, bool>>? _appsEnabledObs;
-    private IObservable<PropertyValue<BooleanGenericTuple<IModConfig>, bool>>? _depsEnabledObs;
+    private IObservable<PropertyValue<BooleanGenericTuple<ModConfig>, bool>>? _depsEnabledObs;
     private IObservable<object>? _resolversObs;
 
     public EditModViewModel(ApplicationConfigService appsService, ModConfigService modsService, ModConfig? preset = null)
@@ -65,7 +65,7 @@ public partial class EditModViewModel : ReactiveViewModelBase
         foreach (var mod in mods)
         {
             bool isModEnabled = _config.ModDependencies.Contains(mod.Config.ModId, StringComparer.OrdinalIgnoreCase) == true;
-            Mods.Add(new BooleanGenericTuple<IModConfig>(isModEnabled, mod.Config));
+            Mods.Add(new BooleanGenericTuple<ModConfig>(isModEnabled, mod.Config));
 
             // Add unknown applications from mods.
             foreach (var appId in mod.Config.SupportedAppId)
@@ -242,7 +242,7 @@ public partial class EditModViewModel : ReactiveViewModelBase
 
     public ObservableCollection<BooleanGenericTuple<IApplicationConfig>> Applications { get; } = [];
 
-    public ObservableCollection<BooleanGenericTuple<IModConfig>> Mods { get; } = [];
+    public ObservableCollection<BooleanGenericTuple<ModConfig>> Mods { get; } = [];
 
     public ObservableCollection<ResolverFactoryConfiguration> Updates { get; } = [];
 
@@ -293,8 +293,10 @@ public partial class EditModViewModel : ReactiveViewModelBase
         return appNameResult || appIdResult;
     }
 
-    public bool FilterMod(BooleanGenericTuple<IModConfig> item)
+    public bool FilterMod(BooleanGenericTuple<ModConfig> item)
     {
+        if (item.Generic.IsSeparator) return false;
+
         if (ModsFilter.Length <= 0)
             return true;
 

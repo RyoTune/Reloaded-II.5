@@ -36,6 +36,6 @@ public partial class EditModDialog : ReactiveWindow<EditModViewModel>
 
     private void AppsFilter(object sender, FilterEventArgs e) => e.Accepted = ViewModel!.FilterApp((BooleanGenericTuple<IApplicationConfig>)e.Item);
 
-    private void ModsFilter(object sender, FilterEventArgs e) => e.Accepted = ViewModel!.FilterMod((BooleanGenericTuple<IModConfig>)e.Item);
+    private void ModsFilter(object sender, FilterEventArgs e) => e.Accepted = ViewModel!.FilterMod((BooleanGenericTuple<ModConfig>)e.Item);
 }
 
