@@ -158,10 +158,19 @@
                             <DataTemplate>
                                 <TextBlock
                                     FontSize="14"
-                                    Style="{DynamicResource DefaultTextBlock}"
                                     Text="{Binding Name}"
                                     TextTrimming="CharacterEllipsis"
-                                    ToolTip="{Binding Name}" />
+                                    ToolTip="{Binding Name}">
+                                    <TextBlock.Style>
+                                        <Style BasedOn="{StaticResource DefaultTextBlock}" TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Enabled}" Value="False">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

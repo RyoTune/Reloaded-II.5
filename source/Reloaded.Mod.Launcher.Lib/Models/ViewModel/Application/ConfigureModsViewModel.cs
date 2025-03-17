@@ -209,7 +209,7 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
     /// <summary>
     /// Builds the list of mods displayed to the user.
     /// </summary>
-    private void BuildModList()
+    public void BuildModList()
     {
         if (_saveStream != null)
         {

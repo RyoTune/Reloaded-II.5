@@ -95,7 +95,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     }
 
     public BasicModEntry[]? SelectedMods
-        => SelectedPreset == NEW_PRESET_ENTRY ? GetActiveMods(_modsVm.AllMods) : SelectedPreset?.Mods;
+        => SelectedPreset == NEW_PRESET_ENTRY ? GetPresetModEntries(_modsVm.AllMods) : SelectedPreset?.Mods;
 
     private bool CanUsePresetCommand => SelectedPreset != null && SelectedPreset != NEW_PRESET_ENTRY;
 
@@ -113,9 +113,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     [RelayCommand]
     private async Task SavePreset()
     {
-        var currentMods = GetActiveMods(_modsVm.AllMods)
-            .OrderBy(x => x.Name)
-            .ToArray() ?? [];
+        var currentMods = GetPresetModEntries(_modsVm.AllMods).ToArray() ?? [];
 
         if (SelectedPreset == NEW_PRESET_ENTRY)
         {
@@ -167,13 +165,19 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     {
         if (SelectedPreset == null || _modsVm.AllMods == null) return;
 
-        foreach (var mod in _modsVm.AllMods)
-        {
-            if (mod.IsEditable)
-            {
-                mod.Enabled = SelectedPreset.Mods.Any(x => x.Id == mod.Tuple.Config.ModId);
-            }
-        }
+        /* Enable and organize mods according to selected preset. */
+
+        // Duplicate the preset mods list and append disabled
+        // entries for any missing mods. Could probably be clever using more LINQ but meh.
+        var presetEntries = SelectedPreset.Mods.ToList();
+        var missingEntries = _modsVm.AllMods.Where(mod => !presetEntries.Any(x => x.Id == mod.Tuple.Config.ModId)).Select(x => new BasicModEntry(x.Tuple.Config, false));
+        presetEntries.AddRange(missingEntries);
+
+        _appConfig.Config.SortedMods = presetEntries.Select(x => x.Id).ToArray();
+        _appConfig.Config.EnabledMods = presetEntries.Where(x => x.Enabled).Select(x => x.Id).ToArray();
+        _appConfig.Save();
+
+        _modsVm.BuildModList();
     }
 
     [RelayCommand]
@@ -204,9 +208,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
         return mod?.Tuple.Config.ModName ?? modId;
     }
 
-    private static BasicModEntry[] GetActiveMods(IEnumerable<ModEntry>? mods)
-        => mods?.Where(x => x.IsEditable && x.Enabled == true)
-        .Select(x => new BasicModEntry(x.Tuple.Config))
-        .OrderBy(x => x.Name)
+    private static BasicModEntry[] GetPresetModEntries(IEnumerable<ModEntry>? mods)
+        => mods?.Select(x => new BasicModEntry(x.Tuple.Config, x.Enabled == true))
         .ToArray() ?? [];
 }

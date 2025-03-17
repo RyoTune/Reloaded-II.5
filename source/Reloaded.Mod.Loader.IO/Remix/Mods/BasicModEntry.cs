@@ -6,13 +6,16 @@ public class BasicModEntry
     {
     }
 
-    public BasicModEntry(ModConfig mod)
+    public BasicModEntry(ModConfig mod, bool enabled)
     {
         Id = mod.ModId;
         Name = mod.ModName;
+        Enabled = enabled;
     }
 
     public string Id { get; set; }
 
     public string Name { get; set; }
+
+    public bool Enabled { get; set; } = true;
 }
