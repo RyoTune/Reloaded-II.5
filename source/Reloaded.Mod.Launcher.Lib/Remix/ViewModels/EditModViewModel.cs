@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using DynamicData.Binding;
 using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -9,9 +10,8 @@ using System.Reactive.Linq;
 namespace Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-public partial class EditModViewModel : ViewModelBase, IActivatableViewModel
+public partial class EditModViewModel : ReactiveViewModelBase
 {
-    public ViewModelActivator Activator { get; } = new();
 
     private readonly string DEFAULT_AUTO_ID = Random.Shared.Next(0, 1000000).ToString("000000");
 
@@ -174,8 +174,7 @@ public partial class EditModViewModel : ViewModelBase, IActivatableViewModel
                 _useAutoId = false;
             }
 
-            _config.ModId = value;
-            this.RaisePropertyChanged(nameof(Id));
+            this.RaiseAndSetIfChanged(_config.ModId, value, _config, (m, v) => m.ModId = v);
         }
     }
 
@@ -185,7 +184,7 @@ public partial class EditModViewModel : ViewModelBase, IActivatableViewModel
         set
         {
             _config.ModName = value;
-            this.RaisePropertyChanged(nameof(Name));
+            this.RaiseAndSetIfChanged(_config.ModName, value, _config, (m, v) => m.ModName = v);
         }
     }
 
@@ -229,6 +228,12 @@ public partial class EditModViewModel : ViewModelBase, IActivatableViewModel
     {
         get => _config.IsUniversalMod;
         set => _config.IsUniversalMod = value;
+    }
+
+    public bool IsSeparator
+    {
+        get => _config.IsSeparator;
+        set => _config.IsSeparator = value;
     }
 
     public string AppsFilter { get; set; } = string.Empty;
@@ -329,7 +334,7 @@ public partial class EditModViewModel : ViewModelBase, IActivatableViewModel
             IconPath = selectedFile;
         }
 
-        this.OnPropertyChanged(nameof(IconPath));
+        this.RaisePropertyChanged(nameof(IconPath));
     }
 
     private bool HasUniqueId() => !_modsService.ItemsById.ContainsKey(Id);

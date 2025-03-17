@@ -15,10 +15,10 @@
     xmlns:re="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
     xmlns:rxui="http://reactiveui.net"
     xmlns:vm="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.ViewModels;assembly=Reloaded.Mod.Launcher.Lib"
-    Width="800"
-    Height="480"
-    MinWidth="800"
-    MinHeight="480"
+    Width="834"
+    Height="500"
+    MinWidth="834"
+    MinHeight="500"
     d:Background="{DynamicResource BackgroundBrush}"
     d:DesignHeight="480"
     d:DesignWidth="800"
@@ -187,6 +187,10 @@
                         <TextBox Text="{Binding ProjectUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                         <TextBlock Style="{DynamicResource FormTextBlockHeader}" Text="Creator Link" />
                         <TextBox Text="{Binding CreatorUrl, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <CheckBox
+                            Content="Separator"
+                            IsChecked="{Binding IsSeparator}"
+                            ToolTip="Appears as a separator in the mods list." />
                     </StackPanel>
                 </Grid>
             </TabItem>

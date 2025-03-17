@@ -11,6 +11,7 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
+    <!--  Bug: Breaks the dynamic width set by mods list based on actual width.  -->
     <UserControl.Style>
         <Style TargetType="UserControl">
             <Style.Triggers>
@@ -45,8 +46,17 @@
             Focusable="False"
             IsChecked="{Binding Enabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
             IsEnabled="{Binding IsEditable}"
-            IsThreeState="False"
-            Style="{DynamicResource DefaultCheckBox}" />
+            IsThreeState="False">
+            <CheckBox.Style>
+                <Style BasedOn="{StaticResource DefaultCheckBox}" TargetType="CheckBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Tuple.Config.IsSeparator}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </CheckBox.Style>
+        </CheckBox>
 
         <!--  Top Half  -->
         <DockPanel Grid.Column="1">
@@ -57,7 +67,19 @@
                 TextTrimming="CharacterEllipsis"
                 ToolTip="{Binding Tuple.Config.ModDisplayName, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Separator Margin="8,0,0,0" Opacity="0.15" />
+            <Separator Margin="8,0,0,0">
+                <Separator.Style>
+                    <Style TargetType="Separator">
+                        <Setter Property="Opacity" Value="0.15" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tuple.Config.IsSeparator}" Value="True">
+                                <Setter Property="Opacity" Value="1" />
+                                <Setter Property="Background" Value="{DynamicResource ThemeBrushDarker}" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Separator.Style>
+            </Separator>
         </DockPanel>
 
         <StackPanel Grid.Column="3" Orientation="Horizontal">
@@ -75,6 +97,15 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Resources>
+            <StackPanel.Style>
+                <Style TargetType="StackPanel">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Tuple.Config.IsSeparator}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </StackPanel.Style>
 
             <fa:IconBlock
                 x:Name="IconSupport"
@@ -158,6 +189,9 @@
                 <Style TargetType="{x:Type StackPanel}">
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsCompact, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="True">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Tuple.Config.IsSeparator}" Value="True">
                             <Setter Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                     </Style.Triggers>
