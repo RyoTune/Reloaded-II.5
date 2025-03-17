@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
+using Reloaded.Mod.Launcher.Lib.Remix.Commands;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
 using System.Reactive.Disposables;
@@ -36,12 +37,14 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     private readonly PathTuple<ApplicationConfig> _appConfig;
     private readonly ConfigureModsViewModel _modsVm;
     private readonly LoaderConfig _loaderConfig;
+    private readonly ApplyPresetCommand _applyPreset;
 
     public ModsControlPanelViewModel(ConfigureModsViewModel modsVm, LoaderConfig loaderConfig)
     {
         _appConfig = modsVm.ApplicationTuple;
         _modsVm = modsVm;
         _loaderConfig = loaderConfig;
+        _applyPreset = new ApplyPresetCommand(modsVm);
 
         Presets = [NEW_PRESET_ENTRY, .._appConfig.Config.Presets];
         SelectedPreset = NEW_PRESET_ENTRY;
@@ -161,24 +164,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     }
 
     [RelayCommand(CanExecute = nameof(CanUsePresetCommand))]
-    private void ApplyPreset()
-    {
-        if (SelectedPreset == null || _modsVm.AllMods == null) return;
-
-        /* Enable and organize mods according to selected preset. */
-
-        // Duplicate the preset mods list and append disabled
-        // entries for any missing mods. Could probably be clever using more LINQ but meh.
-        var presetEntries = SelectedPreset.Mods.ToList();
-        var missingEntries = _modsVm.AllMods.Where(mod => !presetEntries.Any(x => x.Id == mod.Tuple.Config.ModId)).Select(x => new BasicModEntry(x.Tuple.Config, false));
-        presetEntries.AddRange(missingEntries);
-
-        _appConfig.Config.SortedMods = presetEntries.Select(x => x.Id).ToArray();
-        _appConfig.Config.EnabledMods = presetEntries.Where(x => x.Enabled).Select(x => x.Id).ToArray();
-        _appConfig.Save();
-
-        _modsVm.BuildModList();
-    }
+    private void ApplyPreset() => _applyPreset.Execute(SelectedPreset);
 
     [RelayCommand]
     private async Task ImportPreset()
