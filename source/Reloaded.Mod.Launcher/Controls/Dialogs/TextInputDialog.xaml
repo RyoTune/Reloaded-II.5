@@ -13,10 +13,24 @@
     Width="400"
     x:TypeArguments="vm:TextInputViewModel"
     ResizeMode="NoResize"
-    WindowStartupLocation="CenterOwner"
     SizeToContent="Height"
     Style="{DynamicResource ReloadedReactiveWindow}"
+    WindowStartupLocation="CenterOwner"
     mc:Ignorable="d">
+    <Window.InputBindings>
+        <KeyBinding
+            Key="Esc"
+            Command="{Binding Source={x:Static controls:WindowCommands.CloseWindowCommand}}"
+            CommandParameter="{Binding ElementName=TextInput_Window}" />
+        <KeyBinding
+            Key="Return"
+            Command="{Binding Source={x:Static controls:InputCommands.ConfirmInputCommand}}"
+            CommandParameter="{Binding ElementName=TextInput_Window}" />
+        <KeyBinding
+            Key="Enter"
+            Command="{Binding Source={x:Static controls:InputCommands.ConfirmInputCommand}}"
+            CommandParameter="{Binding ElementName=TextInput_Window}" />
+    </Window.InputBindings>
     <StackPanel Margin="4" FocusManager.FocusedElement="{Binding ElementName=Name_TextBox}">
         <TextBlock
             Margin="0,4"
@@ -27,18 +41,7 @@
         <TextBox
             x:Name="Name_TextBox"
             Margin="0,4"
-            Text="{Binding Text}">
-            <TextBox.InputBindings>
-                <KeyBinding
-                    Key="Return"
-                    Command="{Binding Source={x:Static controls:InputCommands.ConfirmInputCommand}}"
-                    CommandParameter="{Binding ElementName=TextInput_Window}" />
-                <KeyBinding
-                    Key="Enter"
-                    Command="{Binding Source={x:Static controls:InputCommands.ConfirmInputCommand}}"
-                    CommandParameter="{Binding ElementName=TextInput_Window}" />
-            </TextBox.InputBindings>
-        </TextBox>
+            Text="{Binding Text}" />
         <Grid Margin="0,4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
