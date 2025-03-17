@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:commands="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.Commands;assembly=Reloaded.Mod.Launcher.Lib"
     xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"
@@ -289,28 +290,33 @@
             Background="Transparent">
             <StackPanel Orientation="Horizontal">
                 <TextBlock
-                    Margin="8,0"
+                    Margin="4,0"
                     d:Text="RyoTune ~ Reloaded II.5 ReMIX"
                     Style="{DynamicResource DefaultTextBlock}"
                     Text="{Binding RemixDetails}" />
-                <Button
-                    Command="{Binding Source={x:Static commands:OpenPathWithShellCommand.Instance}}"
-                    CommandParameter="https://github.com/RyoTune/Reloaded-II.5"
-                    FontSize="18"
+                <controls:LinkControl Path="https://discord.gg/nmaUZS6Wse" ToolTip="ReMIX Project Discord">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="4,0"
+                            FontFamily="{DynamicResource FontRegular}"
+                            FontSize="16"
+                            Text="Discord" />
+                        <fa:IconBlock FontSize="18" Icon="Discord" />
+                    </StackPanel>
+                </controls:LinkControl>
+                <controls:LinkControl
+                    Margin="4,0"
+                    Path="https://github.com/RyoTune/Reloaded-II.5"
                     ToolTip="View on GitHub">
-                    <Button.Style>
-                        <Style BasedOn="{StaticResource StylessButton}" TargetType="Button">
-                            <Setter Property="Foreground" Value="{DynamicResource ThemeBrush}" />
-                            <Style.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter Property="Foreground" Value="{DynamicResource ThemeBrushLighter}" />
-                                    <Setter Property="Cursor" Value="Hand" />
-                                </Trigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                    <fa:IconBlock Icon="GithubSquare" />
-                </Button>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock
+                            Margin="4,0"
+                            FontFamily="{DynamicResource FontRegular}"
+                            FontSize="16"
+                            Text="Github" />
+                        <fa:IconBlock FontSize="18" Icon="GithubSquare" />
+                    </StackPanel>
+                </controls:LinkControl>
             </StackPanel>
         </Border>
     </Grid>
