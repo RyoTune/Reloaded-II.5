@@ -45,7 +45,10 @@
                         Disable All
                     </Button>
                     <Button Margin="0,0,0,8" Command="{Binding ImportPresetCommand}">
-                        Import Mod Set
+                        Import Preset
+                    </Button>
+                    <Button Margin="0,0,0,8" Command="{Binding ExportPresetCommand}">
+                        Export Preset
                     </Button>
                     <CheckBox
                         Margin="0,0,0,2"
@@ -131,7 +134,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     FontFamily="{DynamicResource FontBold}"
-                                    Foreground="{DynamicResource ThemeBrushLighter}"
+                                    Foreground="{DynamicResource ThemeBrush}"
                                     Text="{Binding Converter={x:Static converters:ModsPresetShortcutIdTextConverter.Instance}, ConverterParameter={x:Reference Name=ListView_Presets}}" />
                                 <TextBlock
                                     Grid.Column="1"

@@ -3,7 +3,7 @@ using YamlDotNet.Serialization;
 
 namespace Reloaded.Mod.Loader.IO.Remix.Serializers;
 
-internal static class YamlSerializer
+public static class YamlSerializer
 {
     private static readonly ISerializer Serializer = new SerializerBuilder()
         .WithNamingConvention(UnderscoredNamingConvention.Instance)

@@ -6,6 +6,7 @@ using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.Commands;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
+using Reloaded.Mod.Loader.IO.Remix.Serializers;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 
@@ -14,6 +15,8 @@ namespace Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableViewModel
 {
+    private const string PRESET_EXT = ".rxpreset";
+
     private static readonly string[] PRESET_NAMES =
     [
         "Shuba shuba shuba",
@@ -32,6 +35,7 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     [NotifyPropertyChangedFor(nameof(SelectedMods))]
     [NotifyCanExecuteChangedFor(nameof(DeletePresetCommand))]
     [NotifyCanExecuteChangedFor(nameof(ApplyPresetCommand))]
+    [NotifyCanExecuteChangedFor(nameof(ExportPresetCommand))]
     private ModsPreset? _selectedPreset;
 
     private readonly PathTuple<ApplicationConfig> _appConfig;
@@ -169,23 +173,55 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
     [RelayCommand]
     private async Task ImportPreset()
     {
-        var files = await CommonInteractions.SelectFile.Handle(new() { Title = "Import Mod Set", Filter = "Mod Set (*.json)|*.json" });
+        var files = await CommonInteractions.SelectFile.Handle(new() { Title = "Import Preset", Filter = $"Preset (*{PRESET_EXT};*.json)|*{PRESET_EXT};*.json" });
         if (files.Length < 1) return;
 
-        var name = await CommonInteractions.PromptTextInput.Handle(new() { Title = "Import Mod Set", Description = "Enter a name for the imported Mod Set." });
-        if (string.IsNullOrEmpty(name)) return;
+        var selectedFile = files[0];
+        var fileExt = Path.GetExtension(selectedFile);
+
+        ModsPreset? newPreset = null;
 
         try
         {
-            var modSet = ModSet.FromFile(files[0]);
-            var newPreset = new ModsPreset() { Name = name, Mods = modSet.EnabledMods.Select(id => new BasicModEntry() { Id = id, Name = GetModName(id) }).ToArray() };
+            // Load Remix preset.
+            if (fileExt == PRESET_EXT)
+            {
+                newPreset = YamlSerializer.DeserializeFile<ModsPreset>(selectedFile);
+            }
 
-            // Duplicate code with saving new preset.
-            // Should probably be an observable on Presets that then saves presets to actual config.
-            Presets.Add(newPreset);
-            _appConfig.Config.Presets.Add(newPreset);
+            // Convert Reloaded ModSet to Remix preset.
+            else
+            {
+                var modSet = ModSet.FromFile(files[0]);
+                newPreset = new ModsPreset() { Name = string.Empty, Mods = modSet.EnabledMods.Select(id => new BasicModEntry() { Id = id, Name = GetModName(id) }).ToArray() };
+            }
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            return;
+        }
+
+
+        var finalName = await CommonInteractions.PromptTextInput.Handle(new() { Title = "Import Preset", Description = "Enter a name for the preset.", Text = newPreset.Name });
+        if (string.IsNullOrEmpty(finalName)) return;
+
+        newPreset.Name = finalName;
+
+        Presets.Add(newPreset);
+        _appConfig.Config.Presets.Add(newPreset);
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUsePresetCommand))]
+    private async Task ExportPreset()
+    {
+        var defaultName = $"{Path.GetFileNameWithoutExtension(_appConfig.Config.AppId)} - {SelectedPreset!.Name}{PRESET_EXT}";
+        var outputFile = await CommonInteractions.SaveFile.Handle(new() { Title = "Export Preset", FileName = defaultName, Filter = $"Preset (*{PRESET_EXT})|*{PRESET_EXT}" });
+        if (string.IsNullOrEmpty(outputFile)) return;
+
+        try
+        {
+            YamlSerializer.SerializeFile(outputFile, SelectedPreset);
+        } catch (Exception) { }
     }
 
     private string GetModName(string modId)
