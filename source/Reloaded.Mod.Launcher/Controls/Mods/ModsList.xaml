@@ -9,7 +9,7 @@
     xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:system="clr-namespace:System;assembly=mscorlib"
-    x:Name="ModListView"
+    x:Name="ModsListControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
@@ -20,16 +20,22 @@
         dd:DragDrop.IsDragSource="True"
         dd:DragDrop.IsDropTarget="True"
         Focusable="False"
-        ItemsSource="{Binding ModsSource, RelativeSource={RelativeSource AncestorType=UserControl}}"
-        SelectedItem="{Binding SelectedMod, RelativeSource={RelativeSource AncestorType=UserControl}}"
+        ItemsSource="{Binding ModsSource, ElementName=ModsListControl}"
+        SelectedItem="{Binding SelectedMod, ElementName=ModsListControl}"
         ToolTipService.InitialShowDelay="250"
         VirtualizingPanel.IsVirtualizing="True"
         VirtualizingPanel.VirtualizationMode="Recycling">
         <ListView.Resources>
             <converters:DivideConverter x:Key="Divider" />
+
+            <!--
+                Required here and in ListView style to fully disable vertical scrolling,
+                allowing for wrap panel to wrap horizontally properly.
+                The mods list control is very "It Works TM".
+            -->
             <Style TargetType="{x:Type ScrollViewer}">
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static Orientation.Horizontal}">
+                    <DataTrigger Binding="{Binding Orientation, ElementName=ModsListControl}" Value="{x:Static Orientation.Horizontal}">
                         <Setter Property="VerticalScrollBarVisibility" Value="Disabled" />
                     </DataTrigger>
                 </Style.Triggers>
@@ -46,8 +52,12 @@
         </ListView.Resources>
         <ListView.Style>
             <Style BasedOn="{StaticResource DefaultListViewStyle}" TargetType="{x:Type ListView}">
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static Orientation.Horizontal}">
+                    <DataTrigger Binding="{Binding Orientation, ElementName=ModsListControl}" Value="{x:Static Orientation.Horizontal}">
+                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+                        <Setter Property="Padding" Value="32" />
                         <Setter Property="ItemsPanel">
                             <Setter.Value>
                                 <ItemsPanelTemplate>
@@ -55,8 +65,6 @@
                                 </ItemsPanelTemplate>
                             </Setter.Value>
                         </Setter>
-                        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled" />
-                        <Setter Property="Padding" Value="32" />
                     </DataTrigger>
                 </Style.Triggers>
             </Style>
@@ -101,11 +109,11 @@
         </ListView.ItemContainerStyle>
         <ListView.ItemTemplate>
             <DataTemplate>
-                <local:ModItem IsCompact="{Binding IsCompact, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                <local:ModItem IsCompact="{Binding IsCompact, ElementName=ModsListControl}" Orientation="{Binding Orientation, ElementName=ModsListControl}">
                     <local:ModItem.Style>
                         <Style TargetType="{x:Type local:ModItem}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding Orientation, RelativeSource={RelativeSource AncestorType=UserControl}}" Value="{x:Static Orientation.Horizontal}">
+                                <DataTrigger Binding="{Binding Orientation, ElementName=ModsListControl}" Value="{x:Static Orientation.Horizontal}">
                                     <Setter Property="Width" Value="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ListView}, Converter={StaticResource Divider}, ConverterParameter=2.5, FallbackValue=200, TargetNullValue=200}" />
                                 </DataTrigger>
                             </Style.Triggers>

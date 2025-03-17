@@ -8,27 +8,26 @@
     xmlns:local="clr-namespace:Reloaded.Mod.Launcher.Controls.Mods"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:up="clr-namespace:Reloaded.Mod.Launcher.Lib.Remix.Updates;assembly=Reloaded.Mod.Launcher.Lib"
+    x:Name="ModItemControl"
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <!--  Bug: Breaks the dynamic width set by mods list based on actual width.  -->
-    <UserControl.Style>
-        <Style TargetType="UserControl">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsHidden}" Value="True">
-                    <Setter Property="Opacity" Value="0.75" />
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Style>
     <UserControl.Resources>
         <converters:StringNullOrEmptyConverter x:Key="IsNullOrEmpty" />
     </UserControl.Resources>
     <Grid>
+        <Grid.Style>
+            <Style TargetType="Grid">
+                <Style.Triggers>
+                    <DataTrigger Binding="{Binding IsHidden}" Value="True">
+                        <Setter Property="Opacity" Value="0.75" />
+                    </DataTrigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Style>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="auto" />
             <ColumnDefinition Width="auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -57,6 +56,22 @@
                 </Style>
             </CheckBox.Style>
         </CheckBox>
+
+        <Separator
+            Width="16"
+            Margin="0,0,8,0"
+            Background="{DynamicResource ThemeBrushDarker}">
+            <Separator.Style>
+                <Style TargetType="Separator">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Tuple.Config.IsSeparator}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Separator.Style>
+        </Separator>
 
         <!--  Top Half  -->
         <DockPanel Grid.Column="1">
@@ -106,6 +121,27 @@
                     </Style.Triggers>
                 </Style>
             </StackPanel.Style>
+
+            <TextBlock
+                Margin="8,0,0,0"
+                FontFamily="{DynamicResource FontLight}"
+                FontSize="14"
+                Text="{Binding Tuple.Config.ModAuthor, UpdateSourceTrigger=PropertyChanged}"
+                TextTrimming="CharacterEllipsis"
+                ToolTip="{Binding Tuple.Config.ModAuthor, UpdateSourceTrigger=PropertyChanged}">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Orientation, ElementName=ModItemControl}" Value="{x:Static Orientation.Horizontal}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsCompact, ElementName=ModItemControl}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
 
             <fa:IconBlock
                 x:Name="IconSupport"
