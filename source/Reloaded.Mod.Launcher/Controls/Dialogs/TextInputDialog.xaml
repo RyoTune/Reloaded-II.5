@@ -34,7 +34,7 @@
     <StackPanel Margin="4" FocusManager.FocusedElement="{Binding ElementName=Name_TextBox}">
         <TextBlock
             Margin="0,4"
-            FontFamily="{DynamicResource FontBold}"
+            FontFamily="{DynamicResource FontRegular}"
             FontSize="16"
             Style="{DynamicResource TextBlockDefault}"
             Text="{Binding Description}" />
