@@ -8,9 +8,9 @@ public static class CommonInteractions
 {
     public static readonly Interaction<TextInputViewModel, string?> PromptTextInput = new();
 
-    public static readonly Interaction<SelectFileConfig, string[]?> SelectFile = new();
+    public static readonly Interaction<SelectFileConfig, string[]> SelectFile = new();
 
     public static readonly Interaction<SaveFileConfig, string?> SaveFile = new();
 
-    public static readonly Interaction<SelectFolderConfig, string[]?> SelectFolder = new();
+    public static readonly Interaction<SelectFolderConfig, string[]> SelectFolder = new();
 }

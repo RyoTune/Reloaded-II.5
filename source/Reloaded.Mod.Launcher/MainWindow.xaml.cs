@@ -68,7 +68,7 @@ public partial class MainWindow : ReloadedWindow
         }
     }
 
-    private void HandleSelectFolder(IInteractionContext<SelectFolderConfig, string[]?> context)
+    private void HandleSelectFolder(IInteractionContext<SelectFolderConfig, string[]> context)
     {
         var config = context.Input;
         var openFolder = new VistaFolderBrowserDialog()
@@ -84,11 +84,11 @@ public partial class MainWindow : ReloadedWindow
         }
         else
         {
-            context.SetOutput(null);
+            context.SetOutput([]);
         }
     }
 
-    private void HandleSelectFile(IInteractionContext<SelectFileConfig, string[]?> context)
+    private void HandleSelectFile(IInteractionContext<SelectFileConfig, string[]> context)
     {
         var config = context.Input;
         using var openFile = new System.Windows.Forms.OpenFileDialog()
@@ -104,7 +104,7 @@ public partial class MainWindow : ReloadedWindow
         }
         else
         {
-            context.SetOutput(null);
+            context.SetOutput([]);
         }
     }
 
