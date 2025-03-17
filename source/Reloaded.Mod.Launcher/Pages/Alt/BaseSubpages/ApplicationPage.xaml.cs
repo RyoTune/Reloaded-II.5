@@ -1,3 +1,4 @@
+using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs;
@@ -32,6 +33,18 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
         ViewModel = new ApplicationViewModel(Lib.IoC.Get<MainPageViewModel>().SelectedApplication!, Lib.IoC.Get<ModConfigService>(), Lib.IoC.Get<ModUserConfigService>(), Lib.IoC.Get<LoaderConfig>());
         ViewModel.PropertyChanged += WhenPageChanged;
         ViewModel.ChangeApplicationPage(ApplicationSubPage.ApplicationSummary);
+
+        var appSumPage = this.PageHost.CurrentPage as ApplicationSubPages.AppSummaryPage;
+        for (int i = 0; i < 9; i++)
+        {
+            var id = i + 1;
+            var inputBinding = new KeyBinding(ReactiveCommand.Create(() =>
+            {
+                appSumPage?.ViewModel.ApplyShortcut(id);
+                Keyboard.Focus(this);
+            }), Enum.Parse<Key>($"D{id}"), ModifierKeys.Control);
+            this.InputBindings.Add(inputBinding);
+        }
     }
     
     private void WhenPageChanged(object? sender, PropertyChangedEventArgs e)

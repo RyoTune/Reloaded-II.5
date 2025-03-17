@@ -119,6 +119,7 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
     private CancellationTokenSource _saveToken;
     private IDisposable? _saveStream;
     private readonly LoaderConfig _loaderConfig;
+    private readonly ApplyPresetCommand _applyPreset;
 
     /// <inheritdoc />
     public ConfigureModsViewModel(ApplicationViewModel model, ModUserConfigService userConfigService, LoaderConfig loaderConfig)
@@ -128,6 +129,7 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
         _userConfigService = userConfigService;
         _saveToken = new CancellationTokenSource();
         _loaderConfig = loaderConfig;
+        _applyPreset = new(this);
 
         // Wait for parent to fully initialize.
         _applicationViewModel.OnGetModsForThisApp += BuildModList;
@@ -205,6 +207,15 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
     public ReactiveCommand<Unit, Unit> ToggleModHideCommand { get; }
 
     public int NumHiddenMods { get; set; } = 0;
+
+    public void ApplyShortcut(int id)
+    {
+        var preset = Shortcuts.FirstOrDefault(x => x.Id == id)?.Preset;
+        if (preset != null)
+        {
+            _applyPreset.Execute(preset);
+        }
+    }
 
     /// <summary>
     /// Builds the list of mods displayed to the user.
