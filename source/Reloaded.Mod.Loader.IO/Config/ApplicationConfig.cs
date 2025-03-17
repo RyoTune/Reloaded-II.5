@@ -36,7 +36,7 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     public bool DontInject { get; set; } = false; // don't inject loader, start game via regular process launch.
     public bool IsMsStore { get; set; } = false; // attempts to unprotect this binary on every launch.
 
-    // Remix
+    /* REMIX */
     public ObservableCollection<ModsPreset> Presets { get; set; } = [];
 
     public ReloadedMode ReloadedMode { get; set; } = ReloadedMode.Default;

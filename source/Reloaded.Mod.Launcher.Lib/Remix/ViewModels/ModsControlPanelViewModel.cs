@@ -46,14 +46,14 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
         Presets = [NEW_PRESET_ENTRY, .._appConfig.Config.Presets];
         SelectedPreset = NEW_PRESET_ENTRY;
 
-        var presetsChangeSet = Presets.ToObservableChangeSet();
         this.WhenActivated((CompositeDisposable disp) =>
         {
             this.WhenPropertyChanged(vm => vm.ShortcutsEnabled, false)
                 .Subscribe(_ => IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath))
                 .DisposeWith(disp);
 
-            presetsChangeSet.Subscribe(set =>
+            Presets.ToObservableChangeSet()
+            .Subscribe(set =>
             {
                 foreach (var change in set)
                 {
@@ -174,6 +174,34 @@ public partial class ModsControlPanelViewModel : ViewModelBase, IActivatableView
                 mod.Enabled = SelectedPreset.Mods.Any(x => x.Id == mod.Tuple.Config.ModId);
             }
         }
+    }
+
+    [RelayCommand]
+    private async Task ImportPreset()
+    {
+        var files = await CommonInteractions.SelectFile.Handle(new() { Title = "Import Mod Set", Filter = "Mod Set (*.json)|*.json" });
+        if (files.Length < 1) return;
+
+        var name = await CommonInteractions.PromptTextInput.Handle(new() { Title = "Import Mod Set", Description = "Enter a name for the imported Mod Set." });
+        if (string.IsNullOrEmpty(name)) return;
+
+        try
+        {
+            var modSet = ModSet.FromFile(files[0]);
+            var newPreset = new ModsPreset() { Name = name, Mods = modSet.EnabledMods.Select(id => new BasicModEntry() { Id = id, Name = GetModName(id) }).ToArray() };
+
+            // Duplicate code with saving new preset.
+            // Should probably be an observable on Presets that then saves presets to actual config.
+            Presets.Add(newPreset);
+            _appConfig.Config.Presets.Add(newPreset);
+        }
+        catch (Exception) { }
+    }
+
+    private string GetModName(string modId)
+    {
+        var mod = _modsVm.AllMods?.FirstOrDefault(x => x.Tuple.Config.ModId == modId);
+        return mod?.Tuple.Config.ModName ?? modId;
     }
 
     private static BasicModEntry[] GetActiveMods(IEnumerable<ModEntry>? mods)

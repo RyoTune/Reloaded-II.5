@@ -44,6 +44,9 @@
                         CommandParameter="{StaticResource False}">
                         Disable All
                     </Button>
+                    <Button Margin="0,0,0,8" Command="{Binding ImportPresetCommand}">
+                        Import Mod Set
+                    </Button>
                     <CheckBox
                         Margin="0,0,0,2"
                         Content="Show Shortcuts"
@@ -128,7 +131,7 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
                                     FontFamily="{DynamicResource FontBold}"
-                                    Foreground="{DynamicResource AccentColorLightestBrush}"
+                                    Foreground="{DynamicResource ThemeBrushLighter}"
                                     Text="{Binding Converter={x:Static converters:ModsPresetShortcutIdTextConverter.Instance}, ConverterParameter={x:Reference Name=ListView_Presets}}" />
                                 <TextBlock
                                     Grid.Column="1"
