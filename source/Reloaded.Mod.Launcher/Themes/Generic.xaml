@@ -59,15 +59,17 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:LinkControl}">
-                    <ContentPresenter />
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Cursor" Value="Hand" />
-                            <Setter Property="Foreground" Value="{DynamicResource ThemeBrushLighter}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
+                    <Grid Background="Transparent">
+                        <ContentPresenter />
+                    </Grid>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Cursor" Value="Hand" />
+                <Setter Property="Foreground" Value="{DynamicResource ThemeBrushLighter}" />
+            </Trigger>
+        </Style.Triggers>
     </Style>
 </ResourceDictionary>
