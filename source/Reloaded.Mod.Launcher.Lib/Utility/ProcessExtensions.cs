@@ -127,11 +127,8 @@ public static unsafe class ProcessExtensions
     /// </summary>
     public static void OpenFileWithDefaultProgram(string url)
     {
-        Process.Start(new ProcessStartInfo("cmd", $"/c start \"\" \"{url}\"")
-        {
-            CreateNoWindow = true,
-            WindowStyle = ProcessWindowStyle.Hidden
-        });
+        var info = new ProcessStartInfo() { FileName = url, UseShellExecute = true };
+        Process.Start(info);
     }
 
     /// <summary>
