@@ -1,10 +1,10 @@
+using Reloaded.Mod.Interfaces.Structs;
 using DialogResult = System.Windows.Forms.DialogResult;
 using Color = System.Windows.Media.Color;
 using PropertyItem = HandyControl.Controls.PropertyItem;
 using TextBox = System.Windows.Controls.TextBox;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
 using System.ComponentModel.DataAnnotations;
-using Reloaded.Mod.Interfaces.Structs;
 
 namespace Reloaded.Mod.Launcher.Controls;
 
@@ -13,8 +13,6 @@ namespace Reloaded.Mod.Launcher.Controls;
 /// </summary>
 public class PropertyGridEx : PropertyGrid
 {
-    private const string ElementItemsControl = "PART_ItemsControl";
-
     /// <summary>
     /// Property for current highlighted object.
     /// </summary>
@@ -22,38 +20,22 @@ public class PropertyGridEx : PropertyGrid
 
     private List<PropertyItem> _properties = new List<PropertyItem>();
     private List<PropertyDescriptor> _propertyDescriptors = new List<PropertyDescriptor>();
+    private int _currMaxPriority = int.MaxValue;
 
-    private ICollectionView? _dataView;
-
-    protected override PropertyItem CreatePropertyItem(PropertyDescriptor propertyDescriptor, object component, string? category,
+    protected override PropertyItem CreatePropertyItem(PropertyDescriptor propertyDescriptor, object component, string category,
         int hierarchyLevel)
     {
-        var order = propertyDescriptor.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? 0;
-        if (order == -1)
-        {
-            order = _properties.Count;
-        }
-
         ((PropertyResolverEx)PropertyResolver).Descriptor = propertyDescriptor;
-        var item = base.CreatePropertyItem(propertyDescriptor, component, category, order);
+        var item = base.CreatePropertyItem(propertyDescriptor, component, category, hierarchyLevel);
+
+        /// Uses <see cref="DisplayAttribute.Order"/> for item ordering.
+        /// Unordered items are given a decreasing maximum value to maintain the existing "order" in configs.
+        /// It does means that unordered items will always be at the top, but oh well.
+        item.Priority = propertyDescriptor.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? _currMaxPriority--;
+
         _properties.Add(item);
         _propertyDescriptors.Add(propertyDescriptor);
         return item;
-    }
-
-    private void SortByCategory(object? sender, ExecutedRoutedEventArgs? e)
-    {
-        if (_dataView == null) return;
-
-        using (_dataView.DeferRefresh())
-        {
-            _dataView.GroupDescriptions.Clear();
-            _dataView.SortDescriptions.Clear();
-            _dataView.SortDescriptions.Add(new SortDescription(PropertyItem.HierarchyLevelProperty.Name, ListSortDirection.Ascending));
-            _dataView.SortDescriptions.Add(new SortDescription(PropertyItem.CategoryProperty.Name, ListSortDirection.Ascending));
-            _dataView.SortDescriptions.Add(new SortDescription(PropertyItem.DisplayNameProperty.Name, ListSortDirection.Ascending));
-            _dataView.GroupDescriptions.Add(new PropertyGroupDescription(PropertyItem.CategoryProperty.Name));
-        }
     }
 
     public override PropertyResolver PropertyResolver { get; }
@@ -117,10 +99,10 @@ public class PropertyResolverEx : PropertyResolver
         }
 
         if (type == typeof(string)) return new PlainTextPropertyEditor(this);
-        
+
         // Numbers
         if (type == typeof(sbyte)) return new NumberPropertyEditor(sbyte.MinValue, sbyte.MaxValue, this);
-        if (type == typeof(byte))  return new NumberPropertyEditor(byte.MinValue, byte.MaxValue, this);
+        if (type == typeof(byte)) return new NumberPropertyEditor(byte.MinValue, byte.MaxValue, this);
 
         if (type == typeof(short)) return new NumberPropertyEditor(short.MinValue, short.MaxValue, this);
         if (type == typeof(ushort)) return new NumberPropertyEditor(ushort.MinValue, ushort.MaxValue, this);
@@ -160,7 +142,7 @@ public class PropertyResolverEx : PropertyResolver
 /// <summary>
 /// Extensions helping working with property resolvers.
 /// </summary>
-public static class PropertyResolverExtensions 
+public static class PropertyResolverExtensions
 {
     public static void AttachTooltipAdder(this PropertyItem propertyItem, PropertyResolverEx resolverEx)
     {
@@ -170,7 +152,7 @@ public static class PropertyResolverExtensions
     private static void PropertyItemLoaded(object? sender, EventArgs e, PropertyResolverEx resolverEx, bool hasDescription)
     {
         var propertyItem = (PropertyItem)sender!;
-        
+
         // Make the child textbox not use built-in tooltip
         var textbox = FindChild<TextBox>(propertyItem, "");
         if (textbox != null)
@@ -232,7 +214,7 @@ public static class PropertyResolverExtensions
         where T : DependencyObject
     {
         // Confirm parent and childName are valid. 
-        if (parent == null) 
+        if (parent == null)
             return null;
 
         T? foundChild = null;
@@ -249,13 +231,13 @@ public static class PropertyResolverExtensions
                 foundChild = FindChild<T>(child, childName);
 
                 // If the child is found, break so we do not overwrite the found child. 
-                if (foundChild != null) 
+                if (foundChild != null)
                     break;
             }
             else if (!string.IsNullOrEmpty(childName))
             {
                 // If the child's name is set for search
-                if (child is not FrameworkElement frameworkElement || frameworkElement.Name != childName) 
+                if (child is not FrameworkElement frameworkElement || frameworkElement.Name != childName)
                     continue;
 
                 // if the child's name is of the request name
