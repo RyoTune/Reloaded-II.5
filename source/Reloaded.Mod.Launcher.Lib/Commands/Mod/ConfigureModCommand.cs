@@ -1,5 +1,3 @@
-using Reloaded.Mod.Loader.IO.Remix.Configs;
-
 namespace Reloaded.Mod.Launcher.Lib.Commands.Mod;
 
 /// <summary>
@@ -70,17 +68,6 @@ public class ConfigureModCommand : WithCanExecuteChanged, ICommand
     {
         var config = _modTuple!.Config;
         var modDirectory = Path.GetFullPath(Path.GetDirectoryName(_modTuple.Path)!);
-
-        if (File.Exists(DynamicConfigurator.GetModSchemaFile(modDirectory)) && _modUserConfigTuple != null)
-        {
-            var configDirectory = Path.GetFullPath(Path.GetDirectoryName(_modUserConfigTuple.Path)!);
-            var dynConfigurator = DynamicConfigurator.Create(modDirectory, configDirectory);
-            dynConfigurator.SetModDirectory(modDirectory);
-
-            configurator = dynConfigurator;
-            loader = null;
-            return true;
-        }
 
         string dllPath = config.GetManagedDllPath(_modTuple.Path);
         configurator = null;

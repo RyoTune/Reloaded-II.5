@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using Reloaded.Mod.Launcher.Lib.Remix.Updates;
-using Reloaded.Mod.Loader.IO.Remix.Configs;
 using ObservableObject = CommunityToolkit.Mvvm.ComponentModel.ObservableObject;
 
 namespace Reloaded.Mod.Launcher.Lib.Remix.Mods;
@@ -58,10 +57,6 @@ public partial class ModStatus : ObservableObject
     private bool HasConfigurator(PathTuple<ModConfig> tuple)
     {
         var config = tuple.Config;
-        var modDirectory = Path.GetFullPath(Path.GetDirectoryName(tuple.Path)!);
-
-        if (File.Exists(DynamicConfigurator.GetModSchemaFile(modDirectory))) return true;
-
         string dllPath = config.GetManagedDllPath(tuple.Path);
 
         if (!File.Exists(dllPath))

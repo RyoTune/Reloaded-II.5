@@ -1,5 +1,3 @@
-using Reloaded.Mod.Loader.IO.Remix.Configs;
-using SmartFormat;
 using Type = System.Type;
 
 namespace Reloaded.Mod.Loader.Mods;
@@ -330,12 +328,6 @@ public class PluginManager : IDisposable
         {
             LoaderApi.ModLoading(instance.Mod, instance.ModConfig);
 
-            /*
-             * Applying dynamic mod config here is
-             * simpler than adding LoadContext to non-DLL mods
-             * and editing mod interfaces.
-             */
-            ApplyDynamicConfig(instance);
             instance.Start(LoaderApi);
 
             _modifications[instance.ModConfig.ModId] = instance;
@@ -346,106 +338,6 @@ public class PluginManager : IDisposable
             Logger.WriteLine($"Error while starting mod: {instance.ModConfig.ModId}", Logger.ColorRed);
             throw;
         }
-    }
-
-    private static readonly Dictionary<string, MethodInfo> KnownMethods = [];
-
-    private void ApplyDynamicConfig(ModInstance instance)
-    {
-        var modDir = LoaderApi.GetDirectoryForModId(instance.ModConfig.ModId);
-        if (!File.Exists(DynamicConfigurator.GetModSchemaFile(modDir)))
-        {
-            return;
-        }
-
-        var configDir = LoaderApi.GetModConfigDirectory(instance.ModConfig.ModId);
-        var configurator = DynamicConfigurator.Create(modDir, configDir);
-        configurator.SetModDirectory(modDir);
-
-        var config = configurator.GetConfig();
-
-        /* Build config variables dictionary. */
-        var configVars = config.Constants.ToDictionary(x => x.Key, x => (object?)x.Value);
-        foreach (var item in config.PropertyDescriptors)
-        {
-            configVars[item.Name] = item.GetValue(configVars);
-        }
-
-        foreach (var list in config.Lists)
-        {
-            configVars[list.Key] = list.Value;
-        }
-
-        configVars["ModDir"] = modDir;
-        configVars["ModFolder"] = modDir;
-        configVars["ModId"] = instance.ModConfig.ModId;
-
-        // Execute actions.
-        foreach (var action in config.Actions)
-        {
-            if (!string.IsNullOrEmpty(action.If) && (bool)config.GetSettingValue(action.If) == false)
-            {
-                continue;
-            }
-
-            var actionUsing = Smart.Format(action.Using, configVars);
-            var controller = LoaderApi.GetController(actionUsing) ?? throw new Exception($"Failed to find 'using': {actionUsing}");
-
-            var typeInstance = controller.Target!;
-            var actionRun = Smart.Format(action.Run, configVars);
-
-            var methodKey = $"{actionUsing}.{actionRun}";
-
-            // Retrieve method from cached methods or with relfection.
-            if (!KnownMethods.TryGetValue(methodKey, out var method))
-            {
-                var type = typeInstance.GetType();
-                method = type.GetMethod(actionRun) ?? throw new Exception($"Failed to find 'run': {actionRun}");
-                KnownMethods[methodKey] = method;
-            }
-
-            var methodRet = method.Invoke(typeInstance, ResolveParameters(action.With, method.GetParameters(), configVars));
-            if (!string.IsNullOrEmpty(action.Output))
-            {
-                configVars[action.Output] = methodRet;
-            }
-        }
-    }
-
-    private static object?[]? ResolveParameters(string[] actionArgs, ParameterInfo[] methodParams, Dictionary<string, object?> configVars)
-    {
-        if (actionArgs.Length == 0) return null;
-
-        var resolved = new List<object?>();
-        for (int i = 0; i < actionArgs.Length; i++)
-        {
-            var argText = actionArgs[i];
-
-            // Null arg value.
-            if (argText == null || argText == "null") return null;
-
-            var targetParam = methodParams[i];
-
-            // Arg is the raw value of a setting/constant.
-            if (configVars.TryGetValue(argText, out var configArg))
-            {
-                // Convert variable to param type.
-                resolved.Add(Convert.ChangeType(configArg, targetParam.ParameterType));
-                continue;
-            }
-
-            // Parameter is string, format and use arg text.
-            if (targetParam.ParameterType == typeof(string))
-            {
-                resolved.Add(Smart.Format(argText, configVars));
-                continue;
-            }
-
-            // Convert arg text to parameter type.
-            resolved.Add(Convert.ChangeType(argText, targetParam.ParameterType));
-        }
-
-        return resolved.ToArray();
     }
 
     /* Setup for mod loading */
