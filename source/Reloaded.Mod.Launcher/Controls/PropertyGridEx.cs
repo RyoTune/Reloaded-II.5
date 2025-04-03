@@ -1,13 +1,10 @@
-using Reloaded.Mod.Interfaces.Structs;
 using DialogResult = System.Windows.Forms.DialogResult;
 using Color = System.Windows.Media.Color;
 using PropertyItem = HandyControl.Controls.PropertyItem;
 using TextBox = System.Windows.Controls.TextBox;
 using OpenFileDialog = System.Windows.Forms.OpenFileDialog;
-using HandyControl.Tools.Extension;
-using Reloaded.Mod.Loader.IO.Remix.Configs;
-using DynamicData;
 using System.ComponentModel.DataAnnotations;
+using Reloaded.Mod.Interfaces.Structs;
 
 namespace Reloaded.Mod.Launcher.Controls;
 
@@ -26,59 +23,22 @@ public class PropertyGridEx : PropertyGrid
     private List<PropertyItem> _properties = new List<PropertyItem>();
     private List<PropertyDescriptor> _propertyDescriptors = new List<PropertyDescriptor>();
 
-    private ItemsControl? _itemsControl;
     private ICollectionView? _dataView;
 
     protected override PropertyItem CreatePropertyItem(PropertyDescriptor propertyDescriptor, object component, string? category,
         int hierarchyLevel)
     {
+        var order = propertyDescriptor.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? 0;
+        if (order == -1)
+        {
+            order = _properties.Count;
+        }
+
         ((PropertyResolverEx)PropertyResolver).Descriptor = propertyDescriptor;
-        var item = base.CreatePropertyItem(propertyDescriptor, component, category, hierarchyLevel);
+        var item = base.CreatePropertyItem(propertyDescriptor, component, category, order);
         _properties.Add(item);
         _propertyDescriptors.Add(propertyDescriptor);
         return item;
-    }
-
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();
-        _itemsControl = GetTemplateChild(ElementItemsControl) as ItemsControl;
-    }
-
-    protected override void OnSelectedObjectChanged(object oldValue, object newValue)
-    {
-        //base.OnSelectedObjectChanged(oldValue, newValue);
-        UpdateItems(SelectedObject);
-        RaiseEvent(new RoutedPropertyChangedEventArgs<object>(oldValue, newValue, SelectedObjectChangedEvent));
-    }
-
-    private void UpdateItems(object obj)
-    {
-        if (obj == null || _itemsControl == null) return;
-
-        if (obj is DynamicConfig config)
-        {
-            _dataView = CollectionViewSource.GetDefaultView(config.PropertyDescriptors
-                .Where(PropertyResolver.ResolveIsBrowsable)
-                .Select(x => CreatePropertyItem(x, SelectedObject, null, ResolveHierarchy(config.PropertyDescriptors, x)))
-                .Do(item => item.InitElement()));
-
-            SortByCategory(null, null);
-            _itemsControl.ItemsSource = _dataView;
-        }
-        else
-        {
-            var properties = TypeDescriptor.GetProperties(obj.GetType())
-                .OfType<PropertyDescriptor>()
-                .Where(PropertyResolver.ResolveIsBrowsable).ToArray();
-
-            _dataView = CollectionViewSource.GetDefaultView(properties
-                .Select(property => CreatePropertyItem(property, SelectedObject, null, ResolveHierarchy(properties, property)))
-                .Do(item => item.InitElement()));
-
-            SortByCategory(null, null);
-            _itemsControl.ItemsSource = _dataView;
-        }
     }
 
     private void SortByCategory(object? sender, ExecutedRoutedEventArgs? e)
@@ -124,24 +84,6 @@ public class PropertyGridEx : PropertyGrid
             if (property.DefaultValue != null)
                 _propertyDescriptors[x].SetValue(property.Value, property.DefaultValue);
         }
-
-        if (SelectedObject is DynamicConfig config)
-        {
-            UpdateItems(config);
-        }
-    }
-
-    private static int ResolveHierarchy(PropertyDescriptor[] sourceList, PropertyDescriptor property)
-    {
-        var order = property.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? 0;
-
-        // Use -1 to indicate order of appearance in source list (such as in DynamicConfig).
-        if (order == -1)
-        {
-            return sourceList.IndexOf(property);
-        }
-
-        return order;
     }
 }
 
