@@ -188,11 +188,7 @@ public partial class EditModViewModel : ReactiveViewModelBase
     public string Name
     {
         get => _config.ModName;
-        set
-        {
-            _config.ModName = value;
-            this.RaiseAndSetIfChanged(_config.ModName, value, _config, (m, v) => m.ModName = v);
-        }
+        set => this.RaiseAndSetIfChanged(_config.ModName, value, _config, (m, v) => m.ModName = v);
     }
 
     public string Author
