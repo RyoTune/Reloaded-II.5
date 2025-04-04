@@ -1,4 +1,6 @@
+using System.Reactive;
 using System.Text;
+using HandyControl.Data;
 using Ookii.Dialogs.Wpf;
 using ReactiveUI;
 using Reloaded.Mod.Launcher.Controls.Dialogs;
@@ -46,6 +48,47 @@ public partial class MainWindow : ReloadedWindow
         CommonInteractions.SelectFile.RegisterHandler(HandleSelectFile);
         CommonInteractions.SelectFolder.RegisterHandler(HandleSelectFolder);
         CommonInteractions.SaveFile.RegisterHandler(HandleSaveFile);
+        CommonInteractions.Toast.RegisterHandler(HandleNotification);
+    }
+
+    private void HandleNotification(IInteractionContext<ToastConfig, Unit> context)
+    {
+        var toast = context.Input;
+        var growl = new GrowlInfo()
+        {
+            Message = toast.Message,
+            WaitTime = toast.Duration,
+            ShowDateTime = toast.ShowDateTime,
+            StaysOpen = toast.StaysOpen,
+            ActionBeforeClose = toast.PromptFunc,
+            IconBrushKey = "ThemeBrushLighter",
+        };
+
+        growl.ConfirmStr = toast.ConfirmText ?? growl.ConfirmStr;
+        growl.CancelStr = toast.CancelText ?? growl.CancelStr;
+
+        switch (toast.Type)
+        {
+            case ToastConfig.ToastType.Info:
+                Growl.Info(growl);
+                break;
+            case ToastConfig.ToastType.Warning:
+                Growl.Warning(growl);
+                break;
+            case ToastConfig.ToastType.Error:
+                Growl.Error(growl);
+                break;
+            case ToastConfig.ToastType.Success:
+                Growl.Success(growl);
+                break;
+            case ToastConfig.ToastType.Prompt:
+                Growl.Ask(growl);
+                break;
+            default:
+                break;
+        }
+
+        context.SetOutput(Unit.Default);
     }
 
     private void HandleSaveFile(IInteractionContext<SaveFileConfig, string?> context)

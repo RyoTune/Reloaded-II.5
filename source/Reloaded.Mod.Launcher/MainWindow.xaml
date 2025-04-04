@@ -6,6 +6,7 @@
     xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:default="clr-namespace:Reloaded.WPF.Theme.Default;assembly=Reloaded.WPF.Theme.Default"
+    xmlns:hc="https://handyorg.github.io/handycontrol"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="{Binding Path=RealViewModel.WindowTitle, RelativeSource={RelativeSource Mode=Self}}"
     Width="1056"
@@ -19,6 +20,14 @@
     <!--  Window Content  -->
     <Grid>
         <controls:PageHost CurrentPage="{Binding Path=RealViewModel.CurrentPage, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Window}}, Converter={x:Static converters:ApplicationPageBaseToPageConverter.Instance}}" />
+
+        <ScrollViewer
+            Margin="0,4"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            VerticalScrollBarVisibility="Hidden">
+            <StackPanel hc:Growl.GrowlParent="True" />
+        </ScrollViewer>
 
         <Border
             x:Name="Border_DragDropCapturer"

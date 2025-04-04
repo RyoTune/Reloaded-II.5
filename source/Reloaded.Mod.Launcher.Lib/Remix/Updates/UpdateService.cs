@@ -1,4 +1,6 @@
-﻿using Reloaded.Mod.Launcher.Lib.Remix.Mods;
+﻿using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
+using Reloaded.Mod.Launcher.Lib.Remix.Mods;
+using System.Reactive.Linq;
 
 namespace Reloaded.Mod.Launcher.Lib.Remix.Updates;
 
@@ -34,6 +36,26 @@ public static class UpdateService
 
         IsChecking = false;
         ModStatusRegistry.RefreshAll();
+
+        if (summary?.ManagerModResultPairs.Count > 0)
+        {
+            await CommonInteractions.Toast.Handle(new()
+            {
+                Message = $"{summary.ManagerModResultPairs.Count} mod(s) have updates available!",
+                Type = ToastConfig.ToastType.Prompt,
+                CancelText = "Ignore",
+                ConfirmText = "Open",
+                PromptFunc = (result) =>
+                {
+                    if (result)
+                    {
+                        Actions.ShowModUpdateDialog.Invoke(new ModUpdateDialogViewModel(updater!, summary));
+                    }
+
+                    return true;
+                }
+            });
+        }
     }
 
     public static bool HasModUpdate(PathTuple<ModConfig> tuple)

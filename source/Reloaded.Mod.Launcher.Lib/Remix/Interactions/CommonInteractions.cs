@@ -1,5 +1,6 @@
 ﻿using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
+using System.Reactive;
 
 namespace Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 
@@ -13,4 +14,6 @@ public static class CommonInteractions
     public static readonly Interaction<SaveFileConfig, string?> SaveFile = new();
 
     public static readonly Interaction<SelectFolderConfig, string[]> SelectFolder = new();
+
+    public static readonly Interaction<ToastConfig, Unit> Toast = new();
 }
