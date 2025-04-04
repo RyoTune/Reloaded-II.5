@@ -3,6 +3,7 @@ using DynamicData.Binding;
 using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
 using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
+using RemixToolkit.HostMod.Installer;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
@@ -44,6 +45,7 @@ public partial class EditModViewModel : ReactiveViewModelBase
         _modsService = modsService;
         _mod = mod;
         _config = mod.Config;
+        IsToolkitInstalled = _config.ModDependencies.Contains(HostModInstaller.REMIX_MOD_ID);
 
         if (mod.Config.TryGetIconPath(mod.Path, out var iconPath)) IconPath = iconPath;
 
@@ -76,6 +78,11 @@ public partial class EditModViewModel : ReactiveViewModelBase
                     Applications.Add(new BooleanGenericTuple<IApplicationConfig>(isAppEnabled, new UnknownApplicationConfig(appId)));
                 }
             }
+        }
+
+        if (!Mods.Any(x => x.Generic.ModId == HostModInstaller.REMIX_MOD_ID))
+        {
+            Mods.Add(new(false, new() { ModId = HostModInstaller.REMIX_MOD_ID, ModName = HostModInstaller.REMIX_MOD_NAME }));
         }
 
         _appsEnabledObs = Observable.Merge(Applications.Select(x => x.WhenPropertyChanged(x => x.Enabled, false)));
@@ -240,6 +247,8 @@ public partial class EditModViewModel : ReactiveViewModelBase
 
     public string ModsFilter { get; set; } = string.Empty;
 
+    public bool IsToolkitInstalled { get; set; }
+
     public ObservableCollection<BooleanGenericTuple<IApplicationConfig>> Applications { get; } = [];
 
     public ObservableCollection<BooleanGenericTuple<ModConfig>> Mods { get; } = [];
@@ -263,6 +272,10 @@ public partial class EditModViewModel : ReactiveViewModelBase
         IConfig<ModConfig>.ToPath(_config, filePath);
 
         var newMod = new PathTuple<ModConfig>(filePath, _config);
+        if (IsToolkitInstalled)
+        {
+            HostModInstaller.Install(newMod);
+        }
 
         // Copy selected icon, if any.
         if (string.IsNullOrEmpty(IconPath) || !File.Exists(IconPath)) return;
@@ -337,6 +350,26 @@ public partial class EditModViewModel : ReactiveViewModelBase
         }
 
         this.RaisePropertyChanged(nameof(IconPath));
+    }
+
+    [RelayCommand]
+    private void ToggleToolkitInstall()
+    {
+        if (IsToolkitInstalled)
+        {
+            Mods.First(x => x.Generic.ModId == HostModInstaller.REMIX_MOD_ID).Enabled = false;
+            IsToolkitInstalled = false;
+
+            if (_mod != null) HostModInstaller.Uninstall(_mod);
+        }
+        else
+        {
+            Mods.First(x => x.Generic.ModId == HostModInstaller.REMIX_MOD_ID).Enabled = true;
+            IsToolkitInstalled = true;
+
+            // ConfirmMod handles installation for new mods.
+            if (_mod != null) HostModInstaller.Install(_mod);
+        }
     }
 
     private bool HasUniqueId() => !_modsService.ItemsById.ContainsKey(Id);

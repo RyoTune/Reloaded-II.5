@@ -310,7 +310,7 @@
                 </TabControl>
             </TabItem>
 
-            <TabItem Header="Support">
+            <TabItem Header="Apps">
                 <Grid Margin="8,0">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto" />
@@ -402,6 +402,36 @@
                             </ListView.ItemTemplate>
                         </ListView>
                     </Grid>
+                </Grid>
+            </TabItem>
+
+            <TabItem Header="ReMIX Toolkit">
+                <Grid Margin="8,0">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,8"
+                            FontFamily="{DynamicResource FontBold}"
+                            FontSize="24"
+                            Text="ReMIX Toolkit" />
+                        <TextBlock Margin="0,4">
+                            Add new mod features by using<Run FontFamily="{DynamicResource FontBold}" Text=" ReMIX Toolkit!" />
+                            <LineBreak /><LineBreak />
+                            <Run FontFamily="{DynamicResource FontBold}" Text="Features" /><LineBreak />
+                            - Create a mod config without any code.<LineBreak /><LineBreak />
+                            NOTE: ReMIX Toolkit can only be installed on normal mods. Code mods will have their DLL overwritten!</TextBlock>
+                        <Button Command="{Binding ToggleToolkitInstallCommand}">
+                            <Button.Style>
+                                <Style BasedOn="{StaticResource {x:Type Button}}" TargetType="Button">
+                                    <Setter Property="Content" Value="Install ReMIX Toolkit" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsToolkitInstalled}" Value="True">
+                                            <Setter Property="Content" Value="Uninstall ReMIX Toolkit" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>

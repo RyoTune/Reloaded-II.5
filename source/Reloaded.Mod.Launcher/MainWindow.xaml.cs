@@ -36,9 +36,10 @@ public partial class MainWindow : ReloadedWindow
         this.MouseEnter += MainWindow_MouseEnter;
         this.MouseLeave += MainWindow_MouseLeave;
 
-#if DEBUG
-        this.Border_DragDropCapturer.Visibility = Visibility.Collapsed;
-#endif
+        if (Debugger.IsAttached)
+        {
+            this.Border_DragDropCapturer.Visibility = Visibility.Collapsed;
+        }
 
         // Interactions.
         CommonInteractions.PromptTextInput.RegisterHandler(HandleTextInput);
