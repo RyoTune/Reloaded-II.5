@@ -4,12 +4,15 @@ using Reloaded.Mod.Loader.Update.Providers.GitHub;
 using static Reloaded.Mod.Loader.Update.Providers.GitHub.GitHubReleasesUpdateResolverFactory;
 using Reloaded.Mod.Interfaces.Utilities;
 using SevenZip;
+using Reloaded.Mod.Loader.IO.Structs;
 
 namespace RemixToolkit.HostMod.Installer;
 
-public static class Installer
+public static class HostModInstaller
 {
     public const string REMIX_MOD_ID = "RemixToolkit.Reloaded";
+    public const string REMIX_MOD_NAME = "ReMIX Toolkit";
+
     private const string REMIX_MOD_DLL = "RemixToolkit.HostMod.dll";
     private static readonly string[] REMIX_MOD_FILES =
     [
@@ -33,16 +36,14 @@ public static class Installer
         ReleaseMetadataName = "RemixToolkit.Reloaded.ReleaseMetadata.json",
     };
 
-    public static void Install(string modDir)
+    public static void Install(PathTuple<ModConfig> modTuple)
     {
-        var modConfigFile = Path.Join(modDir, ModConfig.ConfigFileName);
-        if (!File.Exists(modConfigFile)) return;
-
-        var mod = IConfig<ModConfig>.FromPathOrDefault(modConfigFile);
+        var mod = modTuple.Config;
+        var modDir = Path.GetDirectoryName(modTuple.Path)!;
 
         if (!mod.ModDependencies.Contains(REMIX_MOD_ID))
         {
-            mod.ModDependencies = [REMIX_MOD_ID, ..mod.ModDependencies];
+            mod.ModDependencies = [REMIX_MOD_ID, .. mod.ModDependencies];
 
             mod.PluginData.TryAdd(GitHubReleasesDependencyMetadataWriter.PluginId, new DependencyResolverMetadata<GitHubConfig>());
             mod.PluginData.TryGetValue<DependencyResolverMetadata<GitHubConfig>>(GitHubReleasesDependencyMetadataWriter.PluginId, out var githubDeps);
@@ -50,6 +51,7 @@ public static class Installer
             if (!githubDeps.IdToConfigMap.ContainsKey(REMIX_MOD_ID))
             {
                 githubDeps.IdToConfigMap[REMIX_MOD_ID] = REMIX_GITHUB_DEP;
+                mod.PluginData[GitHubReleasesDependencyMetadataWriter.PluginId] = githubDeps;
             }
         }
 
@@ -57,15 +59,14 @@ public static class Installer
         var seven = new SevenZipExtractor(GetHostModPath());
         seven.ExtractFiles(modDir, REMIX_MOD_FILES);
 
-        IConfig<ModConfig>.ToPath(mod, modConfigFile);
+        modTuple.Save();
     }
 
-    public static void Uninstall(string modDir)
+    public static void Uninstall(PathTuple<ModConfig> modTuple)
     {
-        var modConfigFile = Path.Join(modDir, ModConfig.ConfigFileName);
-        if (!File.Exists(modConfigFile)) return;
+        var mod = modTuple.Config;
+        var modDir = Path.GetDirectoryName(modTuple.Path)!;
 
-        var mod = IConfig<ModConfig>.FromPathOrDefault(modConfigFile);
         if (mod.ModDependencies.Contains(REMIX_MOD_ID))
         {
             mod.ModDependencies = mod.ModDependencies.Where(x => x != REMIX_MOD_ID).ToArray();
@@ -73,6 +74,7 @@ public static class Installer
             if (mod.PluginData.TryGetValue<DependencyResolverMetadata<GitHubConfig>>(GitHubReleasesDependencyMetadataWriter.PluginId, out var githubDeps))
             {
                 githubDeps.IdToConfigMap.Remove(REMIX_MOD_ID);
+                mod.PluginData[GitHubReleasesDependencyMetadataWriter.PluginId] = githubDeps;
             }
         }
 
@@ -83,7 +85,7 @@ public static class Installer
             File.Delete(Path.Join(modDir, fileName));
         }
 
-        IConfig<ModConfig>.ToPath(mod, modConfigFile);
+        modTuple.Save();
     }
 
     private static string GetHostModPath()

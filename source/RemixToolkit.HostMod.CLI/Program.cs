@@ -34,16 +34,16 @@ while (int.TryParse(Console.ReadLine(), out id) == false || id < 0 || id > mods.
 id--;
 var selectedMod = mods[id];
 var modDir = Path.GetDirectoryName(selectedMod.Path)!;
-if (selectedMod.Config.ModDependencies.Contains(Installer.REMIX_MOD_ID))
+if (selectedMod.Config.ModDependencies.Contains(HostModInstaller.REMIX_MOD_ID))
 {
     Console.WriteLine($"{selectedMod.Config.ModName}: Removing ReMIX Toolkit...");
-    Installer.Uninstall(modDir);
+    HostModInstaller.Uninstall(selectedMod);
     Console.WriteLine($"{selectedMod.Config.ModName}: ReMIX Toolkit Removed!");
 }
 else
 {
     Console.WriteLine($"{selectedMod.Config.ModName}: Installing ReMIX Toolkit...");
-    Installer.Install(modDir);
+    HostModInstaller.Install(selectedMod);
     Console.WriteLine($"{selectedMod.Config.ModName}: ReMIX Toolkit Installed!");
 }
 
