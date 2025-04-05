@@ -7,6 +7,7 @@ using ApplicationSubPage = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.Applicat
 using EditAppViewModel = Reloaded.Mod.Launcher.Lib.Remix.ViewModels.EditAppViewModel;
 using EditModDialog = Reloaded.Mod.Launcher.Pages.Alt.BaseSubpages.Dialogs.EditModDialog;
 using Environment = Reloaded.Mod.Shared.Environment;
+using MessageBox = Reloaded.Mod.Launcher.Pages.Dialogs.MessageBox;
 using Window = System.Windows.Window;
 using WindowViewModel = Reloaded.Mod.Launcher.Lib.Models.ViewModel.WindowViewModel;
 
@@ -102,7 +103,13 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
 
     private void Button_OpenSettings(object sender, MouseButtonEventArgs e)
     {
-        var editAppDialog = new EditAppDialog(new EditAppViewModel(this.ViewModel.ApplicationTuple));
+        var viewModel = new EditAppViewModel(this.ViewModel.ApplicationTuple, (title, message) =>
+        {
+            var msgBox = new MessageBox(title, message);
+            msgBox.ShowDialog();
+        });
+
+        var editAppDialog = new EditAppDialog(viewModel);
         editAppDialog.ShowDialog();
     }
 

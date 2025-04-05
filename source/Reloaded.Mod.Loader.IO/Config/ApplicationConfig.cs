@@ -206,10 +206,17 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
         if (string.IsNullOrEmpty(config.TargetAppVersion)) return config.AppLocation;
 
         var versions = AppVersions.GetAvailableVersions(config);
-        var targetVersion = AppVersions.FindAppByVersion(config.TargetAppVersion, versions);
-        if (targetVersion != null) return targetVersion.AppPath;
+        if (versions != null)
+        {
+            var targetVersion = AppVersions.FindAppByVersion(config.TargetAppVersion, versions);
+            if (targetVersion != null) return targetVersion.AppPath;
 
-        return config.AppLocation;
+            return config.AppLocation;
+        }
+        else
+        {
+            return config.AppLocation;
+        }
     }
 
     /// <summary>

@@ -16,6 +16,10 @@ namespace Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 {
+    /// <summary>
+    /// Allows you to display a message to the user.
+    /// </summary>
+    public Action<string, string>? ShowMessage { get; set; }
     public ViewModelActivator Activator { get; } = new();
 
     [Reactive]
@@ -23,12 +27,18 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
     private readonly ApplicationConfig _appConfig;
 
-    public EditAppViewModel(PathTuple<ApplicationConfig> appTuple)
+    public EditAppViewModel(PathTuple<ApplicationConfig> appTuple, Action<string, string>? showMessage = null)
     {
+        ShowMessage = showMessage;
         _appConfig = appTuple.Config;
 
         AppTuple = appTuple;
         Versions = AppVersions.GetAvailableVersions(appTuple.Config);
+        //var msg = new
+        if (Versions == null)
+        {
+            Versions = FixVersions(appTuple);
+        }
         SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
 
         MakeShortcutCommand = new(appTuple, Lib.IconConverter);
@@ -130,6 +140,26 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
         });
     }
 
+    public AppVersion[] FixVersions(PathTuple<ApplicationConfig> appTuple)
+    {
+        ShowMessage?.Invoke("Unable to find path to game executable", "The path to the game executable is invalid. Select the exe file using the file picker.");
+        var dialog = new OpenFileDialog
+        {
+            Title = "Select your game executable",
+            Filter = "Executable Files (*.exe)|*.exe",
+            Multiselect = false
+        };
+        bool? result = dialog.ShowDialog();
+        if (result == true && !string.IsNullOrEmpty(dialog.FileName))
+        {
+            appTuple.Config.AppLocation = dialog.FileName;
+            var versions = AppVersions.GetAvailableVersions(dialog.FileName);
+            return versions ?? throw new Exception("Could not retrieve versions from selected executable.");
+        }
+        throw new Exception("User cancelled selection or no file was selected.");
+    }
+
+
     public string Name
     {
         get => _appConfig.AppName;
@@ -162,7 +192,7 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
     public ReloadedMode[] Modes { get; } = Enum.GetValues<ReloadedMode>();
 
-    public AppVersion[] Versions { get; } = [];
+    public AppVersion[] Versions { get; set;} = [];
 
     public ObservableCollection<ProviderFactoryConfiguration> PackageProviders { get; } = [];
 

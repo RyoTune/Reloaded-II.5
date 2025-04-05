@@ -12,7 +12,28 @@ public class AppVersions
     /// <returns></returns>
     public static AppVersion[] GetAvailableVersions(ApplicationConfig appConfig)
     {
-        var appPath = Path.GetFullPath(appConfig.AppLocation);
+        try
+        {
+            var appPath = Path.GetFullPath(appConfig.AppLocation);
+            var appName = Path.GetFileNameWithoutExtension(appPath);
+
+            var appVersions = Directory.EnumerateFiles(Path.GetDirectoryName(appPath)!, $"{appName}_*.exe")
+                .Select(GetFileVersion)
+                .ToList();
+
+            appVersions.Insert(0, GetFileVersion(appPath));
+
+            return appVersions.Distinct(AppVersionDistinctByVersion.Instance).OrderByDescending(x => x.Version).ToArray();
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+    }
+
+    public static AppVersion[] GetAvailableVersions(string appConfigPath)
+    {
+        var appPath = Path.GetFullPath(appConfigPath);
         var appName = Path.GetFileNameWithoutExtension(appPath);
 
         var appVersions = Directory.EnumerateFiles(Path.GetDirectoryName(appPath)!, $"{appName}_*.exe")
