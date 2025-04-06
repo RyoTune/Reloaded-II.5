@@ -10,30 +10,9 @@ public class AppVersions
     /// </summary>
     /// <param name="appConfig">Application config to get versions for.</param>
     /// <returns></returns>
-    public static AppVersion[] GetAvailableVersions(ApplicationConfig appConfig)
+    public static AppVersion[] GetAvailableVersions(string appLocation)
     {
-        try
-        {
-            var appPath = Path.GetFullPath(appConfig.AppLocation);
-            var appName = Path.GetFileNameWithoutExtension(appPath);
-
-            var appVersions = Directory.EnumerateFiles(Path.GetDirectoryName(appPath)!, $"{appName}_*.exe")
-                .Select(GetFileVersion)
-                .ToList();
-
-            appVersions.Insert(0, GetFileVersion(appPath));
-
-            return appVersions.Distinct(AppVersionDistinctByVersion.Instance).OrderByDescending(x => x.Version).ToArray();
-        }
-        catch (Exception ex)
-        {
-            return Array.Empty<AppVersion>();
-        }
-    }
-
-    public static AppVersion[] GetAvailableVersions(string appConfigPath)
-    {
-        var appPath = Path.GetFullPath(appConfigPath);
+        var appPath = Path.GetFullPath(appLocation);
         var appName = Path.GetFileNameWithoutExtension(appPath);
 
         var appVersions = Directory.EnumerateFiles(Path.GetDirectoryName(appPath)!, $"{appName}_*.exe")

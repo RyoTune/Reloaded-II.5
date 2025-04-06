@@ -28,12 +28,7 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
         _appConfig = appTuple.Config;
 
         AppTuple = appTuple;
-        Versions = AppVersions.GetAvailableVersions(appTuple.Config);
-        //var msg = new
-        if (Versions.Length==0)
-        {
-            FixOrDeleteVersions(appTuple);
-        }
+        Versions = AppVersions.GetAvailableVersions(appTuple.Config.AppLocation);
         SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
 
         MakeShortcutCommand = new(appTuple, Lib.IconConverter);
@@ -133,59 +128,6 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
             })
             .DisposeWith(disp);
         });
-    }
-
-    public async void FixOrDeleteVersions(PathTuple<ApplicationConfig> appTuple)
-    {
-        appTuple.Config.AppLocation = "";
-        await ShowFixAppDialog(appTuple);
-    }
-
-    public async Task ShowFixAppDialog(PathTuple<ApplicationConfig> appTuple)
-    {
-        var tcs = new TaskCompletionSource<string?>();
-
-        await CommonInteractions.Toast.Handle(new()
-        {
-            Type = ToastConfig.ToastType.Prompt,
-            CancelText = "Delete App",
-            ConfirmText = "Browse for Exe",
-            Message = "The path to the game executable for this app can not be found!",
-
-            PromptFunc = (result) =>
-            {
-                if (result)
-                {
-                    var dialog = new OpenFileDialog
-                    {
-                        Title = "Select your game executable",
-                        Filter = "Executable Files (*.exe)|*.exe",
-                        Multiselect = false
-                    };
-                    bool? filedialogresult = dialog.ShowDialog();
-                    if (filedialogresult == true && !string.IsNullOrEmpty(dialog.FileName))
-                    {
-                        tcs.SetResult(dialog.FileName);
-                        return true;
-                    }
-                    tcs.SetException(new Exception("User cancelled selection or no file was selected."));
-                    return true;
-                }
-                else
-                {
-                    DeleteApp();
-                    tcs.SetResult("App Deleted!");
-                    return true;
-                }
-            }
-        });
-
-        var selectedExe = await tcs.Task;
-
-        if (string.IsNullOrEmpty(selectedExe))
-            throw new Exception("No executable was selected.");
-
-        appTuple.Config.AppLocation = selectedExe;
     }
 
     public string Name

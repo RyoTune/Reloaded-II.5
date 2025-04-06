@@ -205,7 +205,7 @@ public class ApplicationConfig : ObservableObject, IApplicationConfig, IConfig<A
     {
         if (string.IsNullOrEmpty(config.TargetAppVersion)) return config.AppLocation;
 
-        var versions = AppVersions.GetAvailableVersions(config);
+        var versions = AppVersions.GetAvailableVersions(config.AppLocation);
         if (versions != null)
         {
             var targetVersion = AppVersions.FindAppByVersion(config.TargetAppVersion, versions);
