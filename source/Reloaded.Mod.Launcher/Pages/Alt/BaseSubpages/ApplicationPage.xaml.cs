@@ -103,13 +103,7 @@ public partial class ApplicationPage : ReloadedIIPage, IDisposable
 
     private void Button_OpenSettings(object sender, MouseButtonEventArgs e)
     {
-        var viewModel = new EditAppViewModel(this.ViewModel.ApplicationTuple, (title, message) =>
-        {
-            var msgBox = new MessageBox(title, message);
-            msgBox.ShowDialog();
-        });
-
-        var editAppDialog = new EditAppDialog(viewModel);
+        var editAppDialog = new EditAppDialog(new EditAppViewModel(this.ViewModel.ApplicationTuple));
         editAppDialog.ShowDialog();
     }
 

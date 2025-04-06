@@ -27,7 +27,7 @@ public class AppVersions
         }
         catch (Exception ex)
         {
-            return null;
+            return Array.Empty<AppVersion>();
         }
     }
 

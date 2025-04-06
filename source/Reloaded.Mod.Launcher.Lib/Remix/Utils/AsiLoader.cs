@@ -71,7 +71,10 @@ internal static class AsiLoader
         }
         catch (Exception e)
         {
-            Errors.HandleException(e, Resources.ErrorCantReadExeFileAsiLoaderDeploy.Get());
+            if (appPath != "")
+            {
+                Errors.HandleException(e, Resources.ErrorCantReadExeFileAsiLoaderDeploy.Get());
+            }
             return false;
         }
     }

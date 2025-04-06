@@ -16,10 +16,6 @@ namespace Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 {
-    /// <summary>
-    /// Allows you to display a message to the user.
-    /// </summary>
-    public Action<string, string>? ShowMessage { get; set; }
     public ViewModelActivator Activator { get; } = new();
 
     [Reactive]
@@ -27,17 +23,16 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
     private readonly ApplicationConfig _appConfig;
 
-    public EditAppViewModel(PathTuple<ApplicationConfig> appTuple, Action<string, string>? showMessage = null)
+    public EditAppViewModel(PathTuple<ApplicationConfig> appTuple)
     {
-        ShowMessage = showMessage;
         _appConfig = appTuple.Config;
 
         AppTuple = appTuple;
         Versions = AppVersions.GetAvailableVersions(appTuple.Config);
         //var msg = new
-        if (Versions == null)
+        if (Versions.Length==0)
         {
-            Versions = FixVersions(appTuple);
+            FixOrDeleteVersions(appTuple);
         }
         SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
 
@@ -140,25 +135,58 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
         });
     }
 
-    public AppVersion[] FixVersions(PathTuple<ApplicationConfig> appTuple)
+    public async void FixOrDeleteVersions(PathTuple<ApplicationConfig> appTuple)
     {
-        ShowMessage?.Invoke("Unable to find path to game executable", "The path to the game executable is invalid. Select the exe file using the file picker.");
-        var dialog = new OpenFileDialog
-        {
-            Title = "Select your game executable",
-            Filter = "Executable Files (*.exe)|*.exe",
-            Multiselect = false
-        };
-        bool? result = dialog.ShowDialog();
-        if (result == true && !string.IsNullOrEmpty(dialog.FileName))
-        {
-            appTuple.Config.AppLocation = dialog.FileName;
-            var versions = AppVersions.GetAvailableVersions(dialog.FileName);
-            return versions ?? throw new Exception("Could not retrieve versions from selected executable.");
-        }
-        throw new Exception("User cancelled selection or no file was selected.");
+        appTuple.Config.AppLocation = "";
+        await ShowFixAppDialog(appTuple);
     }
 
+    public async Task ShowFixAppDialog(PathTuple<ApplicationConfig> appTuple)
+    {
+        var tcs = new TaskCompletionSource<string?>();
+
+        await CommonInteractions.Toast.Handle(new()
+        {
+            Type = ToastConfig.ToastType.Prompt,
+            CancelText = "Delete App",
+            ConfirmText = "Browse for Exe",
+            Message = "The path to the game executable for this app can not be found!",
+
+            PromptFunc = (result) =>
+            {
+                if (result)
+                {
+                    var dialog = new OpenFileDialog
+                    {
+                        Title = "Select your game executable",
+                        Filter = "Executable Files (*.exe)|*.exe",
+                        Multiselect = false
+                    };
+                    bool? filedialogresult = dialog.ShowDialog();
+                    if (filedialogresult == true && !string.IsNullOrEmpty(dialog.FileName))
+                    {
+                        tcs.SetResult(dialog.FileName);
+                        return true;
+                    }
+                    tcs.SetException(new Exception("User cancelled selection or no file was selected."));
+                    return true;
+                }
+                else
+                {
+                    DeleteApp();
+                    tcs.SetResult("App Deleted!");
+                    return true;
+                }
+            }
+        });
+
+        var selectedExe = await tcs.Task;
+
+        if (string.IsNullOrEmpty(selectedExe))
+            throw new Exception("No executable was selected.");
+
+        appTuple.Config.AppLocation = selectedExe;
+    }
 
     public string Name
     {
