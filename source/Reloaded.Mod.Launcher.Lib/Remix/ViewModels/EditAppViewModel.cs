@@ -28,9 +28,6 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
         _appConfig = appTuple.Config;
 
         AppTuple = appTuple;
-        Versions = AppVersions.GetAvailableVersions(appTuple.Config.AppLocation);
-        SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
-
         MakeShortcutCommand = new(appTuple, Lib.IconConverter);
         DeleteAppCommand = ReactiveCommand.Create(DeleteApp);
 
@@ -44,6 +41,13 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
         this.WhenActivated((CompositeDisposable disp) =>
         {
+            this.WhenValueChanged(vm => vm.AppPath).Subscribe(_ =>
+            {
+                Versions = AppVersions.GetAvailableVersions(appTuple.Config);
+                SelectedVersion = AppVersions.FindAppByVersion(_appConfig.TargetAppVersion, Versions) ?? Versions.FirstOrDefault();
+            })
+            .DisposeWith(disp);
+
             this.WhenValueChanged(vm => vm.SelectedVersion)
             .Select(x => x?.Version)
             .Subscribe(version => _appConfig.TargetAppVersion = version?.ToString())

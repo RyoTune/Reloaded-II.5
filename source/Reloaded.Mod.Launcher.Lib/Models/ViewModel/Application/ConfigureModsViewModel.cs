@@ -3,7 +3,6 @@ using DynamicData.Binding;
 using ReactiveUI;
 using Reloaded.Mod.Launcher.Lib.Remix.Commands;
 using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
-using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using Reloaded.Mod.Loader.IO.Remix.Mods;
 using System.Reactive;
@@ -131,10 +130,7 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
         _saveToken = new CancellationTokenSource();
         _loaderConfig = loaderConfig;
         _applyPreset = new(this);
-        if (!File.Exists(ApplicationTuple.Config.AppLocation))
-        {
-            FixOrDeleteVersions();
-        }
+
         // Wait for parent to fully initialize.
         _applicationViewModel.OnGetModsForThisApp += BuildModList;
         _applicationViewModel.OnLoadModSet += BuildModList;
@@ -362,60 +358,6 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
     {
         if (e.PropertyName == nameof(SelectedMod))
             UpdateCommands();
-    }
-
-    public async void FixOrDeleteVersions()
-    {
-        ApplicationTuple.Config.AppLocation = "";
-        await ShowFixAppDialog();
-    }
-
-    public async Task ShowFixAppDialog()
-    {
-        var tcs = new TaskCompletionSource<string?>();
-
-        await CommonInteractions.Toast.Handle(new()
-        {
-            Type = ToastConfig.ToastType.Prompt,
-            CancelText = "Ignore",
-            ConfirmText = "Browse for Exe",
-            Message = "The path to the game executable for this app can not be found!",
-
-            PromptFunc = (result) =>
-            {
-                if (result)
-                {
-                    var dialog = new OpenFileDialog
-                    {
-                        Title = "Select your game executable",
-                        Filter = "Executable Files (*.exe)|*.exe",
-                        Multiselect = false
-                    };
-                    bool? filedialogresult = dialog.ShowDialog();
-                    if (filedialogresult == true && !string.IsNullOrEmpty(dialog.FileName))
-                    {
-                        tcs.SetResult(dialog.FileName);
-                        return true;
-                    }
-                    tcs.SetException(new Exception("User cancelled selection or no file was selected."));
-                    return true;
-                }
-                else
-                {
-                    tcs.SetResult("Cancelled");
-                    return true;
-                }
-            }
-        });
-
-        var selectedExe = await tcs.Task;
-
-        if (string.IsNullOrEmpty(selectedExe))
-            throw new Exception("No executable was selected.");
-
-        ApplicationTuple.Config.AppLocation = selectedExe;
-        await ApplicationTuple.SaveAsync();
-        UpdateCommands();
     }
 
     private void UpdateCommands()
