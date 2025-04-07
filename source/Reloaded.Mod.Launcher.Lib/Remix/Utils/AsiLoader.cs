@@ -9,6 +9,8 @@ internal static class AsiLoader
         loaderPath = null;
         bootstrapperPath = null;
 
+        if (!File.Exists(appPath)) return false;
+
         if (CanDeploy(appPath))
         {
             DeployAsiLoader(appPath, out loaderPath, out bootstrapperPath);
@@ -24,6 +26,8 @@ internal static class AsiLoader
     {
         loaderPath = null;
         bootstrapperPath = null;
+
+        if (!File.Exists(appPath)) return false;
 
         if (!CanDeploy(appPath))
         {
