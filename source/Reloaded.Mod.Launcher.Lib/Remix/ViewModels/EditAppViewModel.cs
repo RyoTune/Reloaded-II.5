@@ -162,7 +162,7 @@ public partial class EditAppViewModel : ReactiveObject, IActivatableViewModel
 
     public ReloadedMode[] Modes { get; } = Enum.GetValues<ReloadedMode>();
 
-    public AppVersion[] Versions { get; } = [];
+    public AppVersion[] Versions { get; set;} = [];
 
     public ObservableCollection<ProviderFactoryConfiguration> PackageProviders { get; } = [];
 

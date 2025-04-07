@@ -1,6 +1,8 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using DynamicData;
 using DynamicData.Binding;
+using Reloaded.Mod.Launcher.Lib.Remix.Extensions;
+using Reloaded.Mod.Launcher.Lib.Remix.Interactions;
 using Reloaded.Mod.Launcher.Lib.Remix.ViewModels;
 using System.Reactive.Linq;
 using Page = Reloaded.Mod.Launcher.Lib.Models.Model.Pages.Page;
@@ -55,6 +57,8 @@ public partial class MainPageViewModel : ViewModelBase
         AddApplicationCommand = new AddApplicationCommand(this, service);
         _autoInjector = new AutoInjector(service);
 
+        NotifyInvalidApps(service);
+
         var appsChangeSet = this.ConfigService.Items.ToObservableChangeSet();
         appsChangeSet.AutoRefresh().Subscribe(_ =>
         {
@@ -65,6 +69,35 @@ public partial class MainPageViewModel : ViewModelBase
                 this.Page = Page.SettingsPage;
             }
         });
+    }
+
+    private static void NotifyInvalidApps(ApplicationConfigService configService)
+    {
+        foreach (var app in configService.Items.Where(x => !File.Exists(x.Config.AppLocation)))
+        {
+            CommonInteractions.Toast.Handle(new()
+            {
+                Type = ToastConfig.ToastType.Prompt,
+                CancelText = "Ignore",
+                ConfirmText = "Fix",
+                Message = $"ERROR: {app.Config.AppName}\nThe application EXE was not found!",
+
+                PromptFunc = (result) =>
+                {
+                    if (result)
+                    {
+                        if (app.SelectAppPath())
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }
+
+                    return true;
+                }
+            }).Wait();
+        }
     }
 
     /// <summary>

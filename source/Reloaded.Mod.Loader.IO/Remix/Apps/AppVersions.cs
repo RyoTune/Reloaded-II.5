@@ -12,6 +12,8 @@ public class AppVersions
     /// <returns></returns>
     public static AppVersion[] GetAvailableVersions(ApplicationConfig appConfig)
     {
+        if (!File.Exists(appConfig.AppLocation)) return [];
+
         var appPath = Path.GetFullPath(appConfig.AppLocation);
         var appName = Path.GetFileNameWithoutExtension(appPath);
 
