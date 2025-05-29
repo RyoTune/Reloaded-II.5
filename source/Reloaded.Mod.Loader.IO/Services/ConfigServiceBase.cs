@@ -166,9 +166,6 @@ public abstract class ConfigServiceBase<TConfigType> : ObservableObject where TC
     {
         var deletedPath = e.FullPath;
 
-        // Sanity check.
-        if (Directory.Exists(deletedPath) || File.Exists(deletedPath)) return;
-
         // Fast path: If we're directly deleting a known folder, then there can not be any subfolders,
         // as we don't allow mods inside mods.
         var isDirectFolder = ItemsByFolder.TryGetValue(deletedPath, out var directMod);
@@ -210,9 +207,6 @@ public abstract class ConfigServiceBase<TConfigType> : ObservableObject where TC
 
     private void OnDeleteFile(object sender, FileSystemEventArgs e)
     {
-        // Sanity check, which causes exception in AddItem... somehow...............
-        if (File.Exists(e.FullPath)) return;
-
         if (ItemsByPath.TryGetValue(e.FullPath, out var mod))
         {
             _context.Post(() =>
@@ -252,18 +246,8 @@ public abstract class ConfigServiceBase<TConfigType> : ObservableObject where TC
         {
             // Sometimes you might get directory, then file notification, so we might get a duplicate.
             // We hackily filter out this duplicate here.
-
-            // NOTICE: This breaks if OnDeleteFile includes the sanity check.
-            // I neither know, nor want to know, how this labyrinth of events work.
             var index = Items.IndexOf(existing);
-            if (index < 0 && Items.Contains(itemTuple))
-            {
-                Trace.WriteLine("Adding item is already in list, somehow...");
-            }
-            else
-            {
-                Items[index] = itemTuple;
-            }
+            Items[index] = itemTuple;
         }
         else
         {
