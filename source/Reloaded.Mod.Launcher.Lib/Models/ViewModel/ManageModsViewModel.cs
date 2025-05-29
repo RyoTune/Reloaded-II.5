@@ -120,6 +120,18 @@ public class ManageModsViewModel : ObservableObject
         return appNameResult || appIdResult;
     }
 
+    public bool FilterMod(string filter, PathTuple<ModConfig> mod)
+    {
+        if (mod.Config.IsSeparator) return false;
+
+        if (filter.Length <= 0) return true;
+        
+        if (mod.Config.ModDisplayName.Contains(filter, StringComparison.InvariantCultureIgnoreCase))
+            return true;
+
+        return false;
+    }
+
     /// <summary>
     /// Sets a new mod image.
     /// </summary>
