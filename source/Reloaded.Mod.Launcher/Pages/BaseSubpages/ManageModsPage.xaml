@@ -1,35 +1,48 @@
-﻿<pages:ReloadedIIPage x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ManageModsPage"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:system="clr-namespace:System;assembly=mscorlib"
-             xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-             xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
-             xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
-             xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
-             mc:Ignorable="d"
-             d:DesignHeight="600" d:DesignWidth="756"
-             AllowDrop="True"
-             Title="{DynamicResource TitleManageMods}">
+﻿<pages:ReloadedIIPage
+    AllowDrop="True"
+    Title="{DynamicResource TitleManageMods}"
+    d:DesignHeight="600"
+    d:DesignWidth="756"
+    mc:Ignorable="d"
+    x:Class="Reloaded.Mod.Launcher.Pages.BaseSubpages.ManageModsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+    xmlns:controls="clr-namespace:Reloaded.Mod.Launcher.Controls"
+    xmlns:converters="clr-namespace:Reloaded.Mod.Launcher.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="clr-namespace:Reloaded.Mod.Launcher.Pages"
+    xmlns:system="clr-namespace:System;assembly=mscorlib"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <Grid Margin="{DynamicResource PageMargin}" x:Name="Contents" DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}">
+    <Grid
+        DataContext="{Binding Path=ViewModel, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type Page}}}"
+        Margin="{DynamicResource PageMargin}"
+        x:Name="Contents">
 
         <Grid.Resources>
-            <!-- Layout properties -->
+            <!--  Layout properties  -->
             <GridLength x:Key="LeftPanelWidth">250</GridLength>
 
-            <!-- Sort the mod list -->
-            <CollectionViewSource x:Key="SortedMods" Source="{Binding ModConfigService.Items, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True" IsLiveFilteringRequested="True">
+            <!--  Sort the mod list  -->
+            <CollectionViewSource
+                IsLiveFilteringRequested="True"
+                IsLiveSortingRequested="True"
+                Source="{Binding ModConfigService.Items, UpdateSourceTrigger=PropertyChanged}"
+                x:Key="SortedMods">
                 <CollectionViewSource.SortDescriptions>
                     <componentModel:SortDescription PropertyName="Config.ModDisplayName" />
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
 
-            <!-- Sort the app list -->
-            <CollectionViewSource x:Key="SortedApps" Source="{Binding EnabledAppIds, UpdateSourceTrigger=PropertyChanged}" IsLiveSortingRequested="True" IsLiveFilteringRequested="True">
+            <!--  Sort the app list  -->
+            <CollectionViewSource
+                IsLiveFilteringRequested="True"
+                IsLiveSortingRequested="True"
+                Source="{Binding EnabledAppIds, UpdateSourceTrigger=PropertyChanged}"
+                x:Key="SortedApps">
                 <CollectionViewSource.SortDescriptions>
-                    <componentModel:SortDescription PropertyName="Generic.AppName"/>
+                    <componentModel:SortDescription PropertyName="Generic.AppId" />
                 </CollectionViewSource.SortDescriptions>
             </CollectionViewSource>
 
@@ -37,23 +50,31 @@
 
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="{DynamicResource LeftPanelWidth}"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="{DynamicResource LeftPanelWidth}" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <!-- Left Side. -->
-            <ScrollViewer Margin="{DynamicResource PanelMargin}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" VerticalScrollBarVisibility="Auto">
+            <!--  Left Side.  -->
+            <ScrollViewer
+                HorizontalAlignment="Stretch"
+                Margin="{DynamicResource PanelMargin}"
+                VerticalAlignment="Stretch"
+                VerticalScrollBarVisibility="Auto">
                 <StackPanel>
 
-                    <!-- Application Image -->
-                    <Border BorderBrush="{DynamicResource BorderColorBrush}" Background="Transparent" BorderThickness="1">
+                    <!--  Application Image  -->
+                    <Border
+                        Background="Transparent"
+                        BorderBrush="{DynamicResource BorderColorBrush}"
+                        BorderThickness="1">
                         <Viewbox>
-                            <Image ToolTip="{DynamicResource AddAppImageTooltip}"
-                                   ToolTipService.InitialShowDelay="0"
-                                   PreviewMouseDown="Image_PreviewMouseDown"
-                                   Width="512"
-                                   Height="512"
-                                   Style="{DynamicResource HighQualityImage}">
+                            <Image
+                                Height="512"
+                                PreviewMouseDown="Image_PreviewMouseDown"
+                                Style="{DynamicResource HighQualityImage}"
+                                ToolTip="{DynamicResource AddAppImageTooltip}"
+                                ToolTipService.InitialShowDelay="0"
+                                Width="512">
                                 <Image.Source>
                                     <MultiBinding Converter="{x:Static converters:ModConfigToImageConverter.Instance}" UpdateSourceTrigger="PropertyChanged">
                                         <Binding Path="SelectedModTuple" />
@@ -65,129 +86,148 @@
                         </Viewbox>
                     </Border>
 
-                    <!-- Add / Delete Mod -->
+                    <!--  Add / Delete Mod  -->
                     <Grid Margin="{DynamicResource CommonItemVerticalMargin}">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Button Grid.Column="0"
-                                Grid.Row="0"
-                                Margin="0"
-                                Style="{DynamicResource UnpaddedStretchedGridButton}"
-                                Content="{DynamicResource AddAppNewButton}" 
-                                Click="New_Click"/>
+                        <Button
+                            Click="New_Click"
+                            Content="{DynamicResource AddAppNewButton}"
+                            Grid.Column="0"
+                            Grid.Row="0"
+                            Margin="0"
+                            Style="{DynamicResource UnpaddedStretchedGridButton}" />
 
-                        <Button Grid.Column="1"
-                                Grid.Row="0"
-                                Margin="0"
-                                Style="{DynamicResource UnpaddedStretchedGridButton}"
-                                Content="{DynamicResource AddAppDeleteButton}" 
-                                Command="{Binding DeleteModCommand}"/>
+                        <Button
+                            Command="{Binding DeleteModCommand}"
+                            Content="{DynamicResource AddAppDeleteButton}"
+                            Grid.Column="1"
+                            Grid.Row="0"
+                            Margin="0"
+                            Style="{DynamicResource UnpaddedStretchedGridButton}" />
 
-                        <Button Grid.Row="1"
-                                Grid.Column="0"
-                                Style="{DynamicResource UnpaddedStretchedButton}"
-                                Content="{DynamicResource ModManagerContextEdit}" 
-                                Margin="0"
-                                Command="{Binding EditModCommand}"/>
+                        <Button
+                            Command="{Binding EditModCommand}"
+                            Content="{DynamicResource ModManagerContextEdit}"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Margin="0"
+                            Style="{DynamicResource UnpaddedStretchedButton}" />
 
-                        <Button Grid.Row="1"
-                                Grid.Column="1"
-                                Style="{DynamicResource UnpaddedStretchedButton}"
-                                Content="{DynamicResource ModManagerContextPublish}" 
-                                Margin="0"
-                                Command="{Binding PublishModCommand}"/>
-                        
-                        <Button Grid.Row="2"
-                                Grid.Column="0"
-                                Grid.ColumnSpan="2"
-                                Style="{DynamicResource UnpaddedStretchedButton}"
-                                Content="{DynamicResource CreateModPackTitle}" 
-                                Margin="0"
-                                Command="{Binding CreateModPackCommand}"/>
+                        <Button
+                            Command="{Binding PublishModCommand}"
+                            Content="{DynamicResource ModManagerContextPublish}"
+                            Grid.Column="1"
+                            Grid.Row="1"
+                            Margin="0"
+                            Style="{DynamicResource UnpaddedStretchedButton}" />
+
+                        <Button
+                            Command="{Binding CreateModPackCommand}"
+                            Content="{DynamicResource CreateModPackTitle}"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Grid.Row="2"
+                            Margin="0"
+                            Style="{DynamicResource UnpaddedStretchedButton}" />
                     </Grid>
 
-                    <!-- Mod Properties -->
-                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                         Margin="{DynamicResource CommonItemVerticalMargin}" 
-                         ToolTip="{DynamicResource CreateModDialogName}"
-                         HorizontalAlignment="Stretch" />
+                    <!--  Mod Properties  -->
+                    <TextBox
+                        HorizontalAlignment="Stretch"
+                        Margin="{DynamicResource CommonItemVerticalMargin}"
+                        Text="{Binding Path=SelectedModTuple.Config.ModName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="{DynamicResource CreateModDialogName}" />
 
-                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                         Margin="{DynamicResource CommonItemVerticalMargin}" 
-                         ToolTip="{DynamicResource CreateModDialogAuthor}"
-                         HorizontalAlignment="Stretch" />
+                    <TextBox
+                        HorizontalAlignment="Stretch"
+                        Margin="{DynamicResource CommonItemVerticalMargin}"
+                        Text="{Binding Path=SelectedModTuple.Config.ModAuthor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="{DynamicResource CreateModDialogAuthor}" />
 
-                    <TextBox Text="{Binding Path=SelectedModTuple.Config.ModVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                         Margin="{DynamicResource CommonItemVerticalMargin}" 
-                         ToolTip="{DynamicResource CreateModDialogVersion}"
-                         HorizontalAlignment="Stretch" />
+                    <TextBox
+                        HorizontalAlignment="Stretch"
+                        Margin="{DynamicResource CommonItemVerticalMargin}"
+                        Text="{Binding Path=SelectedModTuple.Config.ModVersion, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        ToolTip="{DynamicResource CreateModDialogVersion}" />
 
                 </StackPanel>
             </ScrollViewer>
 
-            <!-- Right Side. -->
-            <Grid Margin="{DynamicResource PanelMargin}" Grid.Column="1">
+            <!--  Right Side.  -->
+            <Grid Grid.Column="1" Margin="{DynamicResource PanelMargin}">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3*"/>
-                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="3*" />
+                    <RowDefinition Height="2*" />
                 </Grid.RowDefinitions>
 
-                <!-- First Half -->
+                <!--  First Half  -->
                 <Grid Grid.Row="0">
 
-                    <!-- Search Textboxes -->
+                    <!--  Search Textboxes  -->
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
 
-                    
-                    <TextBox x:Name="ModsFilter" Style="{DynamicResource TextboxWithPlaceholder}" 
-                             Margin="{DynamicResource PanelMargin}"
-                             Tag="{DynamicResource ModManagerSearchMods}"
-                             AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
-                             TextChanged="ModsFilter_TextChanged" 
-                             Grid.Column="0" 
-                             Grid.Row="0"/>
 
-                    <TextBox x:Name="AppsFilter" 
-                             Margin="{DynamicResource PanelMargin}"
-                             Style="{DynamicResource TextboxWithPlaceholder}" 
-                             Tag="{DynamicResource ModManagerSearchApps}"
-                             AutomationProperties.Name="{DynamicResource ModManagerSearchApps}"
-                             TextChanged="AppsFilter_TextChanged" 
-                             Grid.Column="1" 
-                             Grid.Row="0"/>
+                    <TextBox
+                        AutomationProperties.Name="{DynamicResource ModManagerSearchMods}"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Margin="{DynamicResource PanelMargin}"
+                        Style="{DynamicResource TextboxWithPlaceholder}"
+                        Tag="{DynamicResource ModManagerSearchMods}"
+                        TextChanged="ModsFilter_TextChanged"
+                        x:Name="ModsFilter" />
 
-                    <!-- List of Mods -->
-                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="{DynamicResource PanelMargin}">
-                        <ListView 
+                    <TextBox
+                        AutomationProperties.Name="{DynamicResource ModManagerSearchApps}"
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Margin="{DynamicResource PanelMargin}"
+                        Style="{DynamicResource TextboxWithPlaceholder}"
+                        Tag="{DynamicResource ModManagerSearchApps}"
+                        TextChanged="AppsFilter_TextChanged"
+                        x:Name="AppsFilter" />
+
+                    <!--  List of Mods  -->
+                    <Grid
+                        Grid.Column="0"
+                        Grid.ColumnSpan="2"
+                        Grid.Row="1"
+                        Margin="{DynamicResource PanelMargin}">
+                        <ListView
                             HorizontalAlignment="Stretch"
                             ItemsSource="{Binding Source={StaticResource SortedMods}}"
-                            SelectedItem="{Binding SelectedModTuple, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                            ToolTip="{DynamicResource ModManagerSelectMod}"
+                            SelectedItem="{Binding SelectedModTuple, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             SelectionChanged="ListView_SelectionChanged"
                             SelectionMode="Single"
+                            ToolTip="{DynamicResource ModManagerSelectMod}"
                             VerticalAlignment="Stretch"
                             VerticalContentAlignment="Top">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Config.ModDisplayName}"  VerticalAlignment="Center" HorizontalAlignment="Center" Margin="{DynamicResource ListEntryItemMarginSmall}"/>
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                        Text="{Binding Config.ModDisplayName}"
+                                        VerticalAlignment="Center" />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -195,26 +235,45 @@
                 </Grid>
 
                 <Grid Grid.Row="1" Margin="{DynamicResource PanelMargin}">
-                    <ListView 
-                        ToolTip="{DynamicResource ModManagerSelectApp}"
-                        ItemsSource="{Binding Source={StaticResource SortedApps}}"
+                    <ListView
                         HorizontalAlignment="Stretch"
+                        ItemsSource="{Binding Source={StaticResource SortedApps}}"
+                        ToolTip="{DynamicResource ModManagerSelectApp}"
                         VerticalAlignment="Stretch"
                         VerticalContentAlignment="Top">
                         <ListView.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel Orientation="Horizontal">
-                                    <CheckBox IsChecked="{Binding Enabled}" 
-                                              Style="{DynamicResource DefaultCheckBox}" 
-                                              Height="{DynamicResource ListEntryCheckboxHeightSmall}" 
-                                              HorizontalAlignment="Center" 
-                                              VerticalAlignment="Center" 
-                                              Margin="{DynamicResource ListEntryItemMarginSmall}" />
+                                    <CheckBox
+                                        Height="{DynamicResource ListEntryCheckboxHeightSmall}"
+                                        HorizontalAlignment="Center"
+                                        IsChecked="{Binding Enabled}"
+                                        Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                        Style="{DynamicResource DefaultCheckBox}"
+                                        VerticalAlignment="Center" />
 
-                                    <TextBlock Text="{Binding Generic.AppName}" 
-                                               VerticalAlignment="Center" 
-                                               HorizontalAlignment="Center" 
-                                               Margin="{DynamicResource ListEntryItemMarginSmall}"/>
+                                    <TextBlock
+                                        HorizontalAlignment="Center"
+                                        Margin="{DynamicResource ListEntryItemMarginSmall}"
+                                        VerticalAlignment="Center">
+                                        <TextBlock.Style>
+                                            <Style TargetType="{x:Type TextBlock}">
+                                                <Setter Property="Text">
+                                                    <Setter.Value>
+                                                        <MultiBinding StringFormat="{}{0} ({1})">
+                                                            <Binding Path="Generic.AppName" />
+                                                            <Binding Path="Generic.AppId" />
+                                                        </MultiBinding>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Generic.AppName, UpdateSourceTrigger=PropertyChanged}" Value="">
+                                                        <Setter Property="Text" Value="{Binding Generic.AppId, UpdateSourceTrigger=PropertyChanged}" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                 </StackPanel>
                             </DataTemplate>
                         </ListView.ItemTemplate>
