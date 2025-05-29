@@ -1,4 +1,6 @@
-﻿namespace Reloaded.Mod.Launcher.Controls.Mods;
+﻿using ScrollViewer = System.Windows.Controls.ScrollViewer;
+
+namespace Reloaded.Mod.Launcher.Controls.Mods;
 
 /// <summary>
 /// Interaction logic for ModsList.xaml
@@ -8,6 +10,29 @@ public partial class ModsList : UserControl
     public ModsList()
     {
         InitializeComponent();
+
+        ModsListView.Loaded += OnModsListViewOnLoaded;
+        ModsListView.Unloaded += ModsListViewOnUnloaded;
+    }
+
+    private void ModsListViewOnUnloaded(object sender, RoutedEventArgs e)
+    {
+        ModsListView.Loaded -= OnModsListViewOnLoaded;
+        ModsListView.Unloaded -= ModsListViewOnUnloaded;
+    }
+
+    private void OnModsListViewOnLoaded(object sender, RoutedEventArgs _)
+    {
+        if (VisualTreeHelper.GetChild((ListView)sender, 0) is Border border && VisualTreeHelper.GetChild(border, 0) is ScrollViewer scrollViewer)
+        {
+            scrollViewer.PreviewMouseWheel += (s, args) =>
+            {
+                if (Orientation != Orientation.Horizontal) return;
+
+                scrollViewer.ScrollToHorizontalOffset(scrollViewer.HorizontalOffset - args.Delta);
+                args.Handled = true;
+            };
+        }
     }
 
     public static readonly DependencyProperty SelectedModProperty =

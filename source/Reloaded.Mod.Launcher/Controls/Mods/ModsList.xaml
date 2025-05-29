@@ -24,6 +24,7 @@
         SelectedItem="{Binding SelectedMod, ElementName=ModsListControl}"
         ToolTipService.InitialShowDelay="250"
         VirtualizingPanel.IsVirtualizing="True"
+        x:Name="ModsListView"
         VirtualizingPanel.VirtualizationMode="Recycling">
         <ListView.Resources>
             <converters:DivideConverter x:Key="Divider" />
