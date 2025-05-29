@@ -60,15 +60,17 @@ public partial class MainPageViewModel : ViewModelBase
         NotifyInvalidApps(service);
 
         var appsChangeSet = this.ConfigService.Items.ToObservableChangeSet();
-        appsChangeSet.AutoRefresh().Subscribe(_ =>
-        {
-            if (this.SelectedApplication == null) return;
-
-            if (!this.ConfigService.Items.Any(x => x.Config.AppId == this.SelectedApplication.Config.AppId))
+        appsChangeSet.AutoRefresh()
+            .Throttle(TimeSpan.FromMilliseconds(250))
+            .Subscribe(_ =>
             {
-                this.Page = Page.SettingsPage;
-            }
-        });
+                if (this.SelectedApplication == null) return;
+
+                if (this.ConfigService.Items.All(x => x.Config.AppId != this.SelectedApplication.Config.AppId))
+                {
+                    this.Page = Page.SettingsPage;
+                }
+            });
     }
 
     private static void NotifyInvalidApps(ApplicationConfigService configService)
@@ -82,20 +84,7 @@ public partial class MainPageViewModel : ViewModelBase
                 ConfirmText = "Fix",
                 Message = $"ERROR: {app.Config.AppName}\nThe application EXE was not found!",
 
-                PromptFunc = (result) =>
-                {
-                    if (result)
-                    {
-                        if (app.SelectAppPath())
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }
-
-                    return true;
-                }
+                PromptFunc = result => !result || app.SelectAppPath()
             }).Wait();
         }
     }
