@@ -28,8 +28,8 @@ public class PropertyGridEx : PropertyGrid
         ((PropertyResolverEx)PropertyResolver).Descriptor = propertyDescriptor;
         var item = base.CreatePropertyItem(propertyDescriptor, component, category, hierarchyLevel);
 
-        /// Uses <see cref="DisplayAttribute.Order"/> for item ordering.
-        item.Priority = propertyDescriptor.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? item.Priority;
+        // Uses 'DisplayAttribute.Order' for item ordering.
+        item.Priority = int.MaxValue - propertyDescriptor.Attributes.OfType<DisplayAttribute>().FirstOrDefault()?.Order ?? item.Priority;
 
         _properties.Add(item);
         _propertyDescriptors.Add(propertyDescriptor);
@@ -97,10 +97,10 @@ public class PropertyResolverEx : PropertyResolver
         }
 
         if (type == typeof(string)) return new PlainTextPropertyEditor(this);
-
+        
         // Numbers
         if (type == typeof(sbyte)) return new NumberPropertyEditor(sbyte.MinValue, sbyte.MaxValue, this);
-        if (type == typeof(byte)) return new NumberPropertyEditor(byte.MinValue, byte.MaxValue, this);
+        if (type == typeof(byte))  return new NumberPropertyEditor(byte.MinValue, byte.MaxValue, this);
 
         if (type == typeof(short)) return new NumberPropertyEditor(short.MinValue, short.MaxValue, this);
         if (type == typeof(ushort)) return new NumberPropertyEditor(ushort.MinValue, ushort.MaxValue, this);
@@ -140,7 +140,7 @@ public class PropertyResolverEx : PropertyResolver
 /// <summary>
 /// Extensions helping working with property resolvers.
 /// </summary>
-public static class PropertyResolverExtensions
+public static class PropertyResolverExtensions 
 {
     public static void AttachTooltipAdder(this PropertyItem propertyItem, PropertyResolverEx resolverEx)
     {
@@ -150,7 +150,7 @@ public static class PropertyResolverExtensions
     private static void PropertyItemLoaded(object? sender, EventArgs e, PropertyResolverEx resolverEx, bool hasDescription)
     {
         var propertyItem = (PropertyItem)sender!;
-
+        
         // Make the child textbox not use built-in tooltip
         var textbox = FindChild<TextBox>(propertyItem, "");
         if (textbox != null)
@@ -212,7 +212,7 @@ public static class PropertyResolverExtensions
         where T : DependencyObject
     {
         // Confirm parent and childName are valid. 
-        if (parent == null)
+        if (parent == null) 
             return null;
 
         T? foundChild = null;
@@ -229,13 +229,13 @@ public static class PropertyResolverExtensions
                 foundChild = FindChild<T>(child, childName);
 
                 // If the child is found, break so we do not overwrite the found child. 
-                if (foundChild != null)
+                if (foundChild != null) 
                     break;
             }
             else if (!string.IsNullOrEmpty(childName))
             {
                 // If the child's name is set for search
-                if (child is not FrameworkElement frameworkElement || frameworkElement.Name != childName)
+                if (child is not FrameworkElement frameworkElement || frameworkElement.Name != childName) 
                     continue;
 
                 // if the child's name is of the request name
@@ -352,16 +352,16 @@ public class EnumPropertyEditor : PropertyEditorBase
         };
     }
 
-    private static List<ItemTuple> GetItems(Type type)
+    private static ItemTuple[] GetItems(Type type)
     {
-        var items = new List<ItemTuple>();
         var values = Enum.GetValues(type);
-        foreach (var value in values)
+        var items = GC.AllocateUninitializedArray<ItemTuple>(values.Length);
+        for (int x = 0; x < values.Length; x++)
         {
+            var value = values.GetValue(x)!;
             var name = value.ToString()!;
             name = type.GetMember(name).First().GetCustomAttribute<DisplayAttribute>()?.Name ?? name;
-
-            items.Add(new(name, value));
+            items[x] = new(name, value);
         }
 
         return items;
@@ -369,7 +369,7 @@ public class EnumPropertyEditor : PropertyEditorBase
 
     public override DependencyProperty GetDependencyProperty() => Selector.SelectedValueProperty;
 
-    private record ItemTuple(string Name, object Value);
+    private record struct ItemTuple(string Name, object Value);
 }
 
 public class NumberPropertyEditor : PropertyEditorBase
@@ -609,7 +609,7 @@ public class FilePropertyEditor : PathPropertyEditor
 
     protected override DialogResult ShowDialog()
     {
-        var initPath = !string.IsNullOrEmpty(_textbox!.Text) ? _textbox.Text : _filePickerParams.InitialDirectory;
+        var initPath = !string.IsNullOrEmpty(_textbox.Text) ? _textbox.Text : _filePickerParams.InitialDirectory;
         _openFileDialog = new OpenFileDialog
         {
             Filter = _filePickerParams.Filter,
@@ -649,7 +649,7 @@ public class FolderPropertyEditor : PathPropertyEditor
     protected override DialogResult ShowDialog()
     {
         var window = System.Windows.Window.GetWindow(Owner.PropertyGrid);
-        var initPath = !string.IsNullOrEmpty(_textbox!.Text) ? _textbox.Text : _folderPickerParams.InitialDirectory;
+        var initPath = !string.IsNullOrEmpty(_textbox.Text) ? _textbox.Text : _folderPickerParams.InitialDirectory;
         _folderPicker = new FolderPicker
         {
             InputPath = initPath,
@@ -711,7 +711,7 @@ public class FolderPicker
     }
 
     // for WPF support
-    public DialogResult ShowDialog(System.Windows.Window? owner = null, bool throwOnError = false)
+    public DialogResult ShowDialog(System.Windows.Window owner = null, bool throwOnError = false)
     {
         owner = owner ?? Application.Current?.MainWindow;
         return ShowDialog(owner != null ? new System.Windows.Interop.WindowInteropHelper(owner).Handle : IntPtr.Zero, throwOnError);
@@ -775,7 +775,7 @@ public class FolderPicker
             CheckHr(item.GetDisplayName(SIGDN.SIGDN_DESKTOPABSOLUTEEDITING, out var name), throwOnError);
             if (path != null || name != null)
             {
-                _resultPaths.Add(path!); // Should this be an and check?
+                _resultPaths.Add(path);
                 _resultNames.Add(name);
             }
         }
