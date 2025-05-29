@@ -66,7 +66,7 @@ public partial class MainPageViewModel : ViewModelBase
             {
                 if (this.SelectedApplication == null) return;
 
-                if (this.ConfigService.Items.All(x => x.Config.AppId != this.SelectedApplication.Config.AppId))
+                if (!File.Exists(SelectedApplication.Path))
                 {
                     this.Page = Page.SettingsPage;
                 }
