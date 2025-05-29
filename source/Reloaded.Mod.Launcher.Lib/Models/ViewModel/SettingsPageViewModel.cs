@@ -57,6 +57,8 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
     /// </summary>
     public IResourceFileSelector? ThemeSelector => Lib.ThemeSelector;
 
+    public AddApplicationCommand AddAppCommand { get; }
+
     public ViewModelActivator Activator { get; } = new();
 
     /// <summary/>
@@ -67,6 +69,7 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
         AppConfigService = appConfigService;
         ModConfigService = modConfigService;
         LoaderConfig = loaderConfig;
+        AddAppCommand = new(mainPage, appConfigService);
 
         UpdateTotalApplicationsInstalled();
         UpdateTotalModsInstalled();
