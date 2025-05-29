@@ -92,7 +92,7 @@ public class LoaderConfig : ObservableObject, IConfig<LoaderConfig>
     /// <summary>
     /// The theme file used by the Reloaded-II launcher.
     /// </summary>
-    public string ThemeFile { get; set; } = DefaultThemeFile;
+    public string ThemeFile => DefaultThemeFile;
 
     public bool FirstLaunch { get; set; } = true;
 

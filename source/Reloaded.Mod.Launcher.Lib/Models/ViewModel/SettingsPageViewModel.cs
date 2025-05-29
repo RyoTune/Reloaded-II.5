@@ -118,14 +118,14 @@ public partial class SettingsPageViewModel : ViewModelBase, IActivatableViewMode
     /// </summary>
     public async Task SaveNewThemeAsync()
     {
-        if (ThemeSelector?.File != null)
-        {
-            LoaderConfig.ThemeFile = ThemeSelector.File;
-            await SaveConfigAsync();
-            
-            // TODO: This is a bug workaround for where the language ComboBox gets reset after a theme change.
-            LanguageSelector!.SelectXamlFileByName(Path.GetFileName(LoaderConfig.LanguageFile!));
-        }
+        // if (ThemeSelector?.File != null)
+        // {
+        //     LoaderConfig.ThemeFile = ThemeSelector.File;
+        //     await SaveConfigAsync();
+        //     
+        //     // TODO: This is a bug workaround for where the language ComboBox gets reset after a theme change.
+        //     LanguageSelector!.SelectXamlFileByName(Path.GetFileName(LoaderConfig.LanguageFile!));
+        // }
     }
 
     /// <summary>
