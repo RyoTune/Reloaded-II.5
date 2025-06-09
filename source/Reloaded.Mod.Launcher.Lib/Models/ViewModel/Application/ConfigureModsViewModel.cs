@@ -175,7 +175,18 @@ public class ConfigureModsViewModel : ReactiveViewModelBase
             // Save hidden mods settings.
             this.ToggleModHideCommand.Subscribe(_ =>
             {
-                _loaderConfig.HiddenModsIds = AllMods.Where(x => x.IsHidden).Select(x => x.Tuple.Config.ModId).ToArray();
+                // AllMods only contains mods available to the current app.
+                // Since pulling mod entries for *all* mods would be annoying, instead:
+                // Copy list of all hidden mods, and add/remove any that appear in the current
+                // app's mods list.
+                var currHiddenMods = _loaderConfig.HiddenModsIds.ToHashSet();
+                foreach (var mod in AllMods)
+                {
+                    if (mod.IsHidden) currHiddenMods.Add(mod.Tuple.Config.ModId);
+                    else currHiddenMods.Remove(mod.Tuple.Config.ModId);
+                }
+
+                _loaderConfig.HiddenModsIds = currHiddenMods.ToArray();
                 IConfig<LoaderConfig>.ToPath(_loaderConfig, Paths.LoaderConfigPath);
             });
 

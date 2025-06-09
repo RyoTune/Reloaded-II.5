@@ -7,7 +7,7 @@
 	  <UseWPF>true</UseWPF>
     <AssemblyName>Reloaded-II</AssemblyName>
     <RootNamespace>Reloaded.Mod.Launcher</RootNamespace>
-    <Version>2.5.4</Version>
+    <Version>2.5.5</Version>
     <Copyright>Sewer56 ~ $([System.DateTime]::UtcNow.ToString("s")) | $(Version)</Copyright>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ApplicationIcon>appicon.ico</ApplicationIcon>
