@@ -37,7 +37,7 @@ public static class DependencyInstaller
                     urlSet.Add(new UrlCommandlinePair()
                     {
                         FriendlyName = $".NET Core {runtimeOptions.GetAllFrameworks()[0].Version} {architecture}",
-                        Url = await frameworkDownloader.GetDownloadUrlAsync(architecture, Platform.Windows, Format.Executable, false),
+                        Url = await frameworkDownloader.GetDownloadUrlAsync(architecture),
                         Parameters = dotNetCommandLineParams
                     });
                 }
