@@ -1,14 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net9.0-windows</TargetFramework>
-    
-    <!-- 9.0.5 is broken, don't allow booting with it -->
-    <RuntimeFrameworkVersion>9.0.4</RuntimeFrameworkVersion>
-    <RollForward>Disable</RollForward>
-    
-	  <LangVersion>preview</LangVersion>
+    <LangVersion>preview</LangVersion>
     <AssemblyTitle>Reloaded.Mod.Loader</AssemblyTitle>
-	  <UseWindowsForms>true</UseWindowsForms>
+    <UseWindowsForms>true</UseWindowsForms>
     <Product>Reloaded.Mod.Loader</Product>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
