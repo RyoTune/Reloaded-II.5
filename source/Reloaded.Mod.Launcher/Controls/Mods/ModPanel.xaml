@@ -64,13 +64,16 @@
                             </Image.Source>
                         </Image>
                         <Border
-                            Background="{DynamicResource GlassBackgroundBrush}"
                             CornerRadius="{DynamicResource ControlRadiusSmall}"
                             HorizontalAlignment="Right"
                             Padding="4,2"
                             VerticalAlignment="Bottom">
+                            <Border.Background>
+                                <SolidColorBrush Color="Black" Opacity="0.75" />
+                            </Border.Background>
                             <TextBlock
-                                FontSize="{DynamicResource TextSizeSmall}"
+                                FontFamily="{DynamicResource FontBold}"
+                                FontSize="12"
                                 Foreground="{DynamicResource RemixTextBrush}"
                                 Text="{Binding SelectedMod.Tuple.Config.ModVersion, StringFormat='Version: {0}'}" />
                         </Border>
